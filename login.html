@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fit & Get - Login</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+
+body{
+    background:#0f0f0f;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    color:white;
+}
+
+
+.app-container{
+
+    width:100%;
+    max-width:400px;
+    height:100vh;
+    max-height:844px;
+
+    background:#000;
+
+    border-radius:30px;
+
+    box-shadow:0 0 25px rgba(141,198,63,0.2);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:30px 20px;
+
+    position:relative;
+    overflow:hidden;
+
+    border:1px solid #1a1a1a;
+
+}
+
+
+
+.logo-section{
+
+    width:100%;
+    text-align:center;
+    margin-top:10px;
+
+}
+
+
+.logo-img{
+
+    width:100%;
+    max-width:280px;
+    height:auto;
+
+}
+
+
+
+.login-card{
+
+    width:100%;
+
+    background:rgba(255,255,255,0.05);
+
+    backdrop-filter:blur(10px);
+
+    border:1px solid rgba(255,255,255,0.1);
+
+    border-radius:20px;
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.login-title{
+
+    text-align:center;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.input-group{
+
+    margin-bottom:15px;
+
+}
+
+
+
+.input-group label{
+
+    display:block;
+
+    font-size:13px;
+
+    color:#8dc63f;
+
+    margin-bottom:6px;
+
+}
+
+
+
+.input-box{
+
+    width:100%;
+
+    height:48px;
+
+    background:#050505;
+
+    border:1px solid rgba(141,198,63,0.4);
+
+    border-radius:10px;
+
+    padding:0 15px;
+
+    color:white;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+
+
+.input-box:focus{
+
+    border-color:#8dc63f;
+
+    box-shadow:0 0 8px rgba(141,198,63,0.5);
+
+}
+
+
+
+.login-btn{
+
+    width:100%;
+
+    height:50px;
+
+    background:#8dc63f;
+
+    color:black;
+
+    border:none;
+
+    border-radius:25px;
+
+    font-size:16px;
+
+    font-weight:800;
+
+    margin-top:10px;
+
+}
+
+
+
+.home-indicator{
+
+    width:120px;
+
+    height:4px;
+
+    background:#333;
+
+    border-radius:2px;
+
+    position:absolute;
+
+    bottom:8px;
+
+}
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="app-container">
+
+
+<div class="logo-section">
+
+<img src="Fit&get.png" class="logo-img">
+
+</div>
+
+
+
+<div class="login-card">
+
+
+<div class="login-title">
+CUSTOMER LOGIN
+</div>
+
+
+
+<div class="input-group">
+
+<label>
+மொபைல் எண் / Mobile Number
+</label>
+
+<input 
+type="tel"
+id="mobile"
+class="input-box"
+placeholder="9876543210"
+maxlength="10">
+
+</div>
+
+
+
+<div class="input-group">
+
+<label>
+OTP
+</label>
+
+
+<input 
+type="password"
+id="otp"
+class="input-box"
+placeholder="Enter OTP"
+maxlength="6">
+
+</div>
+
+
+
+<button 
+id="sendBtn"
+class="login-btn">
+
+SEND OTP
+
+</button>
+<div id="recaptcha-container"></div>
+
+
+<button 
+onclick="verifyOTP()"
+class="login-btn">
+
+VERIFY OTP
+
+</button>
+
+
+
+</div>
+
+
+<div class="home-indicator"></div>
+
+
+</div>
+
+
+
+
+
+<script type="module">
+
+
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import { 
+getAuth,
+RecaptchaVerifier,
+signInWithPhoneNumber
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyA97y1KOFmvzpAHfkAZJWN2nl5aKX1QJZ4",
+
+authDomain: "teenz-bc23c.firebaseapp.com",
+
+projectId: "teenz-bc23c",
+
+storageBucket: "teenz-bc23c.firebasestorage.app",
+
+messagingSenderId: "813766100498",
+
+appId: "1:813766100498:web:e6e71c2386b6cbc4477acb"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+
+const auth = getAuth(app);
+
+
+console.log("Firebase loaded");
+
+window.sendOTP = ()=>{
+
+
+window.recaptchaVerifier = new RecaptchaVerifier(
+"recaptcha-container",
+{
+size:"invisible"
+},
+auth
+);
+
+
+
+let phoneNumber = "+91" + document.getElementById("mobile").value;
+
+
+
+signInWithPhoneNumber(
+auth,
+phoneNumber,
+window.recaptchaVerifier
+)
+
+.then((result)=>{
+
+
+window.confirmationResult=result;
+
+
+alert("OTP Sent Successfully");
+
+
+})
+
+
+.catch((error)=>{
+    console.log(error);
+    alert(error.code + "\n" + error.message);
+});
+
+
+}
+
+
+
+
+
+window.verifyOTP = ()=>{
+
+
+let otp=document.getElementById("otp").value;
+
+
+
+confirmationResult.confirm(otp)
+
+.then((result)=>{
+
+
+alert("Login Successful");
+
+
+window.location.href="home.html";
+
+
+})
+
+
+.catch(()=>{
+
+
+alert("Wrong OTP");
+
+
+});
+
+
+}
+document.getElementById("sendBtn").addEventListener("click", sendOTP);
+
+
+</script>
+
+
+</body>
+</html>
