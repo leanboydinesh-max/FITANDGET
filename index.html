@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ta">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -15,14 +17,15 @@
     font-family:'Segoe UI',sans-serif;
 }
 
-
 body{
+
     background:#0f0f0f;
     display:flex;
     justify-content:center;
     align-items:center;
     min-height:100vh;
     color:white;
+
 }
 
 
@@ -37,16 +40,14 @@ body{
 
     border-radius:30px;
 
-    box-shadow:0 0 25px rgba(141,198,63,0.2);
+    padding:30px 20px;
 
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    align-items:center;
-
-    padding:30px 20px;
 
     position:relative;
+
     overflow:hidden;
 
     border:1px solid #1a1a1a;
@@ -54,24 +55,20 @@ body{
 }
 
 
-
 .logo-section{
 
-    width:100%;
     text-align:center;
-    margin-top:10px;
+    margin-top:30px;
 
 }
 
 
 .logo-img{
 
-    width:100%;
-    max-width:280px;
-    height:auto;
+    width:280px;
+    max-width:100%;
 
 }
-
 
 
 .login-card{
@@ -86,128 +83,58 @@ body{
 
     border-radius:20px;
 
-    padding:20px;
-
-    margin-bottom:20px;
+    padding:25px;
 
 }
-
 
 
 .login-title{
 
     text-align:center;
 
-    font-size:18px;
+    font-size:20px;
 
     font-weight:700;
 
-    letter-spacing:1px;
-
-    margin-bottom:20px;
-
+       margin-bottom:25px;
 }
 
 
-
-.input-group{
-
-    margin-bottom:15px;
-
-}
-
-
-
-.input-group label{
-
-    display:block;
-
-    font-size:13px;
-
-    color:#8dc63f;
-
-    margin-bottom:6px;
-
-}
-
-
-
-.input-box{
+.google-btn{
 
     width:100%;
-
-    height:48px;
-
-    background:#050505;
-
-    border:1px solid rgba(141,198,63,0.4);
-
-    border-radius:10px;
-
-    padding:0 15px;
-
-    color:white;
-
-    font-size:15px;
-
-    outline:none;
-
-}
-
-
-
-.input-box:focus{
-
-    border-color:#8dc63f;
-
-    box-shadow:0 0 8px rgba(141,198,63,0.5);
-
-}
-
-
-
-.login-btn{
-
-    width:100%;
-
-    height:50px;
-
-    background:#8dc63f;
-
-    color:black;
-
+    height:52px;
+    background:white;
+    color:#111;
     border:none;
-
     border-radius:25px;
-
     font-size:16px;
-
-    font-weight:800;
-
-    margin-top:10px;
+    font-weight:700;
+    cursor:pointer;
 
 }
+.google-btn span{
 
+    margin-right:8px;
+
+}
 
 
 .home-indicator{
 
     width:120px;
-
     height:4px;
-
     background:#333;
-
-    border-radius:2px;
+    border-radius:10px;
 
     position:absolute;
-
     bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
 
 }
 
 </style>
-
 
 </head>
 
@@ -230,61 +157,16 @@ body{
 
 
 <div class="login-title">
+
 CUSTOMER LOGIN
-</div>
-
-
-
-<div class="input-group">
-
-<label>
-மொபைல் எண் / Mobile Number
-</label>
-
-<input 
-type="tel"
-id="mobile"
-class="input-box"
-placeholder="9876543210"
-maxlength="10">
 
 </div>
 
 
 
-<div class="input-group">
+<button class="google-btn" onclick="googleLogin()">
 
-<label>
-OTP
-</label>
-
-
-<input 
-type="password"
-id="otp"
-class="input-box"
-placeholder="Enter OTP"
-maxlength="6">
-
-</div>
-
-
-
-<button 
-id="sendBtn"
-class="login-btn">
-
-SEND OTP
-
-</button>
-<div id="recaptcha-container"></div>
-
-
-<button 
-onclick="verifyOTP()"
-class="login-btn">
-
-VERIFY OTP
+<span>G</span> Continue with Google
 
 </button>
 
@@ -297,26 +179,18 @@ VERIFY OTP
 
 
 </div>
-
-
-
-
-
 <script type="module">
-
 
 import { initializeApp } 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 
-import { 
+import {
 getAuth,
-RecaptchaVerifier,
-signInWithPhoneNumber
+GoogleAuthProvider,
+signInWithPopup
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-
 
 
 
@@ -344,68 +218,26 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 
-console.log("Firebase loaded");
-
-window.sendOTP = ()=>{
-
-
-window.recaptchaVerifier = new RecaptchaVerifier(
-"recaptcha-container",
-{
-size:"invisible"
-},
-auth
-);
+const provider = new GoogleAuthProvider();
 
 
 
-let phoneNumber = "+91" + document.getElementById("mobile").value;
+window.googleLogin = function(){
 
 
+signInWithPopup(auth, provider)
 
-signInWithPhoneNumber(
-auth,
-phoneNumber,
-window.recaptchaVerifier
-)
 
 .then((result)=>{
 
 
-window.confirmationResult=result;
+const user = result.user;
 
 
-alert("OTP Sent Successfully");
+console.log(user);
 
 
-})
-
-
-.catch((error)=>{
-    console.log(error);
-    alert(error.code + "\n" + error.message);
-});
-
-
-}
-
-
-
-
-
-window.verifyOTP = ()=>{
-
-
-let otp=document.getElementById("otp").value;
-
-
-
-confirmationResult.confirm(otp)
-
-.then((result)=>{
-
-
-alert("Login Successful");
+alert("Google Login Success 🎉");
 
 
 window.location.href="home.html";
@@ -414,21 +246,24 @@ window.location.href="home.html";
 })
 
 
-.catch(()=>{
+.catch((error)=>{
 
 
-alert("Wrong OTP");
+console.log(error);
+
+
+alert(error.message);
 
 
 });
 
 
-}
-document.getElementById("sendBtn").addEventListener("click", sendOTP);
+};
 
 
 </script>
 
 
 </body>
+
 </html>
