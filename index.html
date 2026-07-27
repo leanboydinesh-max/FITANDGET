@@ -247,14 +247,9 @@ window.location.href="home.html";
 
 
 .catch((error)=>{
-
-
-console.log(error);
-
-
-alert(error.message);
-
-
+ console.log(error.code);
+ console.log(error.message);
+ alert(error.message);
 });
 
 
