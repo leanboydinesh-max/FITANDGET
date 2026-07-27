@@ -218,7 +218,7 @@ const provider = new GoogleAuthProvider();
 
 window.googleLogin = async function () {
   alert("Button working");
-
+alert(window.location.hostname);
   try {
     await signInWithRedirect(auth, provider);
   } catch (error) {
