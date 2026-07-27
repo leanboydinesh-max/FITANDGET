@@ -216,15 +216,25 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 
-window.googleLogin = async function () {
-  alert("Button working");
-alert(window.location.hostname);
-  try {
-    await signInWithRedirect(auth, provider);
-  } catch (error) {
-    alert(error.code + "\n" + error.message);
-    console.log(error);
-  }
+window.googleLogin = async function(){
+
+try{
+
+const result = await signInWithPopup(auth, provider);
+
+const user = result.user;
+
+window.location.href = "home.html";
+
+}
+
+catch(error){
+
+console.log(error);
+alert(error.code);
+
+}
+
 };
 
 
