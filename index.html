@@ -188,7 +188,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getAuth,
 GoogleAuthProvider,
-signInWithPopup
+signInWithRedirect,
+getRedirectResult
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -224,36 +225,38 @@ const provider = new GoogleAuthProvider();
 
 window.googleLogin = function(){
 
+signInWithRedirect(auth, provider);
 
-signInWithPopup(auth, provider)
+};
 
+
+getRedirectResult(auth)
 
 .then((result)=>{
 
-
-const user = result.user;
-
-
-console.log(user);
-
+if(result){
 
 alert("Google Login Success 🎉");
 
-
 window.location.href="home.html";
 
+}
 
 })
 
-
 .catch((error)=>{
- console.log(error.code);
- console.log(error.message);
- alert(error.message);
+
+console.log(error.code);
+console.log(error.message);
+alert(error.message);
+
 });
 
 
-};
+
+
+
+
 
 
 </script>
