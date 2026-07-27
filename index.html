@@ -223,37 +223,17 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 
+window.googleLogin = async function () {
+  alert("Button working");
 
-window.googleLogin = function(){
-
-alert("Button working");
-
-signInWithRedirect(auth, provider);
-
+  try {
+    await signInWithRedirect(auth, provider);
+  } catch (error) {
+    alert(error.code + "\n" + error.message);
+    console.log(error);
+  }
 };
 
-
-getRedirectResult(auth)
-
-.then((result)=>{
-
-if(result){
-
-alert("Google Login Success 🎉");
-
-window.location.href="home.html";
-
-}
-
-})
-
-.catch((error)=>{
-
-console.log(error.code);
-console.log(error.message);
-alert(error.message);
-
-});
 
 
 
