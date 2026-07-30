@@ -233,7 +233,7 @@ header{
   border-radius: 20px;
   padding: 25px;
   width: 90%;
-  max-width: 350px;
+  max-width: 360px;
   text-align: center;
   position: relative;
   box-shadow: 0 0 25px rgba(124, 252, 0, 0.3);
@@ -261,24 +261,79 @@ header{
 
 .modal-content h2 {
   color: #7CFC00;
-  font-size: 24px;
-  margin-top: 10px;
+  font-size: 22px;
+  margin-top: 5px;
   margin-bottom: 10px;
 }
 
 .modal-content p {
-  font-size: 14px;
+  font-size: 13px;
   color: #ddd;
-  margin-bottom: 20px;
-  line-height: 20px;
+  margin-bottom: 15px;
+  line-height: 18px;
 }
 
-.register-btn {
+/* FORM STYLES inside Modal */
+.form-group {
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  font-size: 12px;
+  color: #bbb;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #222;
+  color: #fff;
+  font-size: 14px;
+}
+
+.token-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  margin-bottom: 15px;
+}
+
+.token-info {
+  font-size: 13px;
+  color: #fff;
+}
+
+.token-count {
+  color: #7CFC00;
+  font-weight: bold;
+}
+
+.buy-btn {
   background: #7CFC00;
   color: #000;
   border: none;
-  padding: 12px 25px;
-  font-size: 16px;
+  padding: 6px 12px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.action-btn {
+  background: #7CFC00;
+  color: #000;
+  border: none;
+  padding: 12px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 10px;
   cursor: pointer;
@@ -286,8 +341,15 @@ header{
   transition: 0.3s;
 }
 
-.register-btn:hover {
+.action-btn:hover {
   background: #66d400;
+}
+
+.error-msg {
+  color: #ff4d4d;
+  font-size: 12px;
+  margin-bottom: 10px;
+  display: none;
 }
 </style>
 </head>
@@ -298,10 +360,44 @@ header{
 <div class="modal-overlay" id="promoModal">
   <div class="modal-content">
     <span class="close-btn" id="closeModal">&times;</span>
-    <i class="fa-solid fa-gift" style="font-size: 45px; color: #7CFC00; margin-bottom: 10px;"></i>
+    <i class="fa-solid fa-gift" style="font-size: 38px; color: #7CFC00; margin-bottom: 5px;"></i>
     <h2>FREE SUPPLEMENTS!</h2>
-    <p>Register today and claim your free fitness supplement pack instantly!</p>
-    <button class="register-btn" onclick="location.href='shop.html'">REGISTER NOW</button>
+    
+    <!-- STEP 1: INITIAL BANNER -->
+    <div id="step1">
+      <p>Register today and claim your free fitness supplement pack instantly!</p>
+      <button class="action-btn" id="openRegBtn">REGISTER NOW</button>
+    </div>
+
+    <!-- STEP 2: REGISTRATION FORM -->
+    <div id="step2" style="display: none;">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="Enter username">
+      </div>
+      
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input type="tel" id="regMobile" placeholder="Enter mobile number">
+      </div>
+
+      <div class="form-group">
+        <label>Gmail</label>
+        <input type="email" id="regEmail" placeholder="Enter gmail address">
+      </div>
+
+      <!-- Eligibility Token Area -->
+      <div class="token-container">
+        <div class="token-info">
+          Eligibility Token: <span class="token-count" id="tokenDisplay">0</span>
+        </div>
+        <button class="buy-btn" onclick="location.href='shop.html'">BUY</button>
+      </div>
+
+      <div class="error-msg" id="errorMsg">⚠️ You need at least 1 Eligibility Token to register!</div>
+
+      <button class="action-btn" id="submitRegBtn">Submit Registration</button>
+    </div>
   </div>
 </div>
 
@@ -322,7 +418,6 @@ header{
   <!-- HEADER -->
   <header>
     <div class="left">
-      <!-- 3-Line Menu Icon -->
       <div class="menu" id="menuBtn">
         <i class="fa-solid fa-bars"></i>
       </div>
@@ -332,9 +427,7 @@ header{
     </div>
 
     <div class="right">
-      <!-- Shop Icon -->
       <i class="fa-solid fa-cart-shopping" onclick="location.href='shop.html'" title="Shop"></i>
-      <!-- Notification Icon -->
       <i class="fa-regular fa-bell" id="notifBtn" title="Notifications"></i>
     </div>
   </header>
@@ -402,18 +495,19 @@ header{
 
 <!-- JAVASCRIPT LOGIC -->
 <script>
+  // --- LocalStorage மூலம் Eligibility Tokens நிர்வகித்தல் ---
+  // முதன்முதலில் 0 டோக்கன் இருக்கும்
+  let userTokens = parseInt(localStorage.getItem('eligibilityTokens')) || 0;
+  const tokenDisplay = document.getElementById('tokenDisplay');
+  tokenDisplay.innerText = userTokens;
+
   // 1. Sidebar Menu Logic
   const menuBtn = document.getElementById('menuBtn');
   const sidebar = document.getElementById('sidebar');
   const closeSidebar = document.getElementById('closeSidebar');
 
-  menuBtn.addEventListener('click', () => {
-    sidebar.classList.add('active');
-  });
-
-  closeSidebar.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-  });
+  menuBtn.addEventListener('click', () => { sidebar.classList.add('active'); });
+  closeSidebar.addEventListener('click', () => { sidebar.classList.remove('active'); });
 
   // 2. Notification Panel Logic
   const notifBtn = document.getElementById('notifBtn');
@@ -421,26 +515,60 @@ header{
 
   notifBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    if (notifPanel.style.display === 'block') {
-      notifPanel.style.display = 'none';
-    } else {
-      notifPanel.style.display = 'block';
-    }
+    notifPanel.style.display = (notifPanel.style.display === 'block') ? 'none' : 'block';
   });
 
-  // Close notifications on clicking outside
   document.addEventListener('click', (e) => {
     if (!notifPanel.contains(e.target) && e.target !== notifBtn) {
       notifPanel.style.display = 'none';
     }
   });
 
-  // 3. Popup Modal Logic
+  // 3. Popup & Registration Form Logic
   const promoModal = document.getElementById('promoModal');
   const closeModal = document.getElementById('closeModal');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const openRegBtn = document.getElementById('openRegBtn');
+  const submitRegBtn = document.getElementById('submitRegBtn');
+  const errorMsg = document.getElementById('errorMsg');
 
+  // Close Popup
   closeModal.addEventListener('click', () => {
     promoModal.style.display = 'none';
+  });
+
+  // Show Form on Register Click
+  openRegBtn.addEventListener('click', () => {
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+  });
+
+  // Submit Registration Validation
+  submitRegBtn.addEventListener('click', () => {
+    const username = document.getElementById('regUsername').value.trim();
+    const mobile = document.getElementById('regMobile').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+
+    if (!username || !mobile || !email) {
+      alert('தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும் (Please fill all fields)!');
+      return;
+    }
+
+    // Check Eligibility Token
+    if (userTokens < 1) {
+      errorMsg.style.display = 'block';
+    } else {
+      errorMsg.style.display = 'none';
+      
+      // Deduct 1 Token & Save Remaining
+      userTokens -= 1;
+      localStorage.setItem('eligibilityTokens', userTokens);
+      tokenDisplay.innerText = userTokens;
+
+      alert('🎉 Success! Your ID Registered Successfully!');
+      promoModal.style.display = 'none';
+    }
   });
 </script>
 
