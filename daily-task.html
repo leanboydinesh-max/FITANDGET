@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fit & Get - Daily Task</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+
+background:#000;
+color:#fff;
+overflow-x:hidden;
+
+}
+
+.container{
+
+width:100%;
+max-width:430px;
+margin:auto;
+min-height:100vh;
+background:#050505;
+
+}
+
+.header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px;
+
+background:#0d0d0d;
+
+border-bottom:1px solid rgba(130,255,0,.25);
+
+position:sticky;
+top:0;
+z-index:100;
+
+}
+
+.logo{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+}
+
+.logo img{
+
+width:45px;
+height:45px;
+border-radius:50%;
+
+}
+
+.logo h2{
+
+font-size:22px;
+font-weight:700;
+color:#9DFF00;
+
+}
+
+.rc-box{
+
+display:flex;
+align-items:center;
+gap:8px;
+
+background:#131313;
+
+padding:8px 14px;
+
+border-radius:30px;
+
+border:1px solid #9DFF00;
+
+}
+
+.rc-icon{
+
+width:14px;
+height:14px;
+
+background:#9DFF00;
+
+border-radius:50%;
+
+box-shadow:0 0 15px #9DFF00;
+
+}
+
+.rc{
+
+font-size:15px;
+font-weight:700;
+
+color:#fff;
+
+}
+
+.page-title{
+
+padding:22px 20px 10px;
+
+}
+
+.page-title h1{
+
+font-size:28px;
+
+font-weight:800;
+
+}
+
+.page-title p{
+
+margin-top:5px;
+
+color:#9a9a9a;
+
+font-size:14px;
+
+}
+.progress-card{
+
+margin:20px;
+padding:18px;
+
+background:#111;
+
+border:1px solid rgba(157,255,0,.25);
+
+border-radius:20px;
+
+}
+
+.progress-head{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:12px;
+
+}
+
+.progress-head h3{
+
+font-size:18px;
+font-weight:600;
+
+}
+
+.progress-head span{
+
+color:#9DFF00;
+font-weight:700;
+
+}
+
+.progress{
+
+width:100%;
+height:10px;
+
+background:#222;
+
+border-radius:30px;
+
+overflow:hidden;
+
+}
+
+.progress-fill{
+
+width:20%;
+
+height:100%;
+
+background:#9DFF00;
+
+box-shadow:0 0 12px #9DFF00;
+
+border-radius:30px;
+
+}
+
+.task-list{
+
+padding:0 20px 110px;
+
+}
+
+.task{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+background:#111;
+
+padding:16px;
+
+margin-bottom:15px;
+
+border-radius:18px;
+
+border:1px solid rgba(157,255,0,.18);
+
+transition:.3s;
+
+}
+
+.task:hover{
+
+transform:scale(1.02);
+
+border-color:#9DFF00;
+
+}
+
+.left{
+
+display:flex;
+align-items:center;
+gap:14px;
+
+}
+
+.number{
+
+width:34px;
+height:34px;
+
+border-radius:50%;
+
+background:#1b1b1b;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+color:#9DFF00;
+
+font-weight:700;
+
+}
+
+.exercise{
+
+font-size:16px;
+
+font-weight:600;
+
+}
+
+.status{
+
+color:#9DFF00;
+
+font-size:22px;
+
+font-weight:bold;
+
+}
+
+.start-btn{
+
+position:fixed;
+
+left:20px;
+right:20px;
+bottom:25px;
+
+height:58px;
+
+border:none;
+
+border-radius:18px;
+
+background:#9DFF00;
+
+color:#000;
+
+font-size:18px;
+
+font-weight:700;
+
+cursor:pointer;
+
+box-shadow:0 0 20px rgba(157,255,0,.5);
+
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<div class="logo">
+<img src="logo.png" alt="Fit & Get">
+<h2>FIT & GET</h2>
+</div>
+
+<div class="rc-box">
+<div class="rc-icon"></div>
+<span class="rc">250 RC</span>
+</div>
+
+</div>
+
+<div class="page-title">
+
+<h1>Today's Task</h1>
+
+<p>Complete all 10 workouts and earn RC Points.</p>
+
+</div>
+
+<div class="progress-card">
+
+<div class="progress-head">
+
+<h3>Today's Progress</h3>
+
+<span>2 / 10</span>
+
+</div>
+
+<div class="progress">
+
+<div class="progress-fill"></div>
+
+</div>
+
+</div>
+<div class="task-list">
+
+<!-- 1 -->
+<div class="task">
+<div class="left">
+<div class="number">1</div>
+<div class="exercise">Stretching</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 2 -->
+<div class="task">
+<div class="left">
+<div class="number">2</div>
+<div class="exercise">Push Up</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 3 -->
+<div class="task">
+<div class="left">
+<div class="number">3</div>
+<div class="exercise">Squat</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 4 -->
+<div class="task">
+<div class="left">
+<div class="number">4</div>
+<div class="exercise">High Knees</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 5 -->
+<div class="task">
+<div class="left">
+<div class="number">5</div>
+<div class="exercise">Lunges</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 6 -->
+<div class="task">
+<div class="left">
+<div class="number">6</div>
+<div class="exercise">Mountain Climber</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 7 -->
+<div class="task">
+<div class="left">
+<div class="number">7</div>
+<div class="exercise">Jumping Jack</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 8 -->
+<div class="task">
+<div class="left">
+<div class="number">8</div>
+<div class="exercise">Burpees</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 9 -->
+<div class="task">
+<div class="left">
+<div class="number">9</div>
+<div class="exercise">Plank</div>
+</div>
+<div class="status">○</div>
+</div>
+
+<!-- 10 -->
+<div class="task">
+<div class="left">
+<div class="number">10</div>
+<div class="exercise">Cool Down</div>
+</div>
+<div class="status">○</div>
+</div>
+
+</div>
+
+<button class="start-btn">START WORKOUT</button>
+
+<script>
+
+document.querySelector(".start-btn").addEventListener("click",()=>{
+
+window.location.href="camera.html";
+
+});
+
+</script>
+</body>
+
+</html>
