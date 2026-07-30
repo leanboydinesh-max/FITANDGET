@@ -223,7 +223,21 @@
         .close-btn:hover {
             background-color: #f0fff2;
         }
+        .upload-btn{
+    margin-top:15px;
+    width:100%;
+    padding:12px;
+    background:#00E676;
+    color:#08110d;
+    border:none;
+    font-size:15px;
+    font-weight:bold;
+    border-radius:10px;
+    cursor:pointer;
+}
     </style>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -235,7 +249,7 @@
             
             <!-- 1. Shield Section -->
             <div class="shop-card">
-                <button class="shop-btn" onclick="showQR()">
+                <button class="shop-btn" onclick="showQR('Shield')">
                     <span>Buy Shield At 10 Rupees</span>
                     <span class="icon">🛡️</span>
                 </button>
@@ -246,7 +260,7 @@
 
             <!-- 2. Eligibility Token Section -->
             <div class="shop-card">
-              <button class="card-btn" onclick="showQR()">
+              <button class="card-btn" onclick="showQR('Token')">
 
 <svg width="26" height="26" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <path d="M10 18
@@ -284,7 +298,7 @@
 
             <!-- 3. Crystal Section -->
             <div class="shop-card">
-                <button class="card-btn" onclick="showQR()">
+                <button class="card-btn" onclick="showQR('Crystal')">
                    <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
 
 <polygon points="32,4 18,14 10,28 16,46 30,60 48,54 58,34 50,14"
@@ -326,36 +340,115 @@ fill="#00D766"/>
     <div class="modal-overlay" id="qrModal">
         <div class="modal-box">
             <div class="modal-title">Scan & Pay</div>
+            <div class="modal-text" id="selectedItem">
+</div>
             <div class="qr-placeholder">
                 <img src="QR.png" alt="QR Code">
             </div>
             
             <!-- Pop-up Text & Social Info -->
             <div class="social-info">📱 GPay Number: 6369598898</div>
-            <div class="modal-text">
-💚 Payment முடித்த பிறகு Screenshot அனுப்புங்கள்.<br><br>
+            <input 
+type="file" 
+id="paymentScreenshot" 
+accept="image/*"
+style="margin-top:15px;color:white;"
+>
 
-நீங்கள் வாங்கிய Item-ஐயும் Type செய்யுங்கள்.<br><br>
+<button class="upload-btn" onclick="uploadPayment()">
+📤 Upload Screenshot
+</button>
 
-🛡️ Shield<br>
-🎟️ Eligibility Token<br>
-💎 Emerald Crystal
-</div>
-            <div class="social-info">💬 WhatsApp: +91 6369598898</div>
-            <div class="social-info">📸 Instagram: @fitandget_</div>
-            
-<div class="social-info">📸 Payment Screenshot-ஐ WhatsApp-ல் அனுப்புங்கள்.</div>
-            <button class="close-btn" onclick="closeQR()">Close</button>
+<button class="close-btn" onclick="closeQR()">
+Close
+</button>
+          
+           
         </div>
     </div>
 
     <script>
-        function showQR() {
-            document.getElementById('qrModal').style.display = 'flex';
-        }
-        function closeQR() {
-            document.getElementById('qrModal').style.display = 'none';
-        }
+      const firebaseConfig = {
+  apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+  authDomain: "fitandget-b3461.firebaseapp.com",
+  projectId: "fitandget-b3461",
+  storageBucket: "fitandget-b3461.firebasestorage.app",
+  messagingSenderId: "216178533513",
+  appId: "1:216178533513:web:975f20599c7e77b9d01258"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+  let selectedReward = "";
+
+function showQR(reward) {
+    selectedReward = reward;
+
+    document.getElementById("selectedItem").innerHTML =
+    "🎁 Selected Item: " + selectedReward;
+
+    document.getElementById('qrModal').style.display = 'flex';
+}
+
+function closeQR() {
+    document.getElementById('qrModal').style.display = 'none';
+}
+async function uploadPayment(){
+
+let file = document.getElementById("paymentScreenshot").files[0];
+
+if(!file){
+    alert("Select screenshot first");
+    return;
+}
+
+// Cloudinary upload
+
+let formData = new FormData();
+
+formData.append("file", file);
+formData.append("upload_preset", "Payments_proof");
+
+
+let response = await fetch(
+"https://api.cloudinary.com/v1_1/tjopgkji/image/upload",
+{
+method:"POST",
+body:formData
+});
+
+
+let data = await response.json();
+
+if(!data.secure_url){
+    alert("Upload failed");
+    return;
+}
+
+
+// Firestore save
+
+await db.collection("payments").add({
+
+item: selectedReward,
+screenshot: data.secure_url,
+status:"Pending",
+time: new Date()
+
+});
+
+
+alert("Payment submitted successfully ✅");
+
+
+// clear screenshot
+document.getElementById("paymentScreenshot").value = "";
+
+// close popup
+closeQR();
+
+}
     </script>
 
 </body>
