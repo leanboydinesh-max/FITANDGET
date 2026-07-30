@@ -192,7 +192,12 @@ GoogleAuthProvider,
 signInWithPopup
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
  const firebaseConfig = {
@@ -210,6 +215,7 @@ const app = initializeApp(firebaseConfig);
 
 
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 
 const provider = new GoogleAuthProvider();
@@ -222,6 +228,23 @@ try{
 const result = await signInWithPopup(auth, provider);
 
 const user = result.user;
+const userRef = doc(db, "users", user.uid);
+
+const userSnap = await getDoc(userRef);
+
+if (!userSnap.exists()) {
+
+  await setDoc(userRef, {
+    username: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
+    coins: 0,
+    eligibilityTokens: 0,
+    totalPoints: 0,
+    registered: false
+  });
+
+}
 
 window.location.href = "home.html";
 
