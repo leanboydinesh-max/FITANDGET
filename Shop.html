@@ -387,6 +387,13 @@ Close
 };
 
 firebase.initializeApp(firebaseConfig);
+        firebase.auth().onAuthStateChanged((user)=>{
+    if(user){
+        console.log("Logged user:", user.uid);
+    }else{
+        console.log("No user");
+    }
+});
 
 const db = firebase.firestore();
   let selectedReward = "";
@@ -461,7 +468,7 @@ method:"POST",
 body:formData
 });
 
-
+console.log("Cloudinary response:", response.status);
 let data = await response.json();
 
 
@@ -470,11 +477,15 @@ if(!data.secure_url){
 }
 
 
-// Save Firestore
-let user = firebase.auth().currentUser;
+// Save 
+    let user = await new Promise((resolve)=>{
+    firebase.auth().onAuthStateChanged(resolve);
+});
 
 if(!user){
     alert("Please login first");
+    btn.disabled=false;
+    btn.innerHTML="📤 Upload Screenshot";
     return;
 }
 await db.collection("payments").add({
