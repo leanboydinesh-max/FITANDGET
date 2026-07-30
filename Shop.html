@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Shop App Interface</title>
+    <style>
+        /* General Setup */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color:#0b0f19;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Android-like Mobile Container */
+        .app-container {
+            width: 100%;
+            max-width: 410px;
+            height: 100vh;
+            background-color:#101722;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #dcdcdc;
+            border-right: 1px solid #dcdcdc;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* Top Header (App Bar) */
+        .app-bar{
+    background:linear-gradient(90deg,#00c853,#00e676);
+    color:#fff;
+    padding:20px;
+    text-align:center;
+    font-size:24px;
+    font-weight:700;
+    box-shadow:0 2px 12px rgba(0,230,118,.35);
+}
+
+        /* Buttons & Content Area */
+        .content-area {
+            flex: 1;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Container Cards for each Item */
+        .shop-card{
+    border:2px solid #00e676;
+    border-radius:16px;
+    padding:14px;
+    background:#17212b;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    box-shadow:0 0 15px rgba(0,230,118,.20);
+}
+
+        /* White Button Style */
+        .shop-btn{
+    width:100%;
+    background:#00e676;
+    color:#08110d;
+    border:none;
+    padding:16px;
+    font-size:16px;
+    font-weight:bold;
+    border-radius:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    box-shadow:0 4px 0 #00c853;
+}
+
+        /* Full Green Button Style */
+        .card-btn{
+    width:100%;
+    background:linear-gradient(180deg,#00F57A,#00C853);
+    color:#08110d;
+    border:none;
+    padding:16px;
+    font-size:16px;
+    font-weight:bold;
+    border-radius:12px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    box-sizing:border-box;
+    box-shadow:0 4px 0 #00A63E;
+    transition:transform .15s ease, box-shadow .15s ease;
+}
+        
+        .card-btn:active, .shop-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0px 0px 0px #1e7e34;
+        }
+
+        /* Emerald Crystal SVG styling */
+        .emerald-crystal-svg {
+            width: 26px;
+            height: 26px;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        /* Description Text Styling */
+        .desc-text {
+            font-size: 12.5px;
+            color:#d7e6dc;
+            line-height: 1.5;
+            text-align: justify;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .icon {
+            font-size: 20px;
+        }
+
+        /* QR Code Pop-up (Modal Overlay) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Pop-up Box Window */
+        .modal-box{
+    width:85%;
+    max-width:340px;
+    background:#17212b;
+    border:2px solid #00E676;
+    border-radius:16px;
+    padding:25px 20px;
+    text-align:center;
+    box-sizing:border-box;
+    animation:popIn .3s ease-out;
+    box-shadow:0 0 20px rgba(0,230,118,.35);
+}
+            
+            
+        
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title{
+    font-size:22px;
+    font-weight:bold;
+    color:#00E676;
+    margin-bottom:18px;
+}
+
+        .qr-placeholder{
+    width:180px;
+    height:180px;
+    border:2px dashed #00E676;
+    margin:0 auto 18px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#101722;
+    border-radius:12px;
+}
+
+        .qr-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+    .modal-text{
+    font-size:14.5px;
+    font-weight:bold;
+    color:#FFD54F;
+    margin-bottom:15px;
+}
+
+.social-info{
+    font-size:13.5px;
+    color:#E8F5E9;
+    margin:6px 0;
+    font-weight:600;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:5px;
+}
+
+        /* Close Button */
+   .close-btn{
+    margin-top:18px;
+    width:100%;
+    padding:12px;
+    background:#00E676;
+    color:#08110d;
+    border:none;
+    font-size:15px;
+    font-weight:bold;
+    border-radius:10px;
+    cursor:pointer;
+}
+        
+        .close-btn:hover {
+            background-color: #f0fff2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="app-bar">Shop</div>
+        
+        <div class="content-area">
+            
+            <!-- 1. Shield Section -->
+            <div class="shop-card">
+                <button class="shop-btn" onclick="showQR()">
+                    <span>Buy Shield At 10 Rupees</span>
+                    <span class="icon">🛡️</span>
+                </button>
+                <p class="desc-text">
+                    * If you ever forget or miss completing a task, this shield will protect your streak from being reset.
+                </p>
+            </div>
+
+            <!-- 2. Eligibility Token Section -->
+            <div class="shop-card">
+              <button class="card-btn" onclick="showQR()">
+
+<svg width="26" height="26" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10 18
+           C10 14 14 10 18 10
+           H46
+           C50 10 54 14 54 18
+           V24
+           C49 24 45 28 45 32
+           C45 36 49 40 54 40
+           V46
+           C54 50 50 54 46 54
+           H18
+           C14 54 10 50 10 46
+           V40
+           C15 40 19 36 19 32
+           C19 28 15 24 10 24
+           Z"
+        fill="#00E676"
+        stroke="#00C853"
+        stroke-width="3"/>
+
+  <line x1="32" y1="14" x2="32" y2="50"
+        stroke="#ffffff"
+        stroke-width="2"
+        stroke-dasharray="4 4"/>
+</svg>
+
+<span>Eligible Token At 10 Rupees</span>
+
+</button>
+                <p class="desc-text">
+                    * You must possess an Eligibility Token to participate in all upcoming competitions.
+                </p>
+            </div>
+
+            <!-- 3. Crystal Section -->
+            <div class="shop-card">
+                <button class="card-btn" onclick="showQR()">
+                   <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+
+<polygon points="32,4 18,14 10,28 16,46 30,60 48,54 58,34 50,14"
+fill="#00E676"/>
+
+<polygon points="32,4 18,14 28,30"
+fill="#6DFFB3"/>
+
+<polygon points="32,4 50,14 36,30"
+fill="#34E27A"/>
+
+<polygon points="18,14 10,28 28,30"
+fill="#00C853"/>
+
+<polygon points="50,14 58,34 36,30"
+fill="#00B248"/>
+
+<polygon points="10,28 16,46 30,60 28,30"
+fill="#009B3D"/>
+
+<polygon points="58,34 48,54 30,60 36,30"
+fill="#007E33"/>
+
+<polygon points="28,30 36,30 30,60"
+fill="#00D766"/>
+
+</svg>
+                    <span>Buy Crystal At 10 rupees</span>
+                </button>
+                <p class="desc-text">
+                    * Only available as a 2-month special offer. This crystal is reserved for future exclusive events. In the future, major events will be conducted specifically and exclusively for crystal holders.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- QR Code Pop-up (Modal) -->
+    <div class="modal-overlay" id="qrModal">
+        <div class="modal-box">
+            <div class="modal-title">Scan & Pay</div>
+            <div class="qr-placeholder">
+                <img src="QR.png" alt="QR Code">
+            </div>
+            <!-- Pop-up Text & Social Info -->
+            <div class="modal-text">Cash பண்ணிட்டு Screenshot அனுப்புங்க!</div>
+            <div class="social-info">💬 WhatsApp: +91 XXXXX XXXXX</div>
+            <div class="social-info">📸 Instagram: @your_id</div>
+            <a href="upi://pay?pa=mr.neelam.23-3@okicici&pn=Dinesh&tn=Buy Item&am=10&cu=IN" style="text-decoration:none;">
+    <button class="close-btn">💚 Pay ₹10</button>
+</a>
+            <button class="close-btn" onclick="closeQR()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        function showQR() {
+            document.getElementById('qrModal').style.display = 'flex';
+        }
+        function closeQR() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
