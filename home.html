@@ -1,328 +1,448 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>FIT & GET</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
 }
 
 body{
-background:#050505;
-color:#fff;
-overflow-x:hidden;
+  background:#050505;
+  color:#fff;
+  overflow-x:hidden;
 }
 
 .container{
-width:100%;
-max-width:430px;
-margin:auto;
-padding:20px;
-padding-bottom:100px;
+  width:100%;
+  max-width:430px;
+  margin:auto;
+  padding:20px;
+  padding-bottom:100px;
+  position: relative;
 }
 
 /* HEADER */
-
 header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:25px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
 }
 
 .left{
-display:flex;
-align-items:center;
-gap:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
 .menu{
-font-size:24px;
-color:#fff;
-cursor:pointer;
+  font-size:24px;
+  color:#fff;
+  cursor:pointer;
 }
 
 .username{
-font-size:18px;
-font-weight:600;
-color:#fff;
+  font-size:18px;
+  font-weight:600;
+  color:#fff;
 }
 
 .right{
-display:flex;
-gap:18px;
+  display:flex;
+  gap:18px;
 }
 
 .right i{
-font-size:22px;
-cursor:pointer;
-color:#fff;
-transition:.3s;
+  font-size:22px;
+  cursor:pointer;
+  color:#fff;
+  transition:.3s;
 }
 
 .right i:hover{
-color:#7CFC00;
+  color:#7CFC00;
 }
 
 /* LOGO */
-
 .logo{
-text-align:center;
-margin-top:10px;
-margin-bottom:30px;
+  text-align:center;
+  margin-top:10px;
+  margin-bottom:30px;
 }
 
 .logo img{
-width:170px;
+  width:170px;
 }
 
 .logo h1{
-margin-top:12px;
-font-size:30px;
-font-weight:700;
-color:#7CFC00;
+  margin-top:12px;
+  font-size:30px;
+  font-weight:700;
+  color:#7CFC00;
 }
 
 .logo p{
-margin-top:10px;
-font-size:14px;
-line-height:24px;
-color:#cfcfcf;
+  margin-top:10px;
+  font-size:14px;
+  line-height:24px;
+  color:#cfcfcf;
 }
 
-/* COMMON CARD */
-
+/* CARD */
 .card{
-background:#111;
-border:1px solid #222;
-border-radius:20px;
-padding:18px;
-box-shadow:0 0 15px rgba(124,252,0,.15);
-margin-bottom:10px;
-}
-
-.row{
-display:flex;
-gap:15px;
+  background:#111;
+  border:1px solid #222;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 0 15px rgba(124,252,0,.15);
+  margin-bottom:20px;
 }
 
 .card h3{
-color:#7CFC00;
-margin-bottom:12px;
-font-size:18px;
+  color:#7CFC00;
+  margin-bottom:12px;
+  font-size:18px;
 }
 
 .card p{
-font-size:14px;
-line-height:22px;
-color:#d8d8d8;
+  font-size:14px;
+  line-height:22px;
+  color:#d8d8d8;
 }
 
 .progress{
-width:100%;
-height:8px;
-background:#333;
-border-radius:20px;
-margin-top:12px;
-overflow:hidden;
+  width:100%;
+  height:8px;
+  background:#333;
+  border-radius:20px;
+  margin-top:12px;
+  overflow:hidden;
 }
 
 .progress span{
-display:block;
-width:70%;
-height:100%;
-background:#7CFC00;
-}
-.section-title{
-font-size:22px;
-color:#7CFC00;
-margin:5px 0 5px;
-font-weight:700;
+  display:block;
+  width:70%;
+  height:100%;
+  background:#7CFC00;
 }
 
-.event-card{
-background:#111;
-border:1px solid #222;
-border-radius:20px;
-padding:18px;
-margin-bottom:18px;
-box-shadow:0 0 15px rgba(124,252,0,.15);
+/* SIDEBAR MENU */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 260px;
+  height: 100%;
+  background: #111;
+  border-right: 1px solid #333;
+  z-index: 1000;
+  transition: 0.3s ease;
+  padding: 20px;
 }
 
-.event-card h3{
-color:#7CFC00;
-margin-bottom:10px;
+.sidebar.active {
+  left: 0;
 }
 
-.event-card p{
-margin-bottom:15px;
-color:#ccc;
+.sidebar h2 {
+  color: #7CFC00;
+  margin-bottom: 20px;
 }
 
-.event-card button{
-width:100%;
-padding:12px;
-border:none;
-border-radius:12px;
-background:#7CFC00;
-font-weight:bold;
-cursor:pointer;
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  padding: 12px 0;
+  border-bottom: 1px solid #222;
+}
+
+.sidebar ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.close-sidebar {
+  text-align: right;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+/* NOTIFICATION PANEL */
+.notif-panel {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 250px;
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.notif-panel h4 {
+  color: #7CFC00;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
+}
+
+.notif-panel p {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+/* POPUP MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: #151515;
+  border: 2px solid #7CFC00;
+  border-radius: 20px;
+  padding: 25px;
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 0 25px rgba(124, 252, 0, 0.3);
+  animation: popupAnim 0.4s ease-out;
+}
+
+@keyframes popupAnim {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 22px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  color: #ff4d4d;
+}
+
+.modal-content h2 {
+  color: #7CFC00;
+  font-size: 24px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  font-size: 14px;
+  color: #ddd;
+  margin-bottom: 20px;
+  line-height: 20px;
+}
+
+.register-btn {
+  background: #7CFC00;
+  color: #000;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.register-btn:hover {
+  background: #66d400;
 }
 </style>
-
 </head>
 
 <body>
 
+<!-- POPUP MODAL -->
+<div class="modal-overlay" id="promoModal">
+  <div class="modal-content">
+    <span class="close-btn" id="closeModal">&times;</span>
+    <i class="fa-solid fa-gift" style="font-size: 45px; color: #7CFC00; margin-bottom: 10px;"></i>
+    <h2>FREE SUPPLEMENTS!</h2>
+    <p>Register today and claim your free fitness supplement pack instantly!</p>
+    <button class="register-btn" onclick="location.href='shop.html'">REGISTER NOW</button>
+  </div>
+</div>
+
+<!-- SIDEBAR MENU -->
+<div class="sidebar" id="sidebar">
+  <div class="close-sidebar" id="closeSidebar"><i class="fa-solid fa-xmark"></i></div>
+  <h2>FIT & GET</h2>
+  <ul>
+    <li><a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+    <li><a href="daily-task.html"><i class="fa-solid fa-list-check"></i> Daily Tasks</a></li>
+    <li><a href="leaderboard.html"><i class="fa-solid fa-trophy"></i> Leaderboard</a></li>
+    <li><a href="shop.html"><i class="fa-solid fa-cart-shopping"></i> Shop</a></li>
+  </ul>
+</div>
+
 <div class="container">
 
-<header>
+  <!-- HEADER -->
+  <header>
+    <div class="left">
+      <!-- 3-Line Menu Icon -->
+      <div class="menu" id="menuBtn">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+      <div class="username" onclick="location.href='profile.html'" style="cursor:pointer;">
+        DINESH
+      </div>
+    </div>
 
-<div class="left">
+    <div class="right">
+      <!-- Shop Icon -->
+      <i class="fa-solid fa-cart-shopping" onclick="location.href='shop.html'" title="Shop"></i>
+      <!-- Notification Icon -->
+      <i class="fa-regular fa-bell" id="notifBtn" title="Notifications"></i>
+    </div>
+  </header>
 
-<div class="menu">
-<i class="fa-solid fa-bars"></i>
-</div>
+  <!-- NOTIFICATION PANEL -->
+  <div class="notif-panel" id="notifPanel">
+    <h4>Notifications</h4>
+    <p>🔔 Today's workout task is live!</p>
+    <p>🎉 Alex claimed 1st rank on Leaderboard.</p>
+  </div>
 
-<div class="username" onclick="location.href='profile.html'" style="cursor:pointer;">
-DINESH
-</div>
+  <!-- LOGO SECTION -->
+  <div class="logo">
+    <img src="logo.png" alt="FIT & GET Logo">
+    <h1>FIT & GET</h1>
+    <p>DREAM... BELIEVE... BECOME...</p>
+  </div>
 
-</div>
+  <!-- DAILY TASK CARD -->
+  <div class="card" onclick="location.href='daily-task.html'" style="cursor:pointer;">
+    <h3>📋 Daily Task</h3>
+    <p>Today's Workout Progress</p>
+    <div class="progress">
+      <span></span>
+    </div>
+    <p style="margin-top:12px;">70% Completed</p>
+  </div>
 
-<div class="right">
+  <!-- LEADERBOARD CARD -->
+  <div class="card" onclick="location.href='leaderboard.html'" style="cursor:pointer;">
+    <h3 style="text-align:center;">🏆 Leaderboard</h3>
+    
+    <div style="display:flex;justify-content:space-around;align-items:flex-start;margin-top:15px;">
+      <!-- SECOND -->
+      <div style="text-align:center;">
+        <div style="font-size:28px;">🥈</div>
+        <img src="https://i.pravatar.cc/80?img=15" style="width:55px;height:55px;border-radius:50%;border:3px solid #C0C0C0;margin-top:8px;">
+        <p style="margin-top:8px;font-weight:600;">Dinesh</p>
+        <p style="font-size:13px;color:#C0C0C0;">⭐ 2230</p>
+      </div>
 
-<i class="fa-solid fa-cart-shopping"></i>
+      <!-- FIRST -->
+      <div style="text-align:center;">
+        <div style="font-size:32px;">🥇</div>
+        <img src="https://i.pravatar.cc/80?img=12" style="width:65px;height:65px;border-radius:50%;border:3px solid gold;margin-top:8px;">
+        <p style="margin-top:8px;font-weight:600;">Alex</p>
+        <p style="font-size:13px;color:#FFD700;">⭐ 2450</p>
+      </div>
 
-<i class="fa-regular fa-bell"></i>
+      <!-- THIRD -->
+      <div style="text-align:center;">
+        <div style="font-size:28px;">🥉</div>
+        <img src="https://i.pravatar.cc/80?img=18" style="width:55px;height:55px;border-radius:50%;border:3px solid #CD7F32;margin-top:8px;">
+        <p style="margin-top:8px;font-weight:600;">Rahul</p>
+        <p style="font-size:13px;color:#CD7F32;">⭐ 1980</p>
+      </div>
+    </div>
 
-</div>
-
-</header>
-
-<div class="logo">
-
-<img src="logo.png" alt="FIT & GET Logo">
-
-<h1>FIT & GET</h1>
-
-<p>
-DREAME..BELIEVE..BECAME..<br>
-</p>
-
-</div>
-<!-- Daily Task -->
-
-<div class="card" onclick="location.href='daily-task.html'" style="cursor:pointer;">
-
-<h3>📋 Daily Task</h3>
-
-<p>Today's Workout Progress</p>
-
-<div class="progress">
-<span></span>
-</div>
-
-<p style="margin-top:12px;">70% Completed</p>
-
-
-</div>
-
-<!-- Leaderboard -->
-
-<div class="card" onclick="location.href='leaderboard.html'" style="cursor:pointer;">
-
-<h3 style="text-align:center;">🏆 Leaderboard</h3>
-
-<div style="display:flex;justify-content:space-around;align-items:flex-start;margin-top:15px;">
-
-
-<!-- SECOND -->
-<div style="text-align:center;">
-
-<div style="font-size:28px;">🥈</div>
-
-<img src="https://i.pravatar.cc/80?img=15"
-style="width:55px;height:55px;border-radius:50%;border:3px solid #C0C0C0;margin-top:8px;">
-
-<p style="margin-top:8px;font-weight:600;">Dinesh</p>
-
-<p style="font-size:13px;color:#C0C0C0;">
-⭐ 2230
-</p>
-
-</div>
-
-
-<!-- FIRST -->
-<div style="text-align:center;">
-
-<div style="font-size:32px;">🥇</div>
-
-<img src="https://i.pravatar.cc/80?img=12"
-style="width:65px;height:65px;border-radius:50%;border:3px solid gold;margin-top:8px;">
-
-<p style="margin-top:8px;font-weight:600;">Alex</p>
-
-<p style="font-size:13px;color:#FFD700;">
-⭐ 2450
-</p>
+    <p style="text-align:center;color:#7CFC00;margin-top:18px;font-size:14px;">
+      👆 Tap to View Full Leaderboard
+    </p>
+  </div>
 
 </div>
 
+<!-- JAVASCRIPT LOGIC -->
+<script>
+  // 1. Sidebar Menu Logic
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  const closeSidebar = document.getElementById('closeSidebar');
 
-<!-- THIRD -->
-<div style="text-align:center;">
+  menuBtn.addEventListener('click', () => {
+    sidebar.classList.add('active');
+  });
 
-<div style="font-size:28px;">🥉</div>
+  closeSidebar.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+  });
 
-<img src="https://i.pravatar.cc/80?img=18"
-style="width:55px;height:55px;border-radius:50%;border:3px solid #CD7F32;margin-top:8px;">
+  // 2. Notification Panel Logic
+  const notifBtn = document.getElementById('notifBtn');
+  const notifPanel = document.getElementById('notifPanel');
 
-<p style="margin-top:8px;font-weight:600;">Rahul</p>
+  notifBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (notifPanel.style.display === 'block') {
+      notifPanel.style.display = 'none';
+    } else {
+      notifPanel.style.display = 'block';
+    }
+  });
 
-<p style="font-size:13px;color:#CD7F32;">
-⭐ 1980
-</p>
+  // Close notifications on clicking outside
+  document.addEventListener('click', (e) => {
+    if (!notifPanel.contains(e.target) && e.target !== notifBtn) {
+      notifPanel.style.display = 'none';
+    }
+  });
 
-</div>
+  // 3. Popup Modal Logic
+  const promoModal = document.getElementById('promoModal');
+  const closeModal = document.getElementById('closeModal');
 
+  closeModal.addEventListener('click', () => {
+    promoModal.style.display = 'none';
+  });
+</script>
 
-</div>
-
-
-</div>
-
-<p style="text-align:center;color:#7CFC00;margin-top:18px;font-size:14px;">
-👆 Tap to View Full Leaderboard
-</p>
-
-</div>
-
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
+</body>
+</html>
