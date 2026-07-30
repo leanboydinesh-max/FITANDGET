@@ -238,6 +238,7 @@
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -349,13 +350,21 @@ fill="#00D766"/>
             <!-- Pop-up Text & Social Info -->
             <div class="social-info">📱 GPay Number: 6369598898</div>
             <input 
+type="number" 
+id="quantity"
+value="1"
+min="1"
+style="margin-top:15px;width:100%;padding:10px;"
+placeholder="Quantity"
+>
+            <input 
 type="file" 
 id="paymentScreenshot" 
 accept="image/*"
 style="margin-top:15px;color:white;"
 >
 
-<button class="upload-btn" onclick="uploadPayment()">
+<button id="uploadBtn" class="upload-btn" onclick="uploadPayment()">
 📤 Upload Screenshot
 </button>
 
@@ -385,6 +394,8 @@ const db = firebase.firestore();
 function showQR(reward) {
     selectedReward = reward;
 
+    document.getElementById("quantity").value = 1;
+
     document.getElementById("selectedItem").innerHTML =
     "🎁 Selected Item: " + selectedReward;
 
@@ -396,14 +407,46 @@ function closeQR() {
 }
 async function uploadPayment(){
 
-let file = document.getElementById("paymentScreenshot").files[0];
+let btn = document.getElementById("uploadBtn");
 
-if(!file){
-    alert("Select screenshot first");
+try{
+
+btn.disabled = true;
+btn.innerHTML = "⏳ Uploading...";
+
+let file = document.getElementById("paymentScreenshot").files[0];
+let quantity = Number(document.getElementById("quantity").value);
+
+if(quantity < 1){
+    alert("Enter valid quantity");
+    btn.disabled = false;
+    btn.innerHTML = "📤 Upload Screenshot";
     return;
 }
 
-// Cloudinary upload
+if(!file){
+    alert("Select screenshot first");
+    btn.disabled = false;
+    btn.innerHTML = "📤 Upload Screenshot";
+    return;
+}
+
+
+// Check duplicate filename
+
+let existing = await db.collection("payments")
+.where("fileName","==",file.name)
+.get();
+
+if(!existing.empty){
+    alert("This screenshot already submitted");
+    btn.disabled = false;
+    btn.innerHTML = "📤 Upload Screenshot";
+    return;
+}
+
+
+// Cloudinary Upload
 
 let formData = new FormData();
 
@@ -421,32 +464,66 @@ body:formData
 
 let data = await response.json();
 
+
 if(!data.secure_url){
-    alert("Upload failed");
-    return;
+    throw new Error("Upload failed");
 }
 
 
-// Firestore save
+// Save Firestore
+let user = firebase.auth().currentUser;
 
+if(!user){
+    alert("Please login first");
+    return;
+}
 await db.collection("payments").add({
 
-item: selectedReward,
-screenshot: data.secure_url,
+uid:user.uid,
+
+name:user.displayName || "No Name",
+
+email:user.email,
+
+item:selectedReward,
+
+quantity:quantity,
+
+screenshot:data.secure_url,
+
+fileName:file.name,
+
 status:"Pending",
-time: new Date()
+
+time:new Date()
 
 });
 
 
-alert("Payment submitted successfully ✅");
+alert("Screenshot submitted successfully ✅");
 
 
-// clear screenshot
-document.getElementById("paymentScreenshot").value = "";
+document.getElementById("paymentScreenshot").value="";
+document.getElementById("quantity").value=1;
 
-// close popup
+
+btn.disabled = false;
+btn.innerHTML="📤 Upload Screenshot";
+
 closeQR();
+
+
+}
+catch(error){
+
+console.log(error);
+
+alert("Upload failed ❌");
+
+btn.disabled = false;
+btn.innerHTML="📤 Upload Screenshot";
+
+}
 
 }
     </script>
