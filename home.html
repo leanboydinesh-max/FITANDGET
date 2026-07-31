@@ -462,33 +462,14 @@ Loading...
   <!-- LEADERBOARD CARD -->
   <div class="card" onclick="location.href='Leaderboard.html'" style="cursor:pointer;">
     <h3 style="text-align:center;">🏆 Leaderboard</h3>
-    
-    <div style="display:flex;justify-content:space-around;align-items:flex-start;margin-top:15px;">
-      <!-- SECOND -->
-      <div style="text-align:center;">
-        <div style="font-size:28px;">🥈</div>
-        <img src="https://i.pravatar.cc/80?img=15" style="width:55px;height:55px;border-radius:50%;border:3px solid #C0C0C0;margin-top:8px;">
-        <p style="margin-top:8px;font-weight:600;">Dinesh</p>
-        <p style="font-size:13px;color:#C0C0C0;">⭐ 2230</p>
-      </div>
 
-      <!-- FIRST -->
-      <div style="text-align:center;">
-        <div style="font-size:32px;">🥇</div>
-        <img src="https://i.pravatar.cc/80?img=12" style="width:65px;height:65px;border-radius:50%;border:3px solid gold;margin-top:8px;">
-        <p style="margin-top:8px;font-weight:600;">Alex</p>
-        <p style="font-size:13px;color:#FFD700;">⭐ 2450</p>
-      </div>
+    <div id="topLeaderboard" 
+style="display:flex;justify-content:space-around;align-items:flex-start;margin-top:15px;">
 
-      <!-- THIRD -->
-      <div style="text-align:center;">
-        <div style="font-size:28px;">🥉</div>
-        <img src="https://i.pravatar.cc/80?img=18" style="width:55px;height:55px;border-radius:50%;border:3px solid #CD7F32;margin-top:8px;">
-        <p style="margin-top:8px;font-weight:600;">Rahul</p>
-        <p style="font-size:13px;color:#CD7F32;">⭐ 1980</p>
-      </div>
+Loading...
+
     </div>
-
+    
     <p style="text-align:center;color:#7CFC00;margin-top:18px;font-size:14px;">
       👆 Tap to View Full Leaderboard
     </p>
@@ -547,7 +528,98 @@ tokenDisplay.innerText = userTokens;
     step1.style.display = 'none';
     step2.style.display = 'block';
   });
+  </script>                                                              
 
+
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+  authDomain: "fitandget-b3461.firebaseapp.com",
+  projectId: "fitandget-b3461",
+  storageBucket: "fitandget-b3461.firebasestorage.app",
+  messagingSenderId: "216178533513",
+  appId: "1:216178533513:web:975f20599c7e77b9d01258"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+async function loadTopLeaderboard(){
+
+const box = document.getElementById("topLeaderboard");
+
+const snapshot = await db.collection("users")
+.orderBy("totalPoints","desc")
+.limit(3)
+.get();
+
+
+let html="";
+
+let rank=0;
+
+
+snapshot.forEach((doc)=>{
+
+let data=doc.data();
+
+html += `
+<div style="text-align:center">
+
+<div style="font-size:30px">
+${["🥇","🥈","🥉"][rank]}
+</div>
+
+<img src="${data.photoURL || 'https://i.pravatar.cc/80'}"
+style="width:60px;height:60px;border-radius:50%">
+
+<p>${data.username || "User"}</p>
+
+<p style="color:#7CFC00">
+⭐ ${data.totalPoints || 0}
+</p>
+
+</div>
+`;
+
+rank++;
+
+});
+
+
+box.innerHTML=html;
+
+  }
+
+firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+      loadTopLeaderboard();
+        document.getElementById("username").textContent =
+user.displayName || "FIT USER";
+        db.collection("users").doc(user.uid).get().then((doc) => {
+    if (doc.exists) {
+        userTokens = doc.data().eligibilityTokens || 0;
+        tokenDisplay.innerText = userTokens;
+    }
+});
+  
+        const doc = await db.collection("users").doc(user.uid).get();
+
+        if(doc.exists){
+            userTokens = doc.data().eligibilityTokens || 0;
+            tokenDisplay.innerText = userTokens;
+        }
+
+    } else {
+        window.location.href = "login.html";
+    }
+});
+    
   // Submit Registration Validation
   submitRegBtn.addEventListener('click', () => {
     const username = document.getElementById('regUsername').value.trim();
@@ -574,7 +646,7 @@ db.collection("competitionRegistrations").doc(user.uid).set({
     username: username,
     mobile: mobile,
     email: email,
-    displayName: user.displayName,
+    displayName: user.displayName || "",
     photoURL: user.photoURL || "",
     registeredAt: firebase.firestore.FieldValue.serverTimestamp()
   })
@@ -604,47 +676,7 @@ db.collection("competitionRegistrations").doc(user.uid).set({
 
     }   // else close
 });     // addEventListener close
-</script>
 
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
-  authDomain: "fitandget-b3461.firebaseapp.com",
-  projectId: "fitandget-b3461",
-  storageBucket: "fitandget-b3461.firebasestorage.app",
-  messagingSenderId: "216178533513",
-  appId: "1:216178533513:web:975f20599c7e77b9d01258"
-};
-
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-firebase.auth().onAuthStateChanged(async (user) => {
-    if (user) {
-        document.getElementById("username").textContent = user.displayName;
-        db.collection("users").doc(user.uid).get().then((doc) => {
-    if (doc.exists) {
-        userTokens = doc.data().eligibilityTokens || 0;
-        tokenDisplay.innerText = userTokens;
-    }
-});
-        const doc = await db.collection("users").doc(user.uid).get();
-
-        if(doc.exists){
-            userTokens = doc.data().eligibilityTokens || 0;
-            tokenDisplay.innerText = userTokens;
-        }
-
-    } else {
-        window.location.href = "login.html";
-    }
-});
-    
 
 </script>
 </body>
