@@ -613,7 +613,9 @@ setInterval(() => {
 window.addEventListener("error", (e) => {
     console.log("Leaderboard Error:", e.message);
 });
-
+document.getElementById("backBtn").addEventListener("click", () => {
+    window.location.href = "home.html";
+});
 </script>
 
 
