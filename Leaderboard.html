@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Leaderboard - FIT & GET</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#050505;
+color:#fff;
+overflow-x:hidden;
+}
+
+.container{
+width:100%;
+max-width:430px;
+margin:auto;
+padding:18px;
+padding-bottom:40px;
+}
+
+/* Header */
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:25px;
+}
+
+.backBtn{
+width:45px;
+height:45px;
+border-radius:50%;
+background:#111;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:22px;
+cursor:pointer;
+box-shadow:0 0 15px rgba(124,252,0,.15);
+transition:.3s;
+}
+
+.backBtn:hover{
+background:#7CFC00;
+color:#000;
+}
+
+.title{
+font-size:26px;
+font-weight:700;
+color:#7CFC00;
+}
+
+.refresh{
+font-size:22px;
+cursor:pointer;
+}
+
+/* Top Card */
+
+.topCard{
+
+background:linear-gradient(180deg,#101010,#181818);
+
+border:1px solid rgba(124,252,0,.25);
+
+border-radius:28px;
+
+padding:20px;
+
+box-shadow:0 0 30px rgba(124,252,0,.15);
+
+margin-bottom:28px;
+
+}
+
+.topTitle{
+
+text-align:center;
+
+font-size:22px;
+
+font-weight:700;
+
+margin-bottom:25px;
+
+}
+
+.podium{
+
+display:flex;
+
+justify-content:center;
+
+align-items:flex-end;
+
+gap:14px;
+
+}
+
+/* Player */
+
+.player{
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+}
+
+.avatar{
+
+width:68px;
+
+height:68px;
+
+border-radius:50%;
+
+border:4px solid #fff;
+
+object-fit:cover;
+
+}
+
+.name{
+
+margin-top:10px;
+
+font-size:15px;
+
+font-weight:600;
+
+}
+
+.points{
+
+margin-top:4px;
+
+font-size:13px;
+
+color:#7CFC00;
+
+}
+
+.streak{
+
+font-size:12px;
+
+color:#ffb347;
+
+margin-top:2px;
+
+}
+
+/* Podium Blocks */
+
+.block{
+
+width:92px;
+
+border-radius:18px 18px 0 0;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+font-size:34px;
+
+font-weight:800;
+
+margin-top:14px;
+
+}
+
+/* First */
+
+.first .avatar{
+
+border-color:gold;
+
+box-shadow:0 0 20px gold;
+
+}
+
+.first .block{
+
+height:170px;
+
+background:linear-gradient(180deg,#FFD700,#d8a700);
+
+color:#000;
+
+}
+
+/* Second */
+
+.second .avatar{
+
+border-color:silver;
+
+box-shadow:0 0 18px silver;
+
+}
+
+.second .block{
+
+height:125px;
+
+background:linear-gradient(180deg,#cfcfcf,#8d8d8d);
+
+color:#000;
+
+}
+
+/* Third */
+
+.third .avatar{
+
+border-color:#cd7f32;
+
+box-shadow:0 0 18px #cd7f32;
+
+}
+
+.third .block{
+
+height:95px;
+
+background:linear-gradient(180deg,#cd7f32,#8a4f17);
+
+color:#fff;
+
+}
+
+.sectionTitle{
+
+font-size:21px;
+
+font-weight:700;
+
+margin:10px 0 18px;
+
+color:#7CFC00;
+
+}
+/* Leaderboard List */
+
+.rankList{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+.rankCard{
+background:#111;
+border:1px solid rgba(124,252,0,.15);
+border-radius:18px;
+padding:14px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+transition:.3s;
+box-shadow:0 0 15px rgba(124,252,0,.08);
+}
+
+.rankCard:hover{
+transform:translateY(-2px);
+border-color:#7CFC00;
+}
+
+.leftSide{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.rankNo{
+width:34px;
+font-size:18px;
+font-weight:700;
+color:#7CFC00;
+text-align:center;
+}
+
+.rankAvatar{
+width:58px;
+height:58px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #2b2b2b;
+}
+
+.userInfo h3{
+font-size:16px;
+font-weight:600;
+margin-bottom:3px;
+}
+
+.userInfo p{
+font-size:12px;
+color:#9d9d9d;
+}
+
+.rightSide{
+text-align:right;
+}
+
+.rc{
+font-size:18px;
+font-weight:700;
+color:#7CFC00;
+}
+
+.day{
+margin-top:4px;
+font-size:13px;
+color:#ffb347;
+}
+
+.badge{
+margin-top:6px;
+display:inline-block;
+background:#1b1b1b;
+padding:5px 10px;
+border-radius:20px;
+font-size:11px;
+color:#7CFC00;
+border:1px solid rgba(124,252,0,.3);
+}
+</style>
+</head>
+
+<body>
+
+
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+
+<div class="backBtn" onclick="history.back()">
+<i class="fa-solid fa-arrow-left"></i>
+</div>
+
+<div class="title">
+Leaderboard
+</div>
+
+<div class="refresh" id="refreshBtn">
+<i class="fa-solid fa-rotate-right"></i>
+</div>
+
+</div>
+
+<!-- Top 3 -->
+<div class="topCard">
+
+<div class="topTitle">
+🏆 Top Champions
+</div>
+
+<div class="podium">
+
+<!-- 2nd -->
+<div class="player second" id="top2">
+<img id="top2Photo" class="avatar">
+<div class="name" id="top2Name">Loading...</div>
+<div class="points" id="top2Points">RC 0</div>
+<div class="streak" id="top2Streak">🔥 0 Days</div>
+<div class="block">2</div>
+</div>
+
+<!-- 1st -->
+<div class="player first" id="top1">
+<img id="top1Photo" class="avatar">
+<div class="name" id="top1Name">Loading...</div>
+<div class="points" id="top1Points">RC 0</div>
+<div class="streak" id="top1Streak">🔥 0 Days</div>
+<div class="block">1</div>
+</div>
+
+<!-- 3rd -->
+<div class="player third" id="top3">
+<img id="top3Photo" class="avatar">
+<div class="name" id="top3Name">Loading...</div>
+<div class="points" id="top3Points">RC 0</div>
+<div class="streak" id="top3Streak">🔥 0 Days</div>
+<div class="block">3</div>
+</div>
+
+</div>
+
+</div>
+
+<h2 class="sectionTitle">
+Top 10 Players
+</h2>
+
+<div class="rankList" id="rankList">
+
+<!-- Firebase data வரும் -->
+
+</div>
+
+<div style="text-align:center;margin-top:25px;">
+
+
+<button id="seeMoreBtn"
+style="background:#7CFC00;
+color:#000;
+border:none;
+padding:14px 28px;
+font-size:16px;
+font-weight:700;
+border-radius:12px;
+cursor:pointer;">
+See More
+</button>
+
+</div>
+
+</div>
+
+<!-- Part 3 JavaScript இங்கே வரும் -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+  authDomain: "fitandget-b3461.firebaseapp.com",
+  projectId: "fitandget-b3461",
+  storageBucket: "fitandget-b3461.firebasestorage.app",
+  messagingSenderId: "216178533513",
+  appId: "1:216178533513:web:975f20599c7e77b9d01258"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.firestore();
+
+let leaderboardData = [];
+let visibleCount = 10;
+
+// Load Leaderboard
+async function loadLeaderboard(){
+
+    const snapshot = await db.collection("users")
+        .orderBy("totalPoints","desc")
+        .get();
+
+    leaderboardData = [];
+
+    snapshot.forEach(doc=>{
+        leaderboardData.push({
+            id: doc.id,
+            ...doc.data()
+        });
+    });
+
+    loadTopThree();
+    loadTopList();
+}
+
+// Top 3
+function loadTopThree(){
+
+    const top = leaderboardData;
+
+  if(top[0]){
+    document.getElementById("top1Photo").src =
+    top[0].photoURL || "https://ui-avatars.com/api/?name="+top[0].username;
+
+    document.getElementById("top1Name").innerText = top[0].username || "User";
+    document.getElementById("top1Points").innerText = "RC " + (top[0].totalPoints || 0);
+    document.getElementById("top1Streak").innerText = "🔥 " + (top[0].dailyStreak || 0) + " Days";
+}
+    
+
+    if(top[1]){
+
+    document.getElementById("top2Photo").src =
+    top[1].photoURL ? top[1].photoURL :
+    "https://ui-avatars.com/api/?name="+encodeURIComponent(top[1].username || "User");
+
+    document.getElementById("top2Name").innerText = top[1].username || "User";
+
+    document.getElementById("top2Points").innerText =
+    "RC " + (top[1].totalPoints || 0);
+
+    document.getElementById("top2Streak").innerText =
+    "🔥 " + (top[1].dailyStreak || 0) + " Days";
+
+    }
+
+    if(top[2]){
+        document.getElementById("top3Photo").src = top[2].photoURL || "https://ui-avatars.com/api/?name=User";
+        document.getElementById("top3Name").innerText = top[2].username || "User";
+        document.getElementById("top3Points").innerText = "RC " + (top[2].totalPoints || 0);
+        document.getElementById("top3Streak").innerText = "🔥 " + (top[2].dailyStreak || 0) + " Days";
+    }
+}
+// Top List
+function loadTopList(){
+
+const rankList = document.getElementById("rankList");
+rankList.innerHTML = "";
+
+leaderboardData.slice(0, visibleCount).forEach((user,index)=>{
+
+rankList.innerHTML += `
+
+<div class="rankCard" onclick="openProfile('${user.id}')">
+
+<div class="leftSide">
+
+<div class="rankNo">#${index+1}</div>
+
+<img class="rankAvatar"
+src="${user.photoURL ? user.photoURL : 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.username || 'User')}">
+
+<div class="userInfo">
+<h3>${user.username || 'User'}</h3>
+<p>Fitness Warrior</p>
+</div>
+
+</div>
+
+<div class="rightSide">
+
+<div class="rc">
+RC ${user.totalPoints || 0}
+</div>
+
+<div class="day">
+🔥 ${user.dailyStreak || 0} Days
+</div>
+
+<div class="badge">
+TOP ${index+1}
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+// Open Profile
+function openProfile(uid){
+
+window.location.href =
+"profile.html?uid="+uid;
+
+}
+
+// See More
+document.getElementById("seeMoreBtn")
+.addEventListener("click",()=>{
+
+visibleCount += 10;
+
+if(visibleCount > leaderboardData.length){
+visibleCount = leaderboardData.length;
+}
+
+loadTopList();
+
+});
+
+// Refresh
+document.getElementById("refreshBtn")
+.addEventListener("click",()=>{
+
+loadLeaderboard();
+
+});
+// Auto Load
+window.addEventListener("load", () => {
+    loadLeaderboard();
+});
+
+// Refresh every 30 seconds
+setInterval(() => {
+    loadLeaderboard();
+}, 30000);
+
+// Error Handling
+window.addEventListener("error", (e) => {
+    console.log("Leaderboard Error:", e.message);
+});
+
+</script>
+
+
+</body>
+</html>
