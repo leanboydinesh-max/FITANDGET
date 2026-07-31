@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Profile</title>
+<title>FIT & GET - Profile</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 
@@ -11,371 +16,705 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Poppins, sans-serif;
+font-family:'Poppins',sans-serif;
 }
 
 body{
-background:#07140d;
-color:white;
+background:#050505;
+color:#fff;
+overflow-x:hidden;
 }
 
-
-.profile-page{
+.container{
 width:100%;
-min-height:100vh;
+max-width:430px;
+margin:auto;
 padding:20px;
+padding-bottom:120px;
 }
 
-
-/* Header */
+/* HEADER */
 
 .header{
 display:flex;
-align-items:center;
 justify-content:space-between;
-margin-bottom:20px;
-}
-
-.back{
-font-size:28px;
-color:#00ff88;
-}
-
-.username{
-font-size:22px;
-font-weight:bold;
-}
-
-.edit{
-color:#00ff88;
-font-size:20px;
-}
-
-
-/* Profile Card */
-
-.card{
-
-background:#10261a;
-border-radius:25px;
-padding:20px;
-box-shadow:0 0 20px #00ff8840;
-
-}
-
-
-/* Streak */
-
-.streak{
-
-display:flex;
 align-items:center;
-gap:10px;
-
-color:#ff7b00;
-font-size:18px;
-font-weight:bold;
-
+margin-bottom:25px;
 }
 
+.back-btn{
+width:44px;
+height:44px;
+border-radius:50%;
+background:#141414;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:22px;
+cursor:pointer;
+border:1px solid #2c2c2c;
+transition:.3s;
+}
 
-/* Profile image */
+.back-btn:hover{
+border-color:#7CFC00;
+}
+
+.title{
+font-size:22px;
+font-weight:700;
+color:#7CFC00;
+}
+
+/* PROFILE CARD */
+
+.profile-card{
+
+background:#101010;
+
+border-radius:28px;
+
+padding:28px;
+
+border:1px solid #242424;
+
+text-align:center;
+
+box-shadow:0 0 18px rgba(124,252,0,.12);
+
+}
 
 .profile-img{
 
 width:120px;
+
 height:120px;
+
 border-radius:50%;
-background:#1c3b29;
 
-margin:20px auto;
+object-fit:cover;
 
-border:4px solid #00ff88;
+border:4px solid #7CFC00;
 
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:45px;
+box-shadow:0 0 20px rgba(124,252,0,.45);
 
 }
 
+.username{
 
-/* Stats */
+margin-top:15px;
+
+font-size:24px;
+
+font-weight:700;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+gap:8px;
+
+}
+
+.edit-btn{
+
+color:#7CFC00;
+
+font-size:18px;
+
+cursor:pointer;
+
+}
+
+.email{
+
+margin-top:6px;
+
+font-size:13px;
+
+color:#9d9d9d;
+
+}
+
+/* STATS */
 
 .stats{
 
-display:flex;
-justify-content:space-around;
-text-align:center;
-margin-top:10px;
+display:grid;
 
-}
+grid-template-columns:repeat(2,1fr);
 
-
-.stat{
-
-font-size:15px;
-
-}
-
-
-.icon{
-
-font-size:30px;
-}
-
-
-.number{
-
-font-size:18px;
-font-weight:bold;
-
-}
-
-
-
-/* Coins */
-
-.coins{
-
-display:flex;
-justify-content:space-around;
+gap:15px;
 
 margin-top:25px;
 
 }
 
+.stat{
 
-.coin{
+background:#181818;
 
-text-align:center;
+border-radius:18px;
 
-}
+padding:18px;
 
-
-.rc{
-
-width:55px;
-height:55px;
-
-border-radius:50%;
-
-background:gold;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:25px;
-
-color:#442d00;
-
-box-shadow:0 0 15px gold;
-
-}
-
-
-.token{
-
-width:55px;
-height:55px;
-
-border-radius:15px;
-
-background:#00ff88;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:25px;
-
-color:#003b1c;
-
-}
-
-
-
-/* Graph */
-
-.performance{
-
-margin-top:30px;
-
-}
-
-
-.graph{
-
-height:180px;
-
-background:#091c12;
-
-border-radius:20px;
-
-margin-top:15px;
+border:1px solid #2c2c2c;
 
 position:relative;
 
-overflow:hidden;
+transition:.3s;
+
+cursor:pointer;
 
 }
 
+.stat:hover{
 
-.line{
 
+transform:translateY(-5px);
+border-color:#7CFC00;
+}
+
+.stat h3{
+font-size:15px;
+color:#bdbdbd;
+margin-bottom:8px;
+}
+
+.stat p{
+font-size:24px;
+font-weight:700;
+color:#fff;
+}
+
+.stat .icon{
 position:absolute;
-
-width:200%;
-
-height:3px;
-
-background:#00ff88;
-
-top:80px;
-
-left:-20px;
-
-transform:rotate(-15deg);
-
-box-shadow:0 0 10px #00ff88;
-
+top:15px;
+right:15px;
+font-size:22px;
+color:#7CFC00;
 }
 
 
+/* ACHIEVEMENT BOX */
+
+.achievement-box{
+margin-top:25px;
+background:#101010;
+border:1px solid #242424;
+border-radius:24px;
+padding:18px;
+}
+
+.section-title{
+font-size:20px;
+font-weight:700;
+color:#7CFC00;
+margin-bottom:15px;
+}
+
+.scroll-row{
+display:flex;
+gap:15px;
+overflow-x:auto;
+padding-bottom:10px;
+scrollbar-width:none;
+}
+
+.scroll-row::-webkit-scrollbar{
+display:none;
+}
+
+.medal-card,
+.crystal-card{
+min-width:90px;
+height:110px;
+border-radius:20px;
+background:#181818;
+border:1px solid #2d2d2d;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+transition:.3s;
+}
+
+.medal-card:hover,
+.crystal-card:hover{
+transform:translateY(-5px);
+border-color:#7CFC00;
+}
+
+.medal{
+font-size:42px;
+margin-bottom:8px;
+}
+
+.crystal{
+font-size:40px;
+margin-bottom:8px;
+}
+
+.medal-name,
+.crystal-name{
+font-size:12px;
+font-weight:600;
+text-align:center;
+}
+
+.lock{
+margin-top:5px;
+font-size:11px;
+color:#888;
+}
+
+.red-dot{
+position:absolute;
+top:10px;
+right:10px;
+width:12px;
+height:12px;
+background:#ff2d55;
+border-radius:50%;
+display:none;
+box-shadow:0 0 10px #ff2d55;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:1;}
+50%{opacity:.3;}
+100%{opacity:1;}
+}
+
+/* ACHIEVEMENT CARD */
+
+.achievement-card{
+
+min-width:150px;
+
+background:#181818;
+
+border:1px solid #2c2c2c;
+
+border-radius:20px;
+
+padding:16px;
+
+text-align:center;
+
+transition:.3s;
+
+cursor:pointer;
+
+}
+
+.achievement-card:hover{
+
+transform:translateY(-5px);
+
+border-color:#7CFC00;
+
+}
+
+.medal{
+
+font-size:60px;
+
+margin-bottom:10px;
+
+}
+
+.achievement-name{
+
+font-size:15px;
+
+font-weight:700;
+
+margin-bottom:5px;
+
+}
+
+.achievement-desc{
+
+font-size:12px;
+
+color:#9a9a9a;
+
+}
+
+/* POPUP */
+
+.popup{
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,.82);
+
+display:none;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:999;
+
+}
+
+.popup-content{
+
+width:92%;
+
+max-width:390px;
+
+max-height:90vh;
+
+overflow-y:auto;
+
+background:#121212;
+
+border-radius:28px;
+
+padding:22px;
+
+border:2px solid #7CFC00;
+
+}
+
+.close-popup{
+
+float:right;
+
+font-size:26px;
+
+cursor:pointer;
+
+color:#fff;
+
+}
+
+.claim-btn{
+
+margin-top:15px;
+
+width:100%;
+
+height:48px;
+
+border:none;
+
+border-radius:14px;
+
+background:#7CFC00;
+
+color:#000;
+
+font-size:16px;
+
+font-weight:700;
+
+cursor:pointer;
+
+}
+
+.claimed{
+
+background:#333;
+
+color:#aaa;
+
+pointer-events:none;
+
+}
 
 </style>
 
 </head>
-
-
 <body>
+  <div class="container">
 
+    <!-- Header -->
 
-<div class="profile-page">
+    <div class="header">
 
+        <div class="back-btn" id="backBtn">←</div>
 
-<div class="header">
+        <div class="title">PROFILE</div>
 
-<div class="back">⬅️</div>
+        <div style="width:44px"></div>
 
-<div class="username">
-Dinesh ✏️
+    </div>
+
+    <!-- Profile Card -->
+
+    <div class="profile-card">
+
+        <img id="profilePhoto"
+        class="profile-img"
+        src="https://i.imgur.com/2DhmtJ4.png">
+
+        <div class="username">
+            <span id="username">Loading...</span>
+            <span class="edit-btn">✏️</span>
+        </div>
+
+        <div class="email" id="email">
+            loading@gmail.com
+        </div>
+
+        <!-- Stats -->
+
+        <div class="stats">
+
+            <!-- RC -->
+
+            <div class="stat">
+
+                <div class="icon">🪙</div>
+
+                <h3>RC Points</h3>
+
+                <p id="coins">0</p>
+
+            </div>
+
+            <!-- Streak -->
+
+            <div class="stat"
+            id="streakCard">
+
+                <div class="red-dot"
+                id="claimDot"></div>
+
+                <div class="icon">🔥</div>
+
+                <h3>Daily Streak</h3>
+
+                <p>
+                    <span id="streak">
+                    0
+                    </span> Days
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Achievement -->
+
+    <div class="achievement-box">
+
+        <div class="section-title">
+
+            🏆 Achievements
+
+        </div>
+
+        <div class="scroll-row">
+
+            <div class="medal-card">
+                <div class="medal">🥉</div>
+                <div class="medal-name">Day 1</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">🥈</div>
+                <div class="medal-name">Day 7</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">🥇</div>
+                <div class="medal-name">Day 30</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">🏅</div>
+                <div class="medal-name">Day 90</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">🏆</div>
+                <div class="medal-name">Day 100</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">💎</div>
+                <div class="medal-name">Day 150</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">👑</div>
+                <div class="medal-name">Day 180</div>
+            </div>
+
+            <div class="medal-card">
+                <div class="medal">🌟</div>
+                <div class="medal-name">Day 365</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Crystal -->
+
+    <div class="achievement-box">
+
+        <div class="section-title">
+
+            💎 Crystal Achievements
+
+        </div>
+
+        <div class="scroll-row">
+
+            <div class="crystal-card">
+
+                <div class="crystal">💚</div>
+
+                <div class="crystal-name">
+                    Green Crystal
+                </div>
+
+                <div class="lock">
+                    Locked
+                </div>
+
+            </div>
+
+            <div class="crystal-card">
+
+                <div class="crystal">💙</div>
+
+                <div class="crystal-name">
+                    Blue Crystal
+                </div>
+
+                <div class="lock">
+                    Locked
+                </div>
+
+            </div>
+
+            <div class="crystal-card">
+
+                <div class="crystal">💜</div>
+
+                <div class="crystal-name">
+                    Purple Crystal
+                </div>
+
+                <div class="lock">
+                    Locked
+                </div>
+
+            </div>
+
+            <div class="crystal-card">
+
+                <div class="crystal">❤️</div>
+
+                <div class="crystal-name">
+                    Ruby Crystal
+                </div>
+
+                <div class="lock">
+                    Locked
+                </div>
+
+            </div>
+
+            <div class="crystal-card">
+
+                <div class="crystal">💛</div>
+
+                <div class="crystal-name">
+                    Golden Crystal
+                </div>
+
+                <div class="lock">
+                    Locked
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+<!-- Achievement Popup -->
 
-<div></div>
+<div class="popup" id="achievementPopup">
 
-</div>
+    <div class="popup-content">
 
+        <span class="close-popup" id="closePopup">✕</span>
 
+        <h2 style="text-align:center;color:#7CFC00;margin-bottom:20px;">
+            🏆 Daily Streak Rewards
+        </h2>
 
-<div class="card">
+        <div id="rewardList">
 
+            <!-- JavaScript will create all rewards here -->
 
-<div class="streak">
-🔥 7 Days Streak
-</div>
+        </div>
 
-
-
-<div class="profile-img">
-👤
-</div>
-
-
-
-<div class="stats">
-
-
-<div class="stat">
-
-<div class="icon">❤️</div>
-<div class="number">1K</div>
-Likes
+    </div>
 
 </div>
+<script type="module">
 
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-<div class="stat">
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<div class="icon">🛡️</div>
-<div class="number">1</div>
-Shield
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-</div>
+const firebaseConfig = {
+  apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+  authDomain: "fitandget-b3461.firebaseapp.com",
+  projectId: "fitandget-b3461",
+  storageBucket: "fitandget-b3461.firebasestorage.app",
+  messagingSenderId: "216178533513",
+  appId: "1:216178533513:web:975f20599c7e77b9d01258"
+};
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
+const username = document.getElementById("username");
+const email = document.getElementById("email");
+const profilePhoto = document.getElementById("profilePhoto");
+const coins = document.getElementById("coins");
+const streak = document.getElementById("streak");
 
-</div>
+const popup = document.getElementById("achievementPopup");
+const closePopup = document.getElementById("closePopup");
+const rewardList = document.getElementById("rewardList");
+const streakCard = document.getElementById("streakCard");
+const claimDot = document.getElementById("claimDot");
 
-
-
-
-<div class="coins">
-
-
-<div class="coin">
-
-<div class="rc">
-💪
-</div>
-
-RC Point
-
-<br>
-
-100
-
-</div>
-
-
-
-<div class="coin">
-
-<div class="token">
-🟢
-</div>
-
-Eligibility
-
-<br>
-
-10
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<div class="performance">
-
-
-<h2>Performance</h2>
-
-
-<div class="graph">
-
-<div class="line"></div>
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-</body>
-</html>
+document.getElementById("backBtn").onclick = () => {
+    window.location.href = "home.html";
+};
