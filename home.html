@@ -421,9 +421,12 @@ header{
       <div class="menu" id="menuBtn">
         <i class="fa-solid fa-bars"></i>
       </div>
-      <div class="username" onclick="location.href='profile.html'" style="cursor:pointer;">
-        DINESH
-      </div>
+      <div class="username"
+id="username"
+onclick="location.href='profile.html'"
+style="cursor:pointer;">
+Loading...
+</div>
     </div>
 
     <div class="right">
@@ -497,9 +500,10 @@ header{
 <script>
   // --- LocalStorage மூலம் Eligibility Tokens நிர்வகித்தல் ---
   // முதன்முதலில் 0 டோக்கன் இருக்கும்
-  let userTokens = parseInt(localStorage.getItem('eligibilityTokens')) || 0;
-  const tokenDisplay = document.getElementById('tokenDisplay');
-  tokenDisplay.innerText = userTokens;
+  let userTokens = 0;
+
+const tokenDisplay = document.getElementById("tokenDisplay");
+tokenDisplay.innerText = userTokens;
 
   // 1. Sidebar Menu Logic
   const menuBtn = document.getElementById('menuBtn');
@@ -562,15 +566,86 @@ header{
       errorMsg.style.display = 'none';
       
       // Deduct 1 Token & Save Remaining
-      userTokens -= 1;
-      localStorage.setItem('eligibilityTokens', userTokens);
-      tokenDisplay.innerText = userTokens;
+      const user = firebase.auth().currentUser;
 
-      alert('🎉 Success! Your ID Registered Successfully!');
-      promoModal.style.display = 'none';
-    }
-  });
+
+db.collection("competitionRegistrations").doc(user.uid).set({
+    uid: user.uid,
+    username: username,
+    mobile: mobile,
+    email: email,
+    displayName: user.displayName,
+    photoURL: user.photoURL || "",
+    registeredAt: firebase.firestore.FieldValue.serverTimestamp()
+  })
+      .then(() => {
+
+    userTokens--;
+
+    return db.collection("users").doc(user.uid).update({
+        eligibilityTokens: userTokens
+    });
+
+}).then(() => {
+
+    tokenDisplay.innerText = userTokens;
+    alert("🎉 Registration Successful!");
+    promoModal.style.display = "none";
+
+}).catch((error) => {
+    alert(error.message);
+});
+
+    
+
+
+
+
+
+    }   // else close
+});     // addEventListener close
 </script>
 
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+  authDomain: "fitandget-b3461.firebaseapp.com",
+  projectId: "fitandget-b3461",
+  storageBucket: "fitandget-b3461.firebasestorage.app",
+  messagingSenderId: "216178533513",
+  appId: "1:216178533513:web:975f20599c7e77b9d01258"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+firebase.auth().onAuthStateChanged(async (user) => {
+    if (user) {
+        document.getElementById("username").textContent = user.displayName;
+        db.collection("users").doc(user.uid).get().then((doc) => {
+    if (doc.exists) {
+        userTokens = doc.data().eligibilityTokens || 0;
+        tokenDisplay.innerText = userTokens;
+    }
+});
+        const doc = await db.collection("users").doc(user.uid).get();
+
+        if(doc.exists){
+            userTokens = doc.data().eligibilityTokens || 0;
+            tokenDisplay.innerText = userTokens;
+        }
+
+    } else {
+        window.location.href = "login.html";
+    }
+});
+    
+
+</script>
 </body>
 </html>
