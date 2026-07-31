@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Profile</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins, sans-serif;
+}
+
+body{
+background:#07140d;
+color:white;
+}
+
+
+.profile-page{
+width:100%;
+min-height:100vh;
+padding:20px;
+}
+
+
+/* Header */
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:20px;
+}
+
+.back{
+font-size:28px;
+color:#00ff88;
+}
+
+.username{
+font-size:22px;
+font-weight:bold;
+}
+
+.edit{
+color:#00ff88;
+font-size:20px;
+}
+
+
+/* Profile Card */
+
+.card{
+
+background:#10261a;
+border-radius:25px;
+padding:20px;
+box-shadow:0 0 20px #00ff8840;
+
+}
+
+
+/* Streak */
+
+.streak{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+color:#ff7b00;
+font-size:18px;
+font-weight:bold;
+
+}
+
+
+/* Profile image */
+
+.profile-img{
+
+width:120px;
+height:120px;
+border-radius:50%;
+background:#1c3b29;
+
+margin:20px auto;
+
+border:4px solid #00ff88;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:45px;
+
+}
+
+
+/* Stats */
+
+.stats{
+
+display:flex;
+justify-content:space-around;
+text-align:center;
+margin-top:10px;
+
+}
+
+
+.stat{
+
+font-size:15px;
+
+}
+
+
+.icon{
+
+font-size:30px;
+}
+
+
+.number{
+
+font-size:18px;
+font-weight:bold;
+
+}
+
+
+
+/* Coins */
+
+.coins{
+
+display:flex;
+justify-content:space-around;
+
+margin-top:25px;
+
+}
+
+
+.coin{
+
+text-align:center;
+
+}
+
+
+.rc{
+
+width:55px;
+height:55px;
+
+border-radius:50%;
+
+background:gold;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:25px;
+
+color:#442d00;
+
+box-shadow:0 0 15px gold;
+
+}
+
+
+.token{
+
+width:55px;
+height:55px;
+
+border-radius:15px;
+
+background:#00ff88;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:25px;
+
+color:#003b1c;
+
+}
+
+
+
+/* Graph */
+
+.performance{
+
+margin-top:30px;
+
+}
+
+
+.graph{
+
+height:180px;
+
+background:#091c12;
+
+border-radius:20px;
+
+margin-top:15px;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+
+.line{
+
+position:absolute;
+
+width:200%;
+
+height:3px;
+
+background:#00ff88;
+
+top:80px;
+
+left:-20px;
+
+transform:rotate(-15deg);
+
+box-shadow:0 0 10px #00ff88;
+
+}
+
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="profile-page">
+
+
+<div class="header">
+
+<div class="back">⬅️</div>
+
+<div class="username">
+Dinesh ✏️
+</div>
+
+<div></div>
+
+</div>
+
+
+
+<div class="card">
+
+
+<div class="streak">
+🔥 7 Days Streak
+</div>
+
+
+
+<div class="profile-img">
+👤
+</div>
+
+
+
+<div class="stats">
+
+
+<div class="stat">
+
+<div class="icon">❤️</div>
+<div class="number">1K</div>
+Likes
+
+</div>
+
+
+<div class="stat">
+
+<div class="icon">🛡️</div>
+<div class="number">1</div>
+Shield
+
+</div>
+
+
+
+</div>
+
+
+
+
+<div class="coins">
+
+
+<div class="coin">
+
+<div class="rc">
+💪
+</div>
+
+RC Point
+
+<br>
+
+100
+
+</div>
+
+
+
+<div class="coin">
+
+<div class="token">
+🟢
+</div>
+
+Eligibility
+
+<br>
+
+10
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div class="performance">
+
+
+<h2>Performance</h2>
+
+
+<div class="graph">
+
+<div class="line"></div>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+</body>
+</html>
