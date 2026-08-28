@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>FIT & GET - Profile</title>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@600;700&display=swap"
+      rel="stylesheet">
+
+<style>
+:root{
+  --neon-primary:#00ff66;
+  --neon-glow:rgba(0,255,102,.4);
+  --bg-dark:#030a05;
+  --panel-bg:rgba(8,26,14,.85);
+  --box-bg:rgba(14,42,23,.7);
+  --border-green:#00ff66;
+  --text-main:#fff;
+  --text-muted:#83b890;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:'Rajdhani',sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--bg-dark);
+  color:#fff;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background-image:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(0,255,102,.15) 0%,
+      transparent 70%
+    ),
+    linear-gradient(
+      rgba(0,255,102,.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0,255,102,.03) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    100% 100%,
+    25px 25px,
+    25px 25px;
+}
+
+/* APP */
+
+.app-viewport{
+  width:100%;
+  height:100%;
+  max-width:600px;
+
+  background:rgba(3,12,6,.95);
+
+  border:2px solid var(--border-green);
+
+  box-shadow:
+    inset 0 0 25px var(--neon-glow),
+    0 0 35px var(--neon-glow);
+
+  padding:12px;
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  overflow-y:auto;
+}
+
+/* HEADER */
+
+.header-bar{
+  background:var(--panel-bg);
+  border:1px solid var(--border-green);
+  border-radius:12px;
+
+  padding:8px 14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  box-shadow:0 0 15px var(--neon-glow);
+
+  backdrop-filter:blur(8px);
+
+  flex-shrink:0;
+}
+
+.header-btn{
+  background:var(--box-bg);
+  border:1px solid var(--border-green);
+  color:var(--neon-primary);
+
+  width:38px;
+  height:38px;
+
+  border-radius:8px;
+
+  font-size:16px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.header-center{
+  text-align:center;
+}
+
+.username-wrapper{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.username{
+  font-family:'Orbitron',sans-serif;
+  font-size:1.05rem;
+  font-weight:800;
+
+  color:#fff;
+
+  text-shadow:0 0 10px var(--neon-primary);
+
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.edit-btn{
+  color:var(--neon-primary);
+  cursor:pointer;
+  font-size:13px;
+}
+
+.leaderboard-rank{
+  font-family:'Orbitron',sans-serif;
+  font-size:.72rem;
+  color:var(--neon-primary);
+
+  margin-top:2px;
+
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+/* PROFILE CARD */
+
+.profile-card{
+  background:var(--panel-bg);
+
+  border:1px solid var(--border-green);
+
+  border-radius:14px;
+
+  padding:12px;
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  box-shadow:
+    inset 0 0 15px rgba(0,255,102,.1);
+
+  backdrop-filter:blur(8px);
+}
+
+/* PROFILE TOP */
+
+.profile-top-layout{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* AVATAR */
+
+.avatar-wrapper{
+  position:relative;
+
+  width:75px;
+  height:75px;
+
+  flex-shrink:0;
+
+  border-radius:50%;
+
+  padding:3px;
+
+  background:
+    linear-gradient(
+      45deg,
+      var(--neon-primary),
+      transparent,
+      var(--neon-primary)
+    );
+
+  background-size:200% 200%;
+
+  animation:neonGlowRotate 3s linear infinite;
+}
+
+@keyframes neonGlowRotate{
+  0%{
+    background-position:0% 50%;
+  }
+
+  50%{
+    background-position:100% 50%;
+  }
+
+  100%{
+    background-position:0% 50%;
+  }
+}
+
+.avatar-img{
+  width:100%;
+  height:100%;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  background:var(--box-bg);
+
+  display:block;
+}
+
+.status-dot{
+  position:absolute;
+
+  top:4px;
+  right:4px;
+
+  width:12px;
+  height:12px;
+
+  background:var(--neon-primary);
+
+  border-radius:50%;
+
+  border:2px solid #000;
+
+  box-shadow:
+    0 0 8px var(--neon-primary);
+}
+
+.add-pic-btn{
+  position:absolute;
+
+  bottom:0;
+  right:0;
+
+  background:var(--neon-primary);
+
+  color:#000;
+
+  width:22px;
+  height:22px;
+
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:11px;
+
+  cursor:pointer;
+
+  border:2px solid #000;
+
+  box-shadow:
+    0 0 8px var(--neon-primary);
+}
+
+/* BIO */
+
+.bio-container{
+  flex:1;
+
+  min-width:0;
+
+  background:var(--box-bg);
+
+  border:1px solid rgba(0,255,102,.4);
+
+  border-radius:10px;
+
+  padding:6px 8px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.bio-header{
+  display:flex;
+  justify-content:space-between;
+
+  font-size:.7rem;
+
+  color:var(--neon-primary);
+
+  font-family:'Orbitron',sans-serif;
+
+  margin-bottom:4px;
+}
+
+.insta-bio-input{
+  width:100%;
+
+  background:transparent;
+
+  border:none;
+
+  color:#fff;
+
+  font-size:.82rem;
+
+  font-weight:600;
+
+  letter-spacing:.3px;
+
+  outline:none;
+
+  line-height:1.2;
+}
+
+.insta-bio-input::placeholder{
+  color:rgba(255,255,255,.4);
+}
+
+.counter-badge{
+  background:rgba(0,255,102,.15);
+
+  padding:1px 5px;
+
+  border-radius:4px;
+
+  border:1px solid var(--neon-primary);
+}
+
+/* BADGES */
+
+.top-right-badges{
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+
+  gap:6px;
+}
+
+.like-badge,
+.streak-badge{
+  background:var(--box-bg);
+
+  border:1px solid var(--border-green);
+
+  border-radius:8px;
+
+  padding:5px 8px;
+
+  text-align:center;
+
+  box-shadow:
+    0 0 8px var(--neon-glow);
+
+  display:flex;
+  align-items:center;
+
+  gap:5px;
+}
+
+.icon-heart{
+  color:#ff3366;
+
+  filter:
+    drop-shadow(0 0 5px #ff3366);
+}
+
+.icon-fire{
+  color:#ff9900;
+
+  filter:
+    drop-shadow(0 0 5px #ff9900);
+}
+
+/* STATS */
+
+.open-stats-row{
+  display:flex;
+
+  align-items:center;
+  justify-content:space-around;
+
+  gap:6px;
+
+  background:var(--box-bg);
+
+  border:1px solid rgba(0,255,102,.4);
+
+  border-radius:10px;
+
+  padding:10px 5px;
+}
+
+.stat-pill{
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:6px;
+
+  background:rgba(0,255,102,.1);
+
+  border:1px solid var(--border-green);
+
+  padding:6px 10px;
+
+  border-radius:20px;
+
+  cursor:pointer;
+
+  min-width:78px;
+}
+
+.stat-pill i{
+  font-size:.9rem;
+
+  color:var(--neon-primary);
+}
+
+.stat-pill span{
+  font-family:'Orbitron',sans-serif;
+
+  font-size:.7rem;
+
+  font-weight:700;
+
+  letter-spacing:.5px;
+}
+
+.stat-value{
+  font-family:'Orbitron',sans-serif;
+
+  color:#fff;
+
+  font-size:.65rem;
+
+  margin-left:2px;
+}
+
+/* SECTIONS */
+
+.sections-box{
+  background:var(--panel-bg);
+
+  border:1px solid var(--border-green);
+
+  border-radius:14px;
+
+  padding:12px;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:14px;
+
+  box-shadow:
+    inset 0 0 15px rgba(0,255,102,.1);
+
+  backdrop-filter:blur(8px);
+
+  flex-shrink:0;
+}
+
+.slider-header{
+  font-family:'Orbitron',sans-serif;
+
+  font-size:.85rem;
+
+  color:var(--neon-primary);
+
+  margin-bottom:8px;
+
+  display:flex;
+
+  justify-content:space-between;
+}
+
+.items-container{
+  display:flex;
+
+  gap:10px;
+
+  overflow-x:auto;
+
+  min-height:75px;
+
+  align-items:center;
+
+  scrollbar-width:none;
+}
+
+.items-container::-webkit-scrollbar{
+  display:none;
+}
+
+.card-item{
+  min-width:85px;
+  height:75px;
+
+  background:var(--box-bg);
+
+  border:1px solid var(--border-green);
+
+  border-radius:8px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  gap:4px;
+
+  box-shadow:
+    0 0 8px rgba(0,255,102,.15);
+
+  flex-shrink:0;
+}
+
+.card-item i{
+  font-size:20px;
+
+  color:var(--neon-primary);
+
+  filter:
+    drop-shadow(0 0 5px var(--neon-primary));
+}
+
+.card-item span{
+  font-size:.7rem;
+
+  font-weight:bold;
+
+  color:#fff;
+
+  text-align:center;
+}
+
+.empty-msg{
+  width:100%;
+
+  text-align:center;
+
+  font-size:.75rem;
+
+  color:var(--text-muted);
+
+  border:1px dashed rgba(0,255,102,.2);
+
+  padding:15px;
+
+  border-radius:8px;
+}
+
+/* MOTTO */
+
+.motto-banner{
+  background:var(--panel-bg);
+
+  border:1px dashed var(--border-green);
+
+  border-radius:10px;
+
+  padding:10px;
+
+  text-align:center;
+
+  font-family:'Orbitron',sans-serif;
+
+  font-size:.85rem;
+
+  color:#fff;
+
+  text-shadow:
+    0 0 8px var(--neon-primary);
+
+  letter-spacing:1px;
+
+  flex-shrink:0;
+}
+
+/* MODAL */
+
+.modal-overlay{
+  position:fixed;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  background:rgba(0,0,0,.75);
+
+  backdrop-filter:blur(10px);
+
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  transition:.25s;
+
+  z-index:1000;
+}
+
+.modal-overlay.active{
+  opacity:1;
+
+  pointer-events:auto;
+}
+
+.modal-card{
+  background:rgba(8,30,15,.95);
+
+  border:2px solid var(--border-green);
+
+  border-radius:16px;
+
+  padding:20px;
+
+  width:85%;
+  max-width:340px;
+
+  text-align:center;
+
+  box-shadow:
+    0 0 30px var(--neon-glow);
+}
+
+.modal-title{
+  font-family:'Orbitron',sans-serif;
+
+  color:var(--neon-primary);
+
+  font-size:1.05rem;
+
+  margin-bottom:12px;
+}
+
+.modal-body{
+  font-size:.85rem;
+
+  color:#d0ebd5;
+
+  margin-bottom:15px;
+
+  line-height:1.4;
+}
+
+.modal-input{
+  width:100%;
+
+  height:42px;
+
+  background:#031008;
+
+  border:1px solid var(--border-green);
+
+  border-radius:8px;
+
+  color:#fff;
+
+  padding:0 10px;
+
+  outline:none;
+
+  margin-bottom:10px;
+}
+
+.modal-input:focus{
+  box-shadow:
+    0 0 10px var(--neon-glow);
+}
+
+.modal-save-btn{
+  background:var(--neon-primary);
+
+  color:#000;
+
+  border:none;
+
+  padding:9px 18px;
+
+  border-radius:8px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  font-family:'Orbitron',sans-serif;
+
+  margin:4px;
+}
+
+.modal-close-btn{
+  background:#122016;
+
+  color:var(--neon-primary);
+
+  border:1px solid var(--border-green);
+
+  padding:8px 18px;
+
+  border-radius:8px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  font-family:'Orbitron',sans-serif;
+
+  margin:4px;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+
+  bottom:25px;
+
+  left:50%;
+
+  transform:translateX(-50%) translateY(20px);
+
+  background:#fff;
+
+  color:#000;
+
+  padding:10px 18px;
+
+  border-radius:30px;
+
+  font-size:13px;
+
+  font-weight:bold;
+
+  opacity:0;
+
+  pointer-events:none;
+
+  transition:.25s;
+
+  z-index:2000;
+}
+
+.toast.show{
+  opacity:1;
+
+  transform:translateX(-50%) translateY(0);
+}
+
+/* LOADING */
+
+.loading{
+  position:fixed;
+
+  inset:0;
+
+  background:#030a05;
+
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+  z-index:3000;
+
+  transition:.3s;
+}
+
+.loading.hide{
+  opacity:0;
+  pointer-events:none;
+}
+
+.loader{
+  text-align:center;
+}
+
+.loader i{
+  color:var(--neon-primary);
+
+  font-size:35px;
+
+  animation:spin 1s linear infinite;
+}
+
+.loader p{
+  color:var(--neon-primary);
+
+  font-family:'Orbitron',sans-serif;
+
+  margin-top:10px;
+
+  font-size:12px;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOADING -->
+
+<div class="loading" id="loadingScreen">
+  <div class="loader">
+    <i class="fa-solid fa-circle-notch"></i>
+    <p>LOADING PROFILE...</p>
+  </div>
+</div>
+
+
+<div class="app-viewport">
+
+  <!-- HEADER -->
+
+  <div class="header-bar">
+
+    <button class="header-btn"
+            onclick="goBack()">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="header-center">
+
+      <div class="username-wrapper">
+
+        <span class="username"
+              id="usernameText">
+          USER
+        </span>
+
+        <i class="fa-solid fa-pen-to-square edit-btn"
+           onclick="openUsernameEditor()"></i>
+
+      </div>
+
+      <div class="leaderboard-rank"
+           id="rankText">
+        Rank #--
+      </div>
+
+    </div>
+
+    <button class="header-btn"
+            onclick="openMenu()">
+
+      <i class="fa-solid fa-bars"></i>
+
+    </button>
+
+  </div>
+
+
+  <!-- PROFILE -->
+
+  <div class="profile-card">
+
+    <div class="profile-top-layout">
+
+      <!-- AVATAR -->
+
+      <div class="avatar-wrapper">
+
+        <img id="profileImage"
+             class="avatar-img"
+             src="https://via.placeholder.com/80/0e2a17/00ff66?text=FG"
+             alt="Profile">
+
+        <div class="status-dot"></div>
+
+        <label for="imageUpload"
+               class="add-pic-btn">
+
+          <i class="fa-solid fa-plus"></i>
+
+        </label>
+
+        <input
+          type="file"
+          id="imageUpload"
+          hidden
+          accept="image/*"
+          onchange="uploadImage(event)"
+        >
+
+      </div>
+
+
+      <!-- BIO -->
+
+      <div class="bio-container">
+
+        <div class="bio-header">
+
+          <span>BIO</span>
+
+          <span class="counter-badge"
+                id="charCount">
+            0/20
+          </span>
+
+        </div>
+
+        <input
+          type="text"
+          id="bioText"
+          class="insta-bio-input"
+          maxlength="20"
+          placeholder="Add your bio..."
+          autocomplete="off"
+          oninput="updateBioCount()"
+          onblur="saveBio()"
+        >
+
+      </div>
+
+
+      <!-- LOVE + STREAK -->
+
+      <div class="top-right-badges">
+
+        <div class="like-badge">
+
+          <i class="fa-solid fa-heart icon-heart"></i>
+
+          <span id="likeCounter"
+                style="
+                font-size:.75rem;
+                font-weight:bold;
+                color:var(--neon-primary);
+                ">
+            0
+          </span>
+
+        </div>
+
+        <div class="streak-badge">
+
+          <i class="fa-solid fa-fire icon-fire"></i>
+
+          <span id="streakCounter"
+                style="font-size:.75rem;">
+            0D
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="open-stats-row">
+
+      <div class="stat-pill"
+           onclick="showInfo(
+           'Shield',
+           'Your current Shield protection.'
+           )">
+
+        <i class="fa-solid fa-shield-halved"></i>
+
+        <span>Shield</span>
+
+        <span class="stat-value"
+              id="shieldCount">
+          0
+        </span>
+
+      </div>
+
+
+      <div class="stat-pill"
+           onclick="showInfo(
+           'RC',
+           'Your current RC balance.'
+           )">
+
+        <i class="fa-solid fa-coins"></i>
+
+        <span>RC</span>
+
+        <span class="stat-value"
+              id="rcCount">
+          0
+        </span>
+
+      </div>
+
+
+      <div class="stat-pill"
+           onclick="showInfo(
+           'Token',
+           'Your Eligibility Token balance.'
+           )">
+
+        <i class="fa-solid fa-ticket"></i>
+
+        <span>Token</span>
+
+        <span class="stat-value"
+              id="tokenCount">
+          0
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ACHIEVEMENTS -->
+
+  <div class="sections-box">
+
+    <div>
+
+      <div class="slider-header">
+
+        <span>
+          Achievements
+        </span>
+
+        <span style="
+          font-size:.65rem;
+          color:var(--text-muted);
+        ">
+          Claimed Only
+        </span>
+
+      </div>
+
+      <div class="items-container"
+           id="achieveContainer">
+
+      </div>
+
+    </div>
+
+
+    <!-- CRYSTALS -->
+
+    <div>
+
+      <div class="slider-header">
+
+        <span>
+          Crystals
+        </span>
+
+        <span style="
+          font-size:.65rem;
+          color:var(--text-muted);
+        ">
+          Event Items Only
+        </span>
+
+      </div>
+
+      <div class="items-container"
+           id="crystalContainer">
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- MOTTO -->
+
+  <div class="motto-banner">
+
+    Dream... Believe... Become...
+
+  </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div class="modal-overlay"
+     id="customModal">
+
+  <div class="modal-card">
+
+    <div class="modal-title"
+         id="modalTitle">
+      Info
+    </div>
+
+    <div class="modal-body"
+         id="modalBody">
+      Details...
+    </div>
+
+    <div id="modalInputArea"></div>
+
+    <button class="modal-close-btn"
+            onclick="closeModal()">
+      CLOSE
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="toast"
+     id="toast">
+  Done
+</div>
+
+
+<script type="module">
+
+/* =========================================
+   FIREBASE
+========================================= */
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+
+  authDomain:
+    "fitandget-b3461.firebaseapp.com",
+
+  projectId:
+    "fitandget-b3461",
+
+  storageBucket:
+    "fitandget-b3461.firebasestorage.app",
+
+  messagingSenderId:
+    "216178533513",
+
+  appId:
+    "1:216178533513:web:975f20599c7e77b9d01258"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+/* =========================================
+   CLOUDINARY
+========================================= */
+
+const CLOUDINARY_CLOUD_NAME =
+  "ey7wjwyw";
+
+const CLOUDINARY_UPLOAD_PRESET =
+  "FITANDGET";
+
+
+/* =========================================
+   GLOBAL
+========================================= */
+
+let currentUser = null;
+
+let unsubscribeUser = null;
+
+
+/* =========================================
+   AUTH
+========================================= */
+
+onAuthStateChanged(auth, async (user) => {
+
+  if(!user){
+
+    window.location.href = "index.html";
+
+    return;
+  }
+
+  currentUser = user;
+
+  startProfileListener();
+
+  await updateLeaderboardRank();
+
+  document
+    .getElementById("loadingScreen")
+    .classList.add("hide");
+
+});
+
+
+/* =========================================
+   LIVE USER DATA
+========================================= */
+
+function startProfileListener(){
+
+  const userRef =
+    doc(db, "users", currentUser.uid);
+
+
+  unsubscribeUser = onSnapshot(
+    userRef,
+
+    async (snap) => {
+
+      if(!snap.exists()){
+
+        showToast("Profile data not found");
+
+        return;
+      }
+
+
+      const data = snap.data();
+
+
+      /* USERNAME */
+
+      document
+        .getElementById("usernameText")
+        .textContent =
+        data.username || "User";
+
+
+      /* PHOTO */
+
+      if(data.photoURL){
+
+        document
+          .getElementById("profileImage")
+          .src = data.photoURL;
+
+      }
+
+
+      /* BIO */
+
+      const bio =
+        data.bio || "";
+
+      document
+        .getElementById("bioText")
+        .value =
+        bio.substring(0,20);
+
+      updateBioCount();
+
+
+      /* LOVE */
+
+      document
+        .getElementById("likeCounter")
+        .textContent =
+        formatNumber(
+          data.loveCount ??
+          data.likes ??
+          0
+        );
+
+
+      /* STREAK */
+
+      document
+        .getElementById("streakCounter")
+        .textContent =
+        `${data.dailyStreak ?? 0}D`;
+
+
+      /* SHIELD */
+
+      document
+        .getElementById("shieldCount")
+        .textContent =
+        formatNumber(
+          data.shield ?? 0
+        );
+
+
+      /* RC */
+
+      document
+        .getElementById("rcCount")
+        .textContent =
+        formatNumber(
+          data.rcPoints ??
+          data.rc ??
+          data.coins ??
+          0
+        );
+
+
+      /* TOKEN */
+
+      document
+        .getElementById("tokenCount")
+        .textContent =
+        formatNumber(
+          data.eligibilityTokens ??
+          data.tokens ??
+          0
+        );
+
+
+      /* ACHIEVEMENTS */
+
+      renderAchievements(
+        data.achievements || []
+      );
+
+
+      /* CRYSTALS */
+
+      renderCrystals(
+        data.crystals || []
+      );
+
+
+      /* RANK */
+
+      updateLeaderboardRank();
+
+    },
+
+    (error) => {
+
+      console.error(error);
+
+      showToast("Unable to load profile");
+
+    }
+  );
+}
+
+
+/* =========================================
+   BIO
+========================================= */
+
+window.updateBioCount = function(){
+
+  const input =
+    document.getElementById("bioText");
+
+  let value =
+    input.value.substring(0,20);
+
+  if(input.value !== value){
+
+    input.value = value;
+
+  }
+
+  document
+    .getElementById("charCount")
+    .textContent =
+    `${value.length}/20`;
+};
+
+
+window.saveBio = async function(){
+
+  if(!currentUser) return;
+
+  const input =
+    document.getElementById("bioText");
+
+  const bio =
+    input.value.trim().substring(0,20);
+
+
+  try{
+
+    await updateDoc(
+      doc(db,"users",currentUser.uid),
+      {
+        bio:bio
+      }
+    );
+
+    showToast("Bio saved ✓");
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Bio save failed");
+
+  }
+
+};
+
+
+/* =========================================
+   USERNAME EDIT
+========================================= */
+
+window.openUsernameEditor = function(){
+
+  const current =
+    document
+      .getElementById("usernameText")
+      .textContent;
+
+
+  document.getElementById("modalTitle")
+    .textContent =
+    "CHANGE USERNAME";
+
+
+  document.getElementById("modalBody")
+    .textContent =
+    "Enter your new username.";
+
+
+  document.getElementById("modalInputArea")
+    .innerHTML = `
+
+      <input
+        id="newUsername"
+        class="modal-input"
+        maxlength="25"
+        value="${escapeHTML(current)}"
+        placeholder="Username"
+      >
+
+      <button
+        class="modal-save-btn"
+        id="saveUsernameBtn">
+        SAVE
+      </button>
+
+  `;
+
+
+  document
+    .getElementById("customModal")
+    .classList.add("active");
+
+
+  document
+    .getElementById("saveUsernameBtn")
+    .onclick =
+    saveUsername;
+
+};
+
+
+async function saveUsername(){
+
+  const input =
+    document.getElementById("newUsername");
+
+
+  let username =
+    input.value.trim();
+
+
+  if(!username){
+
+    showToast("Enter username");
+
+    return;
+  }
+
+
+  if(username.length < 3){
+
+    showToast("Minimum 3 characters");
+
+    return;
+  }
+
+
+  try{
+
+    await updateDoc(
+      doc(db,"users",currentUser.uid),
+      {
+        username:username
+      }
+    );
+
+    closeModal();
+
+    showToast("Username updated ✓");
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast("Username update failed");
+
+  }
+
+}
+
+
+/* =========================================
+   CLOUDINARY IMAGE UPLOAD
+========================================= */
+
+window.uploadImage = async function(event){
+
+  const file =
+    event.target.files[0];
+
+
+  if(!file) return;
+
+
+  if(!file.type.startsWith("image/")){
+
+    showToast("Select an image");
+
+    return;
+  }
+
+
+  /* LIMIT 5MB */
+
+  if(file.size > 5 * 1024 * 1024){
+
+    showToast("Image must be under 5MB");
+
+    return;
+  }
+
+
+  showToast("Uploading photo...");
+
+
+  try{
+
+    const formData =
+      new FormData();
+
+
+    formData.append(
+      "file",
+      file
+    );
+
+
+    formData.append(
+      "upload_preset",
+      CLOUDINARY_UPLOAD_PRESET
+    );
+
+
+    const response =
+      await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method:"POST",
+          body:formData
+        }
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if(!response.ok){
+
+      console.error(result);
+
+      throw new Error(
+        result.error?.message ||
+        "Cloudinary upload failed"
+      );
+
+    }
+
+
+    const imageURL =
+      result.secure_url;
+
+
+    /* SAVE URL TO FIRESTORE */
+
+    await updateDoc(
+      doc(db,"users",currentUser.uid),
+      {
+        photoURL:imageURL
+      }
+    );
+
+
+    document
+      .getElementById("profileImage")
+      .src =
+      imageURL;
+
+
+    showToast("Profile photo updated ✓");
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      error.message ||
+      "Photo upload failed"
+    );
+
+  }
+
+
+  event.target.value = "";
+
+};
+
+
+/* =========================================
+   LEADERBOARD RANK
+========================================= */
+
+async function updateLeaderboardRank(){
+
+  if(!currentUser) return;
+
+
+  try{
+
+    const leaderboardQuery =
+      query(
+        collection(db,"users"),
+        orderBy("totalPoints","desc")
+      );
+
+
+    const snapshot =
+      await getDocs(
+        leaderboardQuery
+      );
+
+
+    let rank = 0;
+
+    let previousPoints = null;
+
+    let position = 0;
+
+
+    snapshot.forEach((userDoc) => {
+
+      position++;
+
+
+      const data =
+        userDoc.data();
+
+
+      const points =
+        Number(
+          data.totalPoints || 0
+        );
+
+
+      if(
+        previousPoints === null ||
+        points < previousPoints
+      ){
+
+        rank = position;
+
+        previousPoints = points;
+
+      }
+
+
+      if(userDoc.id === currentUser.uid){
+
+        document
+          .getElementById("rankText")
+          .textContent =
+          `Rank #${rank}`;
+
+      }
+
+    });
+
+
+  }catch(error){
+
+    console.error(
+      "Leaderboard error:",
+      error
+    );
+
+    document
+      .getElementById("rankText")
+      .textContent =
+      "Rank #--";
+
+  }
+
+}
+
+
+/* =========================================
+   ACHIEVEMENTS
+========================================= */
+
+function renderAchievements(items){
+
+  const container =
+    document.getElementById(
+      "achieveContainer"
+    );
+
+
+  container.innerHTML = "";
+
+
+  if(!Array.isArray(items) ||
+     items.length === 0){
+
+    container.innerHTML = `
+      <div class="empty-msg">
+        No achievements claimed yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  items.forEach(item => {
+
+    let name = "Achievement";
+    let icon = "fa-trophy";
+
+
+    if(typeof item === "string"){
+
+      name = item;
+
+    }else{
+
+      name =
+        item.name ||
+        item.title ||
+        "Achievement";
+
+      icon =
+        item.icon ||
+        "fa-trophy";
+
+    }
+
+
+    container.innerHTML += `
+
+      <div class="card-item">
+
+        <i class="fa-solid ${escapeHTML(icon)}"></i>
+
+        <span>
+          ${escapeHTML(name)}
+        </span>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+/* =========================================
+   CRYSTALS
+========================================= */
+
+function renderCrystals(items){
+
+  const container =
+    document.getElementById(
+      "crystalContainer"
+    );
+
+
+  container.innerHTML = "";
+
+
+  if(!Array.isArray(items) ||
+     items.length === 0){
+
+    container.innerHTML = `
+      <div class="empty-msg">
+        No event crystals collected.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  items.forEach(item => {
+
+    let name = "Crystal";
+    let icon = "fa-gem";
+
+
+    if(typeof item === "string"){
+
+      name = item;
+
+    }else{
+
+      name =
+        item.name ||
+        item.title ||
+        "Crystal";
+
+      icon =
+        item.icon ||
+        "fa-gem";
+
+    }
+
+
+    container.innerHTML += `
+
+      <div class="card-item">
+
+        <i class="fa-solid ${escapeHTML(icon)}"></i>
+
+        <span>
+          ${escapeHTML(name)}
+        </span>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+/* =========================================
+   INFO MODAL
+========================================= */
+
+window.showInfo = function(
+  title,
+  message
+){
+
+  document
+    .getElementById("modalTitle")
+    .textContent =
+    title;
+
+
+  document
+    .getElementById("modalBody")
+    .textContent =
+    message;
+
+
+  document
+    .getElementById("modalInputArea")
+    .innerHTML = "";
+
+
+  document
+    .getElementById("customModal")
+    .classList.add("active");
+
+};
+
+
+/* =========================================
+   MENU
+========================================= */
+
+window.openMenu = function(){
+
+  document
+    .getElementById("modalTitle")
+    .textContent =
+    "PROFILE MENU";
+
+
+  document
+    .getElementById("modalBody")
+    .textContent =
+    "Profile options";
+
+
+  document
+    .getElementById("modalInputArea")
+    .innerHTML = `
+
+    <button
+      class="modal-save-btn"
+      onclick="location.href='settings.html'">
+      SETTINGS
+    </button>
+
+  `;
+
+
+  document
+    .getElementById("customModal")
+    .classList.add("active");
+
+};
+
+
+/* =========================================
+   BACK
+========================================= */
+
+window.goBack = function(){
+
+  if(history.length > 1){
+
+    history.back();
+
+  }else{
+
+    location.href =
+      "home.html";
+
+  }
+
+};
+
+
+/* =========================================
+   CLOSE MODAL
+========================================= */
+
+window.closeModal = function(){
+
+  document
+    .getElementById("customModal")
+    .classList.remove("active");
+
+};
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+
+  toast.textContent =
+    message;
+
+
+  toast.classList.add("show");
+
+
+  setTimeout(() => {
+
+    toast.classList.remove("show");
+
+  },2200);
+
+}
+
+
+/* =========================================
+   NUMBER FORMAT
+========================================= */
+
+function formatNumber(number){
+
+  const value =
+    Number(number || 0);
+
+
+  return value.toLocaleString("en-IN");
+
+}
+
+
+/* =========================================
+   HTML ESCAPE
+========================================= */
+
+function escapeHTML(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================
+   CLOSE MODAL OUTSIDE
+========================================= */
+
+document
+  .getElementById("customModal")
+  .addEventListener(
+    "click",
+    (event) => {
+
+      if(
+        event.target.id ===
+        "customModal"
+      ){
+
+        closeModal();
+
+      }
+
+    }
+  );
+
+</script>
+
+</body>
+</html>
