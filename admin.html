@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIT & GET — Admin</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#050505;
+    color:white;
+    min-height:100vh;
+}
+
+:root{
+    --green:#7CFC00;
+    --card:#101010;
+    --border:#222;
+}
+
+.login{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.login-box{
+    width:100%;
+    max-width:400px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:900;
+    color:var(--green);
+    margin-bottom:8px;
+}
+
+.subtitle{
+    color:#888;
+    margin-bottom:25px;
+}
+
+input{
+    width:100%;
+    background:#181818;
+    border:1px solid #292929;
+    color:white;
+    padding:14px;
+    border-radius:12px;
+    outline:none;
+    margin-bottom:12px;
+}
+
+input:focus{
+    border-color:var(--green);
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    border-radius:12px;
+    padding:12px 18px;
+    font-weight:bold;
+}
+
+.login-btn{
+    width:100%;
+    background:var(--green);
+    color:#000;
+}
+
+.error{
+    color:#ff4d4d;
+    margin-top:12px;
+    font-size:14px;
+}
+
+.dashboard{
+    display:none;
+}
+
+header{
+    height:70px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    position:sticky;
+    top:0;
+    background:#050505;
+    z-index:10;
+}
+
+.header-logo{
+    color:var(--green);
+    font-size:22px;
+    font-weight:900;
+}
+
+.admin-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logout{
+    background:#181818;
+    color:white;
+    border:1px solid #292929;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:25px 18px 50px;
+}
+
+.title{
+    font-size:27px;
+    font-weight:800;
+    margin-bottom:20px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.stat{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+}
+
+.stat-icon{
+    font-size:25px;
+    margin-bottom:12px;
+}
+
+.stat-name{
+    color:#888;
+    font-size:13px;
+}
+
+.stat-value{
+    font-size:27px;
+    font-weight:900;
+    margin-top:5px;
+    color:var(--green);
+}
+
+.section{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.section-title{
+    font-size:19px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.search{
+    margin-bottom:15px;
+}
+
+.users{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.user{
+    background:#151515;
+    border:1px solid #242424;
+    border-radius:14px;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.user-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.avatar{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#222;
+}
+
+.username{
+    font-weight:bold;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.email{
+    color:#777;
+    font-size:12px;
+    margin-top:3px;
+}
+
+.user-stats{
+    color:#aaa;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.view-btn{
+    background:var(--green);
+    color:#000;
+    white-space:nowrap;
+}
+
+.loading{
+    text-align:center;
+    padding:25px;
+    color:#777;
+}
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-box{
+    width:100%;
+    max-width:450px;
+    background:#111;
+    border:1px solid #292929;
+    border-radius:20px;
+    padding:22px;
+    max-height:90vh;
+    overflow:auto;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close{
+    background:#222;
+    color:white;
+    width:38px;
+    height:38px;
+    padding:0;
+}
+
+.detail{
+    background:#181818;
+    padding:13px;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+
+.detail span{
+    color:#777;
+    font-size:12px;
+    display:block;
+    margin-bottom:4px;
+}
+
+.action{
+    width:100%;
+    margin-top:8px;
+}
+
+.green-btn{
+    background:var(--green);
+    color:#000;
+}
+
+.red-btn{
+    background:#ff3b30;
+    color:white;
+}
+
+@media(max-width:800px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .user{
+        align-items:flex-start;
+    }
+}
+
+@media(max-width:500px){
+    .stats{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .stat{
+        padding:15px;
+    }
+
+    .stat-value{
+        font-size:22px;
+    }
+
+    .admin-info span{
+        display:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginScreen">
+
+    <div class="login-box">
+
+        <div class="logo">FIT & GET</div>
+        <div class="subtitle">Admin Control Panel</div>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Admin Email"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+        >
+
+        <button class="login-btn" onclick="adminLogin()">
+            LOGIN
+        </button>
+
+        <div class="error" id="loginError"></div>
+
+    </div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+
+<header>
+
+    <div class="header-logo">
+        FIT & GET ADMIN
+    </div>
+
+    <div class="admin-info">
+        <span id="adminEmail"></span>
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <div class="title">
+        Dashboard
+    </div>
+
+
+    <!-- STATS -->
+    <div class="stats">
+
+        <div class="stat">
+            <div class="stat-icon">👥</div>
+            <div class="stat-name">Total Users</div>
+            <div class="stat-value" id="totalUsers">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">🪙</div>
+            <div class="stat-name">Total Coins</div>
+            <div class="stat-value" id="totalCoins">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">🎟️</div>
+            <div class="stat-name">Eligibility Tokens</div>
+            <div class="stat-value" id="totalTokens">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-name">Active Streaks</div>
+            <div class="stat-value" id="activeStreaks">0</div>
+        </div>
+
+    </div>
+
+
+    <!-- USERS -->
+    <div class="section">
+
+        <div class="section-title">
+            👥 User Management
+        </div>
+
+        <input
+            class="search"
+            id="searchUser"
+            placeholder="Search username..."
+            oninput="searchUsers()"
+        >
+
+        <div id="users" class="users">
+            <div class="loading">
+                Loading users...
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+    <div class="section">
+
+        <div class="section-title">
+            ⚡ Quick Actions
+        </div>
+
+        <button class="action green-btn" onclick="loadUsers()">
+            🔄 Refresh Users
+        </button>
+
+        <button class="action green-btn" onclick="showLeaderboard()">
+            🏆 Open Leaderboard
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- USER MODAL -->
+<div class="modal" id="userModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>User Details</h2>
+
+            <button class="close" onclick="closeModal()">
+                ✕
+            </button>
+
+        </div>
+
+        <div id="userDetails"></div>
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    updateDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE CONFIG
+========================= */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+    authDomain: "fitandget-b3461.firebaseapp.com",
+    projectId: "fitandget-b3461",
+    storageBucket: "fitandget-b3461.firebasestorage.app",
+    messagingSenderId: "216178533513",
+    appId: "1:216178533513:web:975f20599c7e77b9d01258"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+/* =========================
+   GLOBAL
+========================= */
+
+let allUsers = [];
+let selectedUser = null;
+
+
+/* =========================
+   ADMIN LOGIN
+========================= */
+
+window.adminLogin = async function(){
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const error =
+        document.getElementById("loginError");
+
+    error.textContent = "";
+
+    if(!email || !password){
+
+        error.textContent =
+            "Email and password enter pannunga.";
+
+        return;
+    }
+
+    try{
+
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        error.textContent =
+            "Login failed. Email/password check pannunga.";
+
+    }
+
+};
+
+
+/* =========================
+   CHECK ADMIN
+========================= */
+
+onAuthStateChanged(auth, async(user)=>{
+
+    if(!user){
+
+        document.getElementById("loginScreen").style.display =
+            "flex";
+
+        document.getElementById("dashboard").style.display =
+            "none";
+
+        return;
+    }
+
+    try{
+
+        const adminRef =
+            doc(db,"admins",user.uid);
+
+        const adminSnap =
+            await getDoc(adminRef);
+
+        if(!adminSnap.exists() ||
+           adminSnap.data().role !== "admin"){
+
+            await signOut(auth);
+
+            document.getElementById("loginError").textContent =
+                "Access denied. Admin account mattum allowed.";
+
+            return;
+        }
+
+        document.getElementById("loginScreen").style.display =
+            "none";
+
+        document.getElementById("dashboard").style.display =
+            "block";
+
+        document.getElementById("adminEmail").textContent =
+            user.email || "Admin";
+
+        await loadUsers();
+
+    }catch(err){
+
+        console.error(err);
+
+        await signOut(auth);
+
+    }
+
+});
+
+
+/* =========================
+   LOAD USERS
+========================= */
+
+window.loadUsers = async function(){
+
+    const usersContainer =
+        document.getElementById("users");
+
+    usersContainer.innerHTML =
+        `<div class="loading">Loading...</div>`;
+
+    try{
+
+        const snapshot =
+            await getDocs(collection(db,"users"));
+
+        allUsers = [];
+
+        let totalCoins = 0;
+        let totalTokens = 0;
+        let activeStreaks = 0;
+
+        snapshot.forEach(docSnap=>{
+
+            const data = docSnap.data();
+
+            const user = {
+                id: docSnap.id,
+                ...data
+            };
+
+            allUsers.push(user);
+
+            totalCoins += Number(data.coins || 0);
+
+            totalTokens +=
+                Number(data.eligibilityTokens || 0);
+
+            if(Number(data.dailyStreak || 0) > 0){
+                activeStreaks++;
+            }
+
+        });
+
+
+        document.getElementById("totalUsers").textContent =
+            allUsers.length;
+
+        document.getElementById("totalCoins").textContent =
+            totalCoins.toLocaleString();
+
+        document.getElementById("totalTokens").textContent =
+            totalTokens.toLocaleString();
+
+        document.getElementById("activeStreaks").textContent =
+            activeStreaks;
+
+
+        renderUsers(allUsers);
+
+    }catch(err){
+
+        console.error(err);
+
+        usersContainer.innerHTML =
+            `<div class="loading">
+                Failed to load users.
+             </div>`;
+    }
+
+};
+
+
+/* =========================
+   RENDER USERS
+========================= */
+
+function renderUsers(users){
+
+    const container =
+        document.getElementById("users");
+
+    if(users.length === 0){
+
+        container.innerHTML =
+            `<div class="loading">
+                No users found.
+             </div>`;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    users.forEach(user=>{
+
+        const div =
+            document.createElement("div");
+
+        div.className = "user";
+
+        const photo =
+            user.photoURL ||
+            "https://via.placeholder.com/100";
+
+        div.innerHTML = `
+
+            <div class="user-left">
+
+                <img
+                    class="avatar"
+                    src="${photo}"
+                >
+
+                <div>
+
+                    <div class="username">
+                        ${escapeHTML(user.username || "Unknown")}
+                    </div>
+
+                    <div class="email">
+                        ${escapeHTML(user.email || "")}
+                    </div>
+
+                    <div class="user-stats">
+                        🪙 ${Number(user.coins || 0)}
+                        &nbsp; • &nbsp;
+                        🎟️ ${Number(user.eligibilityTokens || 0)}
+                        &nbsp; • &nbsp;
+                        🔥 ${Number(user.dailyStreak || 0)}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button
+                class="view-btn"
+                onclick="viewUser('${user.id}')"
+            >
+                View
+            </button>
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+window.searchUsers = function(){
+
+    const query =
+        document.getElementById("searchUser")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const filtered =
+        allUsers.filter(user=>
+            String(user.username || "")
+            .toLowerCase()
+            .includes(query)
+        );
+
+    renderUsers(filtered);
+
+};
+
+
+/* =========================
+   USER DETAILS
+========================= */
+
+window.viewUser = function(uid){
+
+    selectedUser =
+        allUsers.find(user=>user.id === uid);
+
+    if(!selectedUser) return;
+
+    const blocked =
+        selectedUser.blocked === true;
+
+    document.getElementById("userDetails").innerHTML = `
+
+        <div class="detail">
+            <span>Username</span>
+            ${escapeHTML(selectedUser.username || "Unknown")}
+        </div>
+
+        <div class="detail">
+            <span>User ID</span>
+            ${selectedUser.id}
+        </div>
+
+        <div class="detail">
+            <span>Email</span>
+            ${escapeHTML(selectedUser.email || "Not available")}
+        </div>
+
+        <div class="detail">
+            <span>Coins</span>
+            🪙 ${Number(selectedUser.coins || 0)}
+        </div>
+
+        <div class="detail">
+            <span>RC Points</span>
+            🏆 ${Number(selectedUser.totalPoints || 0)}
+        </div>
+
+        <div class="detail">
+            <span>Eligibility Tokens</span>
+            🎟️ ${Number(selectedUser.eligibilityTokens || 0)}
+        </div>
+
+        <div class="detail">
+            <span>Daily Streak</span>
+            🔥 ${Number(selectedUser.dailyStreak || 0)}
+        </div>
+
+        <div class="detail">
+            <span>Status</span>
+            ${blocked ? "🚫 Blocked" : "🟢 Active"}
+        </div>
+
+        <button
+            class="action green-btn"
+            onclick="editCoins()"
+        >
+            🪙 Edit Coins
+        </button>
+
+        <button
+            class="action green-btn"
+            onclick="editTokens()"
+        >
+            🎟️ Edit Tokens
+        </button>
+
+        <button
+            class="action ${blocked ? "green-btn" : "red-btn"}"
+            onclick="toggleBlock()"
+        >
+            ${blocked ? "🟢 Unblock User" : "🚫 Block User"}
+        </button>
+
+    `;
+
+    document.getElementById("userModal").style.display =
+        "flex";
+
+};
+
+
+/* =========================
+   EDIT COINS
+========================= */
+
+window.editCoins = async function(){
+
+    if(!selectedUser) return;
+
+    const value =
+        prompt(
+            "New coins value:",
+            selectedUser.coins || 0
+        );
+
+    if(value === null) return;
+
+    const coins = Number(value);
+
+    if(!Number.isFinite(coins) || coins < 0){
+
+        alert("Valid number enter pannunga.");
+
+        return;
+    }
+
+    try{
+
+        await updateDoc(
+            doc(db,"users",selectedUser.id),
+            { coins: coins }
+        );
+
+        alert("Coins updated!");
+
+        closeModal();
+
+        await loadUsers();
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Update failed.");
+
+    }
+
+};
+
+
+/* =========================
+   EDIT TOKENS
+========================= */
+
+window.editTokens = async function(){
+
+    if(!selectedUser) return;
+
+    const value =
+        prompt(
+            "New eligibility token value:",
+            selectedUser.eligibilityTokens || 0
+        );
+
+    if(value === null) return;
+
+    const tokens = Number(value);
+
+    if(!Number.isFinite(tokens) || tokens < 0){
+
+        alert("Valid number enter pannunga.");
+
+        return;
+    }
+
+    try{
+
+        await updateDoc(
+            doc(db,"users",selectedUser.id),
+            {
+                eligibilityTokens: tokens
+            }
+        );
+
+        alert("Tokens updated!");
+
+        closeModal();
+
+        await loadUsers();
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Update failed.");
+
+    }
+
+};
+
+
+/* =========================
+   BLOCK / UNBLOCK
+========================= */
+
+window.toggleBlock = async function(){
+
+    if(!selectedUser) return;
+
+    const newStatus =
+        selectedUser.blocked !== true;
+
+    const message =
+        newStatus
+        ? "இந்த user-ஐ block பண்ணவா?"
+        : "இந்த user-ஐ unblock பண்ணவா?";
+
+    if(!confirm(message)) return;
+
+    try{
+
+        await updateDoc(
+            doc(db,"users",selectedUser.id),
+            {
+                blocked: newStatus
+            }
+        );
+
+        alert(
+            newStatus
+            ? "User blocked!"
+            : "User unblocked!"
+        );
+
+        closeModal();
+
+        await loadUsers();
+
+    }catch(err){
+
+        console.error(err);
+
+        alert("Update failed.");
+
+    }
+
+};
+
+
+/* =========================
+   LEADERBOARD
+========================= */
+
+window.showLeaderboard = function(){
+
+    const sorted =
+        [...allUsers]
+        .sort(
+            (a,b)=>
+            Number(b.totalPoints || 0) -
+            Number(a.totalPoints || 0)
+        )
+        .slice(0,10);
+
+    let html = "<h3>🏆 Top 10</h3><br>";
+
+    sorted.forEach((user,index)=>{
+
+        html += `
+            <div class="detail">
+                <b>#${index+1}</b>
+                &nbsp;
+                ${escapeHTML(user.username || "Unknown")}
+                <span>
+                    ${Number(user.totalPoints || 0)} points
+                </span>
+            </div>
+        `;
+
+    });
+
+    document.getElementById("userDetails").innerHTML =
+        html;
+
+    document.getElementById("userModal").style.display =
+        "flex";
+
+};
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+window.closeModal = function(){
+
+    document.getElementById("userModal").style.display =
+        "none";
+
+    selectedUser = null;
+
+};
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+window.logout = async function(){
+
+    await signOut(auth);
+
+};
+
+
+/* =========================
+   SECURITY HELPER
+========================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
