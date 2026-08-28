@@ -588,13 +588,12 @@ window.adminLogin = async function(){
 
     }catch(err){
 
-        console.error(err);
+    console.error(err);
 
-        error.textContent =
-            "Login failed. Email/password check pannunga.";
+    error.textContent =
+        err.code + " — " + err.message;
 
     }
-
 };
 
 
