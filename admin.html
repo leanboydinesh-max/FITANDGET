@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FIT & GET — Admin</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#050505;
+    color:white;
+    min-height:100vh;
+}
+
+:root{
+    --green:#7CFC00;
+    --card:#101010;
+    --card2:#151515;
+    --border:#252525;
+    --yellow:#FFD54F;
+    --red:#ff3b30;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    border-radius:12px;
+    padding:12px 16px;
+    font-weight:bold;
+}
+
+input,select{
+    width:100%;
+    background:#181818;
+    border:1px solid #292929;
+    color:white;
+    padding:13px;
+    border-radius:12px;
+    outline:none;
+}
+
+input:focus,select:focus{
+    border-color:var(--green);
+}
+
+/* LOGIN */
+
+.login{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.login-box{
+    width:100%;
+    max-width:400px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:30px;
+    text-align:center;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:900;
+    color:var(--green);
+}
+
+.subtitle{
+    color:#888;
+    margin:8px 0 25px;
+}
+
+.login-box input{
+    margin-bottom:12px;
+}
+
+.login-btn{
+    width:100%;
+    background:var(--green);
+    color:#000;
+}
+
+.error{
+    color:#ff4d4d;
+    margin-top:12px;
+    font-size:14px;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+    display:none;
+}
+
+header{
+    height:70px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    position:sticky;
+    top:0;
+    background:#050505;
+    z-index:20;
+}
+
+.header-logo{
+    color:var(--green);
+    font-size:22px;
+    font-weight:900;
+}
+
+.admin-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logout{
+    background:#181818;
+    color:white;
+    border:1px solid #292929;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:25px 18px 60px;
+}
+
+.title{
+    font-size:28px;
+    font-weight:900;
+    margin-bottom:20px;
+}
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:25px;
+}
+
+.stat{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:18px;
+}
+
+.stat-icon{
+    font-size:25px;
+    margin-bottom:10px;
+}
+
+.stat-name{
+    color:#888;
+    font-size:13px;
+}
+
+.stat-value{
+    color:var(--green);
+    font-size:26px;
+    font-weight:900;
+    margin-top:5px;
+}
+
+/* SECTION */
+
+.section{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.section-title{
+    font-size:20px;
+    font-weight:900;
+    margin-bottom:16px;
+}
+
+.section-subtitle{
+    color:#777;
+    font-size:13px;
+    margin-top:-8px;
+    margin-bottom:15px;
+}
+
+/* TABS */
+
+.tabs{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    margin-bottom:20px;
+}
+
+.tab{
+    white-space:nowrap;
+    background:#181818;
+    color:#aaa;
+    border:1px solid #292929;
+}
+
+.tab.active{
+    background:var(--green);
+    color:#000;
+}
+
+/* USERS */
+
+.users{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.user{
+    background:var(--card2);
+    border:1px solid #242424;
+    border-radius:15px;
+    padding:15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.user-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+}
+
+.avatar{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#222;
+}
+
+.username{
+    font-weight:bold;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.email{
+    color:#777;
+    font-size:12px;
+    margin-top:3px;
+}
+
+.user-stats{
+    color:#aaa;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.view-btn{
+    background:var(--green);
+    color:#000;
+    white-space:nowrap;
+}
+
+/* PAYMENTS */
+
+.payments{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.payment{
+    background:var(--card2);
+    border:1px solid #282828;
+    border-radius:17px;
+    padding:16px;
+}
+
+.payment-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.payment-user{
+    font-weight:900;
+}
+
+.payment-email{
+    color:#777;
+    font-size:12px;
+    margin-top:3px;
+}
+
+.status{
+    padding:6px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.status-pending{
+    background:#3b3100;
+    color:var(--yellow);
+}
+
+.status-approved{
+    background:#123d16;
+    color:#7CFC00;
+}
+
+.status-rejected{
+    background:#421313;
+    color:#ff6b6b;
+}
+
+.order-box{
+    background:#181818;
+    border-radius:13px;
+    padding:13px;
+    margin-top:12px;
+}
+
+.order-item{
+    font-size:18px;
+    font-weight:900;
+    color:var(--green);
+}
+
+.order-info{
+    color:#aaa;
+    font-size:13px;
+    margin-top:6px;
+    line-height:1.6;
+}
+
+.payment-time{
+    color:#666;
+    font-size:11px;
+    margin-top:10px;
+}
+
+.payment-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:12px;
+}
+
+.approve{
+    background:var(--green);
+    color:#000;
+}
+
+.reject{
+    background:var(--red);
+    color:white;
+}
+
+.screenshot-btn{
+    width:100%;
+    margin-top:10px;
+    background:#242424;
+    color:white;
+}
+
+.empty{
+    text-align:center;
+    color:#777;
+    padding:25px;
+}
+
+/* MODAL */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    z-index:100;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+}
+
+.modal-box{
+    width:100%;
+    max-width:470px;
+    max-height:92vh;
+    overflow:auto;
+    background:#111;
+    border:1px solid #292929;
+    border-radius:22px;
+    padding:20px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+
+.close{
+    width:38px;
+    height:38px;
+    padding:0;
+    background:#222;
+    color:white;
+}
+
+.detail{
+    background:#181818;
+    padding:13px;
+    border-radius:12px;
+    margin-bottom:9px;
+}
+
+.detail span{
+    display:block;
+    color:#777;
+    font-size:11px;
+    margin-bottom:4px;
+}
+
+.action{
+    width:100%;
+    margin-top:8px;
+}
+
+.green-btn{
+    background:var(--green);
+    color:#000;
+}
+
+.red-btn{
+    background:var(--red);
+    color:white;
+}
+
+/* EDIT */
+
+.edit-box{
+    margin-top:15px;
+    border-top:1px solid #292929;
+    padding-top:15px;
+}
+
+.edit-box input{
+    margin-bottom:8px;
+}
+
+.save-btn{
+    width:100%;
+    background:var(--green);
+    color:#000;
+}
+
+/* SCREENSHOT */
+
+.image-modal img{
+    width:100%;
+    max-height:75vh;
+    object-fit:contain;
+    border-radius:12px;
+    background:#000;
+}
+
+/* LEADERBOARD */
+
+.rank{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.rank-name{
+    font-weight:bold;
+}
+
+.rank-points{
+    color:var(--green);
+    font-weight:900;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:800px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
+
+@media(max-width:500px){
+
+    header{
+        padding:0 14px;
+    }
+
+    .header-logo{
+        font-size:18px;
+    }
+
+    .admin-info span{
+        display:none;
+    }
+
+    .container{
+        padding:20px 12px 50px;
+    }
+
+    .section{
+        padding:15px;
+    }
+
+    .user{
+        align-items:flex-start;
+    }
+
+    .user .view-btn{
+        padding:10px 12px;
+    }
+
+    .payment-actions{
+        grid-template-columns:1fr;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div class="login" id="loginScreen">
+
+    <div class="login-box">
+
+        <div class="logo">FIT & GET</div>
+
+        <div class="subtitle">
+            Admin Control Panel
+        </div>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Admin Email"
+        >
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Password"
+        >
+
+        <button
+            class="login-btn"
+            onclick="adminLogin()"
+        >
+            LOGIN
+        </button>
+
+        <div
+            class="error"
+            id="loginError"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div
+    class="dashboard"
+    id="dashboard"
+>
+
+<header>
+
+    <div class="header-logo">
+        FIT & GET ADMIN
+    </div>
+
+    <div class="admin-info">
+
+        <span id="adminEmail"></span>
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<div class="container">
+
+    <div class="title">
+        Dashboard
+    </div>
+
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-icon">👥</div>
+
+            <div class="stat-name">
+                Total Users
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalUsers"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">🪙</div>
+
+            <div class="stat-name">
+                Total Coins
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalCoins"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">🎟️</div>
+
+            <div class="stat-name">
+                Total Tokens
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalTokens"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">💳</div>
+
+            <div class="stat-name">
+                Pending Payments
+            </div>
+
+            <div
+                class="stat-value"
+                id="pendingPayments"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABS -->
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            id="usersTab"
+            onclick="showSection('usersSection')"
+        >
+            👥 Users
+        </button>
+
+        <button
+            class="tab"
+            id="paymentsTab"
+            onclick="showSection('paymentsSection')"
+        >
+            💳 Payments
+        </button>
+
+        <button
+            class="tab"
+            id="leaderboardTab"
+            onclick="showSection('leaderboardSection')"
+        >
+            🏆 Leaderboard
+        </button>
+
+    </div>
+
+
+    <!-- USERS SECTION -->
+
+    <div
+        class="section"
+        id="usersSection"
+    >
+
+        <div class="section-title">
+            👥 User Management
+        </div>
+
+        <div class="section-subtitle">
+            Full user control
+        </div>
+
+        <input
+            id="searchUser"
+            placeholder="Search username..."
+            oninput="searchUsers()"
+        >
+
+        <div
+            class="users"
+            id="users"
+            style="margin-top:15px;"
+        >
+            <div class="empty">
+                Loading users...
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- PAYMENTS SECTION -->
+
+    <div
+        class="section"
+        id="paymentsSection"
+        style="display:none;"
+    >
+
+        <div class="section-title">
+            💳 Payment Management
+        </div>
+
+        <div class="section-subtitle">
+            Orders and payment screenshots
+        </div>
+
+        <select
+            id="paymentFilter"
+            onchange="renderPayments()"
+        >
+
+            <option value="all">
+                All Payments
+            </option>
+
+            <option value="Pending">
+                🟡 Pending
+            </option>
+
+            <option value="Approved">
+                🟢 Approved
+            </option>
+
+            <option value="Rejected">
+                🔴 Rejected
+            </option>
+
+        </select>
+
+        <div
+            class="payments"
+            id="payments"
+            style="margin-top:15px;"
+        >
+            <div class="empty">
+                Loading payments...
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- LEADERBOARD -->
+
+    <div
+        class="section"
+        id="leaderboardSection"
+        style="display:none;"
+    >
+
+        <div class="section-title">
+            🏆 Leaderboard
+        </div>
+
+        <div
+            id="leaderboard"
+            class="users"
+        ></div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="section">
+
+        <div class="section-title">
+            ⚡ Quick Actions
+        </div>
+
+        <button
+            class="action green-btn"
+            onclick="refreshAll()"
+        >
+            🔄 Refresh Everything
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- USER MODAL -->
+
+<div
+    class="modal"
+    id="userModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>User Details</h2>
+
+            <button
+                class="close"
+                onclick="closeModal('userModal')"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div id="userDetails"></div>
+
+    </div>
+
+</div>
+
+
+<!-- SCREENSHOT MODAL -->
+
+<div
+    class="modal image-modal"
+    id="imageModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>Payment Screenshot</h2>
+
+            <button
+                class="close"
+                onclick="closeModal('imageModal')"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <img
+            id="paymentImage"
+            src=""
+            alt="Payment Screenshot"
+        >
+
+    </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+    initializeApp
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    updateDoc,
+    addDoc,
+    serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+
+    authDomain:
+    "fitandget-b3461.firebaseapp.com",
+
+    projectId:
+    "fitandget-b3461",
+
+    storageBucket:
+    "fitandget-b3461.firebasestorage.app",
+
+    messagingSenderId:
+    "216178533513",
+
+    appId:
+    "1:216178533513:web:975f20599c7e77b9d01258"
+
+};
+
+
+const app =
+    initializeApp(firebaseConfig);
+
+const auth =
+    getAuth(app);
+
+const db =
+    getFirestore(app);
+
+
+/* =========================
+   GLOBAL
+========================= */
+
+let allUsers = [];
+
+let allPayments = [];
+
+let selectedUser = null;
+
+
+/* =========================
+   LOGIN
+========================= */
+
+window.adminLogin =
+async function(){
+
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("password")
+        .value;
+
+    const error =
+        document
+        .getElementById("loginError");
+
+    error.textContent = "";
+
+    if(!email || !password){
+
+        error.textContent =
+        "Email and password enter pannunga.";
+
+        return;
+    }
+
+    try{
+
+        await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+    }catch(err){
+
+        console.error(err);
+
+        error.textContent =
+            err.code +
+            " — " +
+            err.message;
+
+    }
+
+};
+
+
+/* =========================
+   AUTH CHECK
+========================= */
+
+onAuthStateChanged(
+auth,
+async(user)=>{
+
+    if(!user){
+
+        document
+        .getElementById("loginScreen")
+        .style.display = "flex";
+
+        document
+        .getElementById("dashboard")
+        .style.display = "none";
+
+        return;
+    }
+
+    try{
+
+        /*
+         IMPORTANT:
+         Collection name is "admin"
+         because your current code uses admin/{uid}
+        */
+
+        const adminRef =
+            doc(
+                db,
+                "admin",
+                user.uid
+            );
+
+        const adminSnap =
+            await getDoc(adminRef);
+
+
+        if(
+            !adminSnap.exists() ||
+            adminSnap.data().role !== "admin"
+        ){
+
+            await signOut(auth);
+
+            document
+            .getElementById("loginError")
+            .textContent =
+            "Access denied. Admin account mattum allowed.";
+
+            return;
+        }
+
+
+        document
+        .getElementById("loginScreen")
+        .style.display = "none";
+
+        document
+        .getElementById("dashboard")
+        .style.display = "block";
+
+        document
+        .getElementById("adminEmail")
+        .textContent =
+        user.email || "Admin";
+
+
+        await refreshAll();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        await signOut(auth);
+
+    }
+
+});
+
+
+/* =========================
+   REFRESH EVERYTHING
+========================= */
+
+window.refreshAll =
+async function(){
+
+    await Promise.all([
+        loadUsers(),
+        loadPayments()
+    ]);
+
+    renderLeaderboard();
+
+};
+
+
+/* =========================
+   LOAD USERS
+========================= */
+
+window.loadUsers =
+async function(){
+
+    const container =
+        document.getElementById("users");
+
+    container.innerHTML =
+    `<div class="empty">Loading users...</div>`;
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"users")
+            );
+
+        allUsers = [];
+
+        let totalCoins = 0;
+
+        let totalTokens = 0;
+
+
+        snapshot.forEach(
+        docSnap=>{
+
+            const data =
+                docSnap.data();
+
+            const user = {
+
+                id:docSnap.id,
+
+                ...data
+
+            };
+
+            allUsers.push(user);
+
+
+            totalCoins +=
+                Number(
+                    data.coins || 0
+                );
+
+
+            totalTokens +=
+                Number(
+                    data.eligibilityTokens || 0
+                );
+
+        });
+
+
+        document
+        .getElementById("totalUsers")
+        .textContent =
+        allUsers.length;
+
+
+        document
+        .getElementById("totalCoins")
+        .textContent =
+        totalCoins.toLocaleString();
+
+
+        document
+        .getElementById("totalTokens")
+        .textContent =
+        totalTokens.toLocaleString();
+
+
+        renderUsers(allUsers);
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        container.innerHTML =
+        `<div class="empty">
+            Failed to load users.
+         </div>`;
+
+    }
+
+};
+
+
+/* =========================
+   RENDER USERS
+========================= */
+
+function renderUsers(users){
+
+    const container =
+        document.getElementById("users");
+
+    if(users.length === 0){
+
+        container.innerHTML =
+        `<div class="empty">
+            No users found.
+         </div>`;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+
+    users.forEach(user=>{
+
+        const div =
+            document.createElement("div");
+
+        div.className = "user";
+
+
+        const photo =
+            user.photoURL ||
+            "https://via.placeholder.com/100";
+
+
+        div.innerHTML = `
+
+            <div class="user-left">
+
+                <img
+                    class="avatar"
+                    src="${escapeHTML(photo)}"
+                >
+
+                <div>
+
+                    <div class="username">
+                        ${escapeHTML(
+                            user.username ||
+                            "Unknown"
+                        )}
+                    </div>
+
+                    <div class="email">
+                        ${escapeHTML(
+                            user.email || ""
+                        )}
+                    </div>
+
+                    <div class="user-stats">
+                        🪙 ${Number(user.coins || 0)}
+                        &nbsp; • &nbsp;
+                        🏆 ${Number(user.totalPoints || 0)}
+                        &nbsp; • &nbsp;
+                        🎟️ ${Number(user.eligibilityTokens || 0)}
+                        &nbsp; • &nbsp;
+                        🔥 ${Number(user.dailyStreak || 0)}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="view-btn"
+                onclick="viewUser('${user.id}')"
+            >
+                Manage
+            </button>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   SEARCH USERS
+========================= */
+
+window.searchUsers =
+function(){
+
+    const query =
+        document
+        .getElementById("searchUser")
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const filtered =
+        allUsers.filter(user=>
+
+            String(
+                user.username || ""
+            )
+            .toLowerCase()
+            .includes(query)
+
+        );
+
+
+    renderUsers(filtered);
+
+};
+
+
+/* =========================
+   VIEW USER
+========================= */
+
+window.viewUser =
+function(uid){
+
+    selectedUser =
+        allUsers.find(
+            user=>user.id === uid
+        );
+
+
+    if(!selectedUser) return;
+
+
+    const blocked =
+        selectedUser.blocked === true;
+
+
+    document
+    .getElementById("userDetails")
+    .innerHTML = `
+
+        <div class="detail">
+            <span>Username</span>
+            ${escapeHTML(
+                selectedUser.username ||
+                "Unknown"
+            )}
+        </div>
+
+        <div class="detail">
+            <span>User ID</span>
+            ${escapeHTML(
+                selectedUser.id
+            )}
+        </div>
+
+        <div class="detail">
+            <span>Email</span>
+            ${escapeHTML(
+                selectedUser.email ||
+                "Not available"
+            )}
+        </div>
+
+        <div class="detail">
+            <span>Coins</span>
+            🪙 ${Number(
+                selectedUser.coins || 0
+            )}
+        </div>
+
+        <div class="detail">
+            <span>RC Points</span>
+            🏆 ${Number(
+                selectedUser.totalPoints || 0
+            )}
+        </div>
+
+        <div class="detail">
+            <span>Eligibility Tokens</span>
+            🎟️ ${Number(
+                selectedUser.eligibilityTokens || 0
+            )}
+        </div>
+
+        <div class="detail">
+            <span>Daily Streak</span>
+            🔥 ${Number(
+                selectedUser.dailyStreak || 0
+            )}
+        </div>
+
+        <div class="detail">
+            <span>Status</span>
+            ${
+                blocked
+                ? "🚫 Blocked"
+                : "🟢 Active"
+            }
+        </div>
+
+
+        <div class="edit-box">
+
+            <h3 style="margin-bottom:12px;">
+                ✏️ Edit User
+            </h3>
+
+
+            <input
+                id="editUsername"
+                placeholder="Username"
+                value="${escapeHTML(
+                    selectedUser.username || ""
+                )}"
+            >
+
+
+            <input
+                id="editCoins"
+                type="number"
+                min="0"
+                placeholder="Coins"
+                value="${Number(
+                    selectedUser.coins || 0
+                )}"
+            >
+
+
+            <input
+                id="editPoints"
+                type="number"
+                min="0"
+                placeholder="RC Points"
+                value="${Number(
+                    selectedUser.totalPoints || 0
+                )}"
+            >
+
+
+            <input
+                id="editTokens"
+                type="number"
+                min="0"
+                placeholder="Eligibility Tokens"
+                value="${Number(
+                    selectedUser.eligibilityTokens || 0
+                )}"
+            >
+
+
+            <input
+                id="editStreak"
+                type="number"
+                min="0"
+                placeholder="Daily Streak"
+                value="${Number(
+                    selectedUser.dailyStreak || 0
+                )}"
+            >
+
+
+            <button
+                class="save-btn"
+                onclick="saveUserChanges()"
+            >
+                💾 Save Changes
+            </button>
+
+        </div>
+
+
+        <button
+            class="action ${blocked
+                ? "green-btn"
+                : "red-btn"}"
+            onclick="toggleBlock()"
+        >
+            ${
+                blocked
+                ? "🟢 Unblock User"
+                : "🚫 Block User"
+            }
+        </button>
+
+    `;
+
+
+    document
+    .getElementById("userModal")
+    .style.display = "flex";
+
+};
+
+
+/* =========================
+   SAVE USER CHANGES
+========================= */
+
+window.saveUserChanges =
+async function(){
+
+    if(!selectedUser) return;
+
+
+    const username =
+        document
+        .getElementById("editUsername")
+        .value
+        .trim();
+
+
+    const coins =
+        Number(
+            document
+            .getElementById("editCoins")
+            .value
+        );
+
+
+    const points =
+        Number(
+            document
+            .getElementById("editPoints")
+            .value
+        );
+
+
+    const tokens =
+        Number(
+            document
+            .getElementById("editTokens")
+            .value
+        );
+
+
+    const streak =
+        Number(
+            document
+            .getElementById("editStreak")
+            .value
+        );
+
+
+    if(
+        !Number.isFinite(coins) ||
+        coins < 0 ||
+        !Number.isFinite(points) ||
+        points < 0 ||
+        !Number.isFinite(tokens) ||
+        tokens < 0 ||
+        !Number.isFinite(streak) ||
+        streak < 0
+    ){
+
+        alert("Valid values enter pannunga.");
+
+        return;
+    }
+
+
+    if(!username){
+
+        alert("Username empty ah irukka koodadhu.");
+
+        return;
+    }
+
+
+    try{
+
+        await updateDoc(
+
+            doc(
+                db,
+                "users",
+                selectedUser.id
+            ),
+
+            {
+
+                username:username,
+
+                coins:coins,
+
+                totalPoints:points,
+
+                eligibilityTokens:tokens,
+
+                dailyStreak:streak
+
+            }
+
+        );
+
+
+        alert("User updated successfully ✅");
+
+        closeModal("userModal");
+
+        await loadUsers();
+
+        renderLeaderboard();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "Update failed ❌\n" +
+            err.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   BLOCK
+========================= */
+
+window.toggleBlock =
+async function(){
+
+    if(!selectedUser) return;
+
+
+    const newStatus =
+        selectedUser.blocked !== true;
+
+
+    const message =
+        newStatus
+        ? "இந்த user-ஐ block பண்ணவா?"
+        : "இந்த user-ஐ unblock பண்ணவா?";
+
+
+    if(!confirm(message)) return;
+
+
+    try{
+
+        await updateDoc(
+
+            doc(
+                db,
+                "users",
+                selectedUser.id
+            ),
+
+            {
+                blocked:newStatus
+            }
+
+        );
+
+
+        alert(
+            newStatus
+            ? "User blocked ✅"
+            : "User unblocked ✅"
+        );
+
+
+        closeModal("userModal");
+
+        await loadUsers();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "Update failed ❌"
+        );
+
+    }
+
+};
+
+
+/* =========================
+   LOAD PAYMENTS
+========================= */
+
+window.loadPayments =
+async function(){
+
+    const container =
+        document.getElementById("payments");
+
+    container.innerHTML =
+    `<div class="empty">
+        Loading payments...
+     </div>`;
+
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(db,"payments")
+            );
+
+
+        allPayments = [];
+
+
+        snapshot.forEach(
+        docSnap=>{
+
+            allPayments.push({
+
+                id:docSnap.id,
+
+                ...docSnap.data()
+
+            });
+
+        });
+
+
+        /*
+        Newest first.
+        Works with both Timestamp
+        and JS Date/string.
+        */
+
+        allPayments.sort(
+        (a,b)=>{
+
+            const ta =
+                getTimeValue(a.time);
+
+            const tb =
+                getTimeValue(b.time);
+
+            return tb-ta;
+
+        });
+
+
+        updatePaymentStats();
+
+        renderPayments();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        container.innerHTML =
+        `<div class="empty">
+            Failed to load payments.
+         </div>`;
+
+    }
+
+};
+
+
+/* =========================
+   PAYMENT STATS
+========================= */
+
+function updatePaymentStats(){
+
+    const pending =
+        allPayments.filter(
+            p=>String(p.status || "Pending")
+            .toLowerCase()
+            === "pending"
+        ).length;
+
+
+    document
+    .getElementById("pendingPayments")
+    .textContent = pending;
+
+}
+
+
+/* =========================
+   RENDER PAYMENTS
+========================= */
+
+window.renderPayments =
+function(){
+
+    const container =
+        document.getElementById("payments");
+
+
+    const filter =
+        document
+        .getElementById("paymentFilter")
+        .value;
+
+
+    let payments =
+        allPayments;
+
+
+    if(filter !== "all"){
+
+        payments =
+            allPayments.filter(
+                p =>
+                String(
+                    p.status || "Pending"
+                ).toLowerCase()
+                ===
+                filter.toLowerCase()
+            );
+
+    }
+
+
+    if(payments.length === 0){
+
+        container.innerHTML =
+        `<div class="empty">
+            No payments found.
+         </div>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    payments.forEach(payment=>{
+
+        const div =
+            document.createElement("div");
+
+        div.className = "payment";
+
+
+        const status =
+            payment.status ||
+            "Pending";
+
+
+        const statusClass =
+            status.toLowerCase()
+            === "approved"
+            ? "status-approved"
+            :
+            status.toLowerCase()
+            === "rejected"
+            ? "status-rejected"
+            : "status-pending";
+
+
+        const quantity =
+            Number(
+                payment.quantity || 1
+            );
+
+
+        const item =
+            payment.item ||
+            "Unknown Item";
+
+
+        const amount =
+            getItemPrice(item) *
+            quantity;
+
+
+        const time =
+            formatTime(payment.time);
+
+
+        div.innerHTML = `
+
+            <div class="payment-top">
+
+                <div>
+
+                    <div class="payment-user">
+                        👤 ${escapeHTML(
+                            payment.name ||
+                            "No Name"
+                        )}
+                    </div>
+
+                    <div class="payment-email">
+                        ${escapeHTML(
+                            payment.email ||
+                            ""
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="status ${statusClass}"
+                >
+                    ${escapeHTML(status)}
+                </div>
+
+            </div>
+
+
+            <div class="order-box">
+
+                <div class="order-item">
+                    📦 ${escapeHTML(item)}
+                </div>
+
+                <div class="order-info">
+
+                    🔢 Quantity:
+                    <b>${quantity}</b>
+
+                    <br>
+
+                    💰 Amount:
+                    <b>₹${amount}</b>
+
+                    <br>
+
+                    🆔 User ID:
+                    ${escapeHTML(
+                        payment.uid || ""
+                    )}
+
+                </div>
+
+            </div>
+
+
+            ${
+                payment.screenshot
+                ?
+                `
+                <button
+                    class="screenshot-btn"
+                    onclick="showScreenshot('${escapeHTML(
+                        payment.screenshot
+                    )}')"
+                >
+                    🖼️ View Payment Screenshot
+                </button>
+                `
+                :
+                ""
+            }
+
+
+            <div class="payment-time">
+                🕐 ${escapeHTML(time)}
+            </div>
+
+
+            ${
+                status.toLowerCase()
+                === "pending"
+                ?
+                `
+                <div class="payment-actions">
+
+                    <button
+                        class="approve"
+                        onclick="approvePayment('${payment.id}')"
+                    >
+                        🟢 APPROVE
+                    </button>
+
+                    <button
+                        class="reject"
+                        onclick="rejectPayment('${payment.id}')"
+                    >
+                        🔴 REJECT
+                    </button>
+
+                </div>
+                `
+                :
+                ""
+            }
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+};
+
+
+/* =========================
+   PRICE
+========================= */
+
+function getItemPrice(item){
+
+    /*
+    Current Shop:
+    Shield = ₹10
+    Token = ₹10
+    Crystal = ₹10
+    */
+
+    return 10;
+
+}
+
+
+/* =========================
+   APPROVE PAYMENT
+========================= */
+
+window.approvePayment =
+async function(paymentId){
+
+    const payment =
+        allPayments.find(
+            p=>p.id === paymentId
+        );
+
+
+    if(!payment) return;
+
+
+    if(
+        String(payment.status || "")
+        .toLowerCase()
+        !== "pending"
+    ){
+
+        alert("This payment already processed.");
+
+        return;
+    }
+
+
+    const confirmApprove =
+        confirm(
+            "இந்த payment-ஐ APPROVE பண்ணவா?\n\n" +
+            "Item: " +
+            payment.item +
+            "\nQuantity: " +
+            payment.quantity
+        );
+
+
+    if(!confirmApprove) return;
+
+
+    try{
+
+        /*
+        1. Payment status update
+        */
+
+        await updateDoc(
+
+            doc(
+                db,
+                "payments",
+                paymentId
+            ),
+
+            {
+                status:"Approved",
+                approvedAt:serverTimestamp()
+            }
+
+        );
+
+
+        /*
+        2. Create order
+        */
+
+        await addDoc(
+
+            collection(db,"orders"),
+
+            {
+
+                paymentId:paymentId,
+
+                uid:payment.uid || "",
+
+                name:payment.name || "",
+
+                email:payment.email || "",
+
+                item:payment.item || "",
+
+                quantity:
+                    Number(
+                        payment.quantity || 1
+                    ),
+
+                amount:
+                    getItemPrice(
+                        payment.item
+                    ) *
+                    Number(
+                        payment.quantity || 1
+                    ),
+
+                screenshot:
+                    payment.screenshot || "",
+
+                status:"Processing",
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        alert(
+            "Payment Approved ✅\n" +
+            "Order created successfully 📦"
+        );
+
+
+        await loadPayments();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "Approve failed ❌\n" +
+            err.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   REJECT PAYMENT
+========================= */
+
+window.rejectPayment =
+async function(paymentId){
+
+    const payment =
+        allPayments.find(
+            p=>p.id === paymentId
+        );
+
+
+    if(!payment) return;
+
+
+    if(
+        String(payment.status || "")
+        .toLowerCase()
+        !== "pending"
+    ){
+
+        alert("This payment already processed.");
+
+        return;
+    }
+
+
+    if(
+        !confirm(
+            "இந்த payment-ஐ REJECT பண்ணவா?"
+        )
+    ) return;
+
+
+    try{
+
+        await updateDoc(
+
+            doc(
+                db,
+                "payments",
+                paymentId
+            ),
+
+            {
+
+                status:"Rejected",
+
+                rejectedAt:
+                    serverTimestamp()
+
+            }
+
+        );
+
+
+        alert(
+            "Payment rejected ❌"
+        );
+
+
+        await loadPayments();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "Reject failed ❌\n" +
+            err.message
+        );
+
+    }
+
+};
+
+
+/* =========================
+   SCREENSHOT
+========================= */
+
+window.showScreenshot =
+function(url){
+
+    if(!url) return;
+
+
+    document
+    .getElementById("paymentImage")
+    .src = url;
+
+
+    document
+    .getElementById("imageModal")
+    .style.display = "flex";
+
+};
+
+
+/* =========================
+   LEADERBOARD
+========================= */
+
+function renderLeaderboard(){
+
+    const container =
+        document.getElementById("leaderboard");
+
+
+    const sorted =
+        [...allUsers]
+        .sort(
+            (a,b)=>
+            Number(
+                b.totalPoints || 0
+            )
+            -
+            Number(
+                a.totalPoints || 0
+            )
+        )
+        .slice(0,20);
+
+
+    if(sorted.length === 0){
+
+        container.innerHTML =
+        `<div class="empty">
+            No users found.
+         </div>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    sorted.forEach(
+    (user,index)=>{
+
+        const div =
+            document.createElement("div");
+
+        div.className = "detail";
+
+
+        div.innerHTML = `
+
+            <div class="rank">
+
+                <div class="rank-name">
+
+                    ${
+                        index === 0
+                        ? "🥇"
+                        : index === 1
+                        ? "🥈"
+                        : index === 2
+                        ? "🥉"
+                        : "#" + (index+1)
+                    }
+
+                    &nbsp;
+
+                    ${escapeHTML(
+                        user.username ||
+                        "Unknown"
+                    )}
+
+                </div>
+
+
+                <div class="rank-points">
+                    ${Number(
+                        user.totalPoints || 0
+                    )} pts
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   TABS
+========================= */
+
+window.showSection =
+function(sectionId){
+
+    const sections = [
+        "usersSection",
+        "paymentsSection",
+        "leaderboardSection"
+    ];
+
+
+    sections.forEach(id=>{
+
+        document
+        .getElementById(id)
+        .style.display =
+        id === sectionId
+        ? "block"
+        : "none";
+
+    });
+
+
+    document
+    .getElementById("usersTab")
+    .classList.remove("active");
+
+    document
+    .getElementById("paymentsTab")
+    .classList.remove("active");
+
+    document
+    .getElementById("leaderboardTab")
+    .classList.remove("active");
+
+
+    if(sectionId === "usersSection"){
+
+        document
+        .getElementById("usersTab")
+        .classList.add("active");
+
+    }
+
+
+    if(sectionId === "paymentsSection"){
+
+        document
+        .getElementById("paymentsTab")
+        .classList.add("active");
+
+    }
+
+
+    if(sectionId === "leaderboardSection"){
+
+        document
+        .getElementById("leaderboardTab")
+        .classList.add("active");
+
+    }
+
+};
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+window.closeModal =
+function(id){
+
+    document
+    .getElementById(id)
+    .style.display = "none";
+
+};
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+window.logout =
+async function(){
+
+    await signOut(auth);
+
+};
+
+
+/* =========================
+   TIME
+========================= */
+
+function getTimeValue(value){
+
+    if(!value) return 0;
+
+
+    if(
+        typeof value.toMillis === "function"
+    ){
+
+        return value.toMillis();
+
+    }
+
+
+    if(value.seconds){
+
+        return value.seconds * 1000;
+
+    }
+
+
+    const parsed =
+        new Date(value).getTime();
+
+
+    return Number.isFinite(parsed)
+        ? parsed
+        : 0;
+
+}
+
+
+function formatTime(value){
+
+    const timestamp =
+        getTimeValue(value);
+
+
+    if(!timestamp)
+        return "Unknown time";
+
+
+    return new Date(timestamp)
+        .toLocaleString();
+
+}
+
+
+/* =========================
+   SECURITY HELPER
+========================= */
+
+function escapeHTML(value){
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+</html>
