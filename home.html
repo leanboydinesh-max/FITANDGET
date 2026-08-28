@@ -351,6 +351,18 @@ header{
   margin-bottom: 10px;
   display: none;
 }
+  .logout-btn{
+    width:100%;
+    margin-top:10px;
+    padding:13px;
+    border-radius:12px;
+    border:1px solid #7CFC00;
+    background:#181818;
+    color:#7CFC00;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
 </style>
 </head>
 
@@ -410,6 +422,11 @@ header{
     <li><a href="daily-task.html"><i class="fa-solid fa-list-check"></i> Daily Tasks</a></li>
     <li><a href="Leaderboard.html"><i class="fa-solid fa-trophy"></i> Leaderboard</a></li>
     <li><a href="Shop.html"><i class="fa-solid fa-cart-shopping"></i> Shop</a></li>
+    <li>
+  <button class="logout-btn" id="logoutBtn">
+    🚪 Logout
+  </button>
+</li>
   </ul>
 </div>
 
@@ -676,7 +693,13 @@ db.collection("competitionRegistrations").doc(user.uid).set({
 
     }   // else close
 });     // addEventListener close
+document.getElementById("logoutBtn").addEventListener("click", async () => {
 
+    await firebase.auth().signOut();
+
+    window.location.href = "login.html";
+
+});
 
 </script>
 </body>
