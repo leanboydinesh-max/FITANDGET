@@ -2,849 +2,636 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FIT & GET - Profile</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-
 :root{
-    --neon-primary:#7CFC00;
-    --neon-dark:#39a900;
-    --neon-glow:rgba(124,252,0,.42);
-
-    --bg-dark:#030603;
-    --panel-bg:rgba(8,20,8,.92);
-    --box-bg:rgba(15,32,13,.82);
-
-    --border-green:#7CFC00;
-
-    --text-main:#ffffff;
-    --text-muted:#8fa98f;
-
-    --danger:#ff4141;
-    --gold:#ffd84d;
+    --green:#7CFC00;
+    --green-soft:#9dff4d;
+    --bg:#050505;
+    --card:#0b0b0b;
+    --card2:#101010;
+    --border:#1c351c;
+    --text:#ffffff;
+    --muted:#777;
 }
-
-/* RESET */
 
 *{
-    box-sizing:border-box;
-}
-
-html,
-body{
     margin:0;
     padding:0;
-    width:100%;
-    height:100%;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 body{
-    background:
-        radial-gradient(circle at 50% 0%,
-        rgba(124,252,0,.13),
-        transparent 35%),
-        radial-gradient(circle at 0% 100%,
-        rgba(124,252,0,.06),
-        transparent 30%),
-        #020502;
-
-    color:var(--text-main);
-
+    min-height:100vh;
+    background:#050505;
+    color:var(--text);
     font-family:'Rajdhani',sans-serif;
-
-    overflow:hidden;
 }
 
-/* GRID BACKGROUND */
-
+/* subtle FG background */
 body::before{
     content:"";
     position:fixed;
     inset:0;
-
-    background-image:
-        linear-gradient(
-            rgba(124,252,0,.025) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(124,252,0,.025) 1px,
-            transparent 1px
-        );
-
-    background-size:28px 28px;
-
     pointer-events:none;
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(124,252,0,.07),
+            transparent 35%
+        );
 }
 
-/* APP */
+/* =========================
+   APP
+========================= */
 
 .app-viewport{
     position:relative;
-
     width:100%;
     max-width:600px;
-
-    height:100vh;
-
+    min-height:100vh;
     margin:auto;
-
     padding:12px;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(4,12,5,.98),
-            rgba(2,7,3,.98)
-        );
-
-    border-left:1px solid rgba(124,252,0,.45);
-    border-right:1px solid rgba(124,252,0,.45);
-
-    overflow-y:auto;
-    overflow-x:hidden;
-
-    scrollbar-width:none;
+    background:#050505;
 }
 
-.app-viewport::-webkit-scrollbar{
-    display:none;
-}
+/* =========================
+   HEADER
+========================= */
 
-/* HEADER */
-
-.profile-header{
-    position:relative;
-
+.top-header{
+    height:58px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-
-    min-height:48px;
-
-    margin-bottom:10px;
+    border-bottom:1px solid #172317;
+    margin-bottom:12px;
 }
 
-.header-left,
-.header-right{
-    width:44px;
+.header-side{
+    width:42px;
     display:flex;
-    align-items:center;
+    justify-content:center;
 }
 
-.header-right{
-    justify-content:flex-end;
-}
-
-.back-btn,
-.menu-btn{
+.icon-btn{
     width:38px;
     height:38px;
-
-    border:1px solid rgba(124,252,0,.45);
-    border-radius:12px;
-
-    background:rgba(124,252,0,.06);
-
-    color:var(--neon-primary);
-
+    border-radius:10px;
+    border:1px solid #203820;
+    background:#0a0a0a;
+    color:var(--green);
     display:flex;
     align-items:center;
     justify-content:center;
-
     cursor:pointer;
-
-    transition:.2s;
 }
 
-.back-btn:hover,
-.menu-btn:hover{
-    background:rgba(124,252,0,.15);
-    box-shadow:0 0 14px var(--neon-glow);
+.icon-btn:active{
+    transform:scale(.94);
 }
 
 .header-center{
     flex:1;
     text-align:center;
-    min-width:0;
 }
 
 .username-line{
     display:flex;
-    align-items:center;
     justify-content:center;
+    align-items:center;
     gap:7px;
 }
 
 #usernameText{
-    margin:0;
-
-    max-width:260px;
-
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-
     font-family:'Orbitron',sans-serif;
-    font-size:18px;
+    font-size:17px;
     font-weight:700;
-
     color:#fff;
-
-    text-shadow:0 0 10px rgba(124,252,0,.2);
 }
 
-.edit-name-btn{
-    border:0;
-    background:transparent;
-
-    color:var(--neon-primary);
-
+.edit-name{
+    color:var(--green);
+    font-size:12px;
     cursor:pointer;
-    padding:4px;
 }
 
 #rankText{
-    margin:2px 0 0;
-
-    color:var(--neon-primary);
-
+    margin-top:3px;
     font-family:'Orbitron',sans-serif;
-    font-size:10px;
-    font-weight:700;
-
-    letter-spacing:1px;
+    font-size:8px;
+    letter-spacing:1.5px;
+    color:var(--green);
 }
 
-/* PROFILE CARD */
+/* =========================
+   PROFILE CARD
+========================= */
 
 .profile-card{
-    position:relative;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(10,28,11,.94),
-            rgba(4,13,5,.96)
-        );
-
-    border:1px solid rgba(124,252,0,.4);
-
-    border-radius:20px;
-
-    padding:15px;
-
-    box-shadow:
-        0 0 18px rgba(124,252,0,.07),
-        inset 0 0 25px rgba(124,252,0,.025);
+    background:#090909;
+    border:1px solid #1b321b;
+    border-radius:16px;
+    padding:17px;
+    margin-bottom:12px;
 }
 
-/* TOP PROFILE AREA */
-
-.profile-top{
+.profile-main{
     display:flex;
     align-items:center;
     gap:15px;
 }
 
-/* AVATAR */
+/* =========================
+   PROFILE IMAGE
+========================= */
 
 .avatar-wrap{
     position:relative;
-
-    width:92px;
-    min-width:92px;
-    height:92px;
+    width:88px;
+    height:88px;
+    flex-shrink:0;
 }
 
 #profileImage{
-    width:92px;
-    height:92px;
-
-    border-radius:50%;
-
+    width:88px;
+    height:88px;
     object-fit:cover;
-
-    background:#0b150b;
-
-    border:2px solid var(--neon-primary);
-
-    box-shadow:
-        0 0 0 3px rgba(124,252,0,.08),
-        0 0 20px rgba(124,252,0,.24);
+    border-radius:50%;
+    border:2px solid var(--green);
+    background:#111;
 }
 
 .online-dot{
     position:absolute;
-
-    right:2px;
-    bottom:7px;
-
-    width:16px;
-    height:16px;
-
-    background:var(--neon-primary);
-
-    border:3px solid #071007;
-
+    right:1px;
+    bottom:5px;
+    width:14px;
+    height:14px;
     border-radius:50%;
-
-    box-shadow:0 0 10px var(--neon-primary);
+    background:var(--green);
+    border:3px solid #090909;
+    box-shadow:0 0 8px rgba(124,252,0,.5);
 }
 
 .upload-btn{
     position:absolute;
-
     left:0;
     bottom:0;
 
-    width:29px;
-    height:29px;
+    width:27px;
+    height:27px;
 
     border-radius:50%;
+    border:1px solid var(--green);
 
-    border:1px solid var(--neon-primary);
-
-    background:#081108;
-
-    color:var(--neon-primary);
+    background:#080808;
+    color:var(--green);
 
     display:flex;
     align-items:center;
     justify-content:center;
 
+    font-size:11px;
     cursor:pointer;
-
-    font-size:12px;
 }
 
-/* BIO AREA */
+/* =========================
+   BIO
+========================= */
 
 .profile-info{
     flex:1;
     min-width:0;
 }
 
+.bio-label{
+    font-family:'Orbitron',sans-serif;
+    font-size:8px;
+    color:#666;
+    letter-spacing:1px;
+    margin-bottom:6px;
+}
+
 #bioText{
     width:100%;
-    min-height:45px;
-
+    height:42px;
     resize:none;
 
-    background:rgba(0,0,0,.25);
+    background:#050505;
+    color:#eee;
 
-    border:1px solid rgba(124,252,0,.2);
-
-    border-radius:12px;
-
-    color:#fff;
-
-    padding:9px 10px;
+    border:1px solid #1d351d;
+    border-radius:8px;
 
     outline:none;
+    padding:8px 10px;
 
     font-family:'Rajdhani',sans-serif;
     font-size:14px;
 }
 
 #bioText:focus{
-    border-color:var(--neon-primary);
-    box-shadow:0 0 10px rgba(124,252,0,.12);
+    border-color:var(--green);
 }
 
 .bio-bottom{
     display:flex;
     justify-content:space-between;
     align-items:center;
-
-    margin-top:6px;
+    margin-top:4px;
 }
 
 #charCount{
-    color:var(--text-muted);
-    font-size:11px;
+    font-size:9px;
+    color:#555;
 }
 
-/* LIKE / STREAK */
+.save-bio{
+    color:var(--green);
+    font-family:'Orbitron',sans-serif;
+    font-size:8px;
+    cursor:pointer;
+}
 
-.profile-badges{
+/* =========================
+   LIKE / STREAK
+========================= */
+
+.profile-actions{
     display:flex;
+    gap:8px;
+    margin-top:15px;
+}
+
+.action-badge{
+    flex:1;
+    height:38px;
+
+    display:flex;
+    justify-content:center;
     align-items:center;
     gap:7px;
-}
 
-.like-badge,
-.streak-badge{
-    display:flex;
-    align-items:center;
-    gap:5px;
+    background:#050505;
+    border:1px solid #1b321b;
+    border-radius:9px;
 
-    padding:6px 9px;
-
-    border-radius:20px;
-
-    border:1px solid rgba(124,252,0,.25);
-
-    background:rgba(124,252,0,.06);
-
+    font-family:'Rajdhani',sans-serif;
     font-size:12px;
-    font-weight:700;
-}
 
-.like-badge{
     cursor:pointer;
-    user-select:none;
 }
 
-.like-badge:hover{
-    border-color:var(--neon-primary);
-    box-shadow:0 0 12px rgba(124,252,0,.14);
-}
-
-.like-badge.liked{
-    color:#ff5d70;
-    border-color:#ff5d70;
+.action-badge i{
+    font-size:13px;
 }
 
 .like-badge i{
-    color:#ff5d70;
+    color:#ff3d54;
 }
 
 .streak-badge i{
-    color:#ff9d22;
+    color:#ff9d00;
 }
 
-/* STATS */
+.action-badge strong{
+    color:#fff;
+    font-family:'Orbitron',sans-serif;
+    font-size:11px;
+}
+
+/* =========================
+   STATS
+========================= */
 
 .stats-row{
     display:grid;
-
     grid-template-columns:repeat(3,1fr);
-
     gap:9px;
-
-    margin-top:13px;
+    margin-bottom:12px;
 }
 
 .stat-pill{
-    min-height:70px;
+    min-height:75px;
+
+    background:#090909;
+    border:1px solid #1b321b;
+    border-radius:12px;
 
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
 
-    border:1px solid rgba(124,252,0,.22);
-
-    border-radius:15px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124,252,0,.07),
-            rgba(0,0,0,.25)
-        );
-
     cursor:pointer;
-
     transition:.2s;
 }
 
+.stat-pill:active{
+    transform:scale(.97);
+}
+
 .stat-pill:hover{
-    transform:translateY(-1px);
-
-    border-color:rgba(124,252,0,.65);
-
-    box-shadow:0 0 15px rgba(124,252,0,.12);
+    border-color:#365b36;
 }
 
 .stat-icon{
-    color:var(--neon-primary);
-
+    color:var(--green);
     font-size:16px;
+    margin-bottom:4px;
+}
 
-    margin-bottom:3px;
+.stat-name{
+    font-family:'Orbitron',sans-serif;
+    font-size:7px;
+    color:#666;
+    letter-spacing:1px;
 }
 
 .stat-value{
     color:#fff;
-
     font-family:'Orbitron',sans-serif;
-
-    font-size:17px;
+    font-size:16px;
     font-weight:700;
+    margin-top:3px;
 }
 
-.stat-label{
-    color:var(--text-muted);
+/* =========================
+   SECTIONS
+========================= */
 
-    font-size:10px;
-
-    text-transform:uppercase;
-
-    letter-spacing:.8px;
-}
-
-/* SECTION */
-
-.section-card{
-    margin-top:12px;
-
-    padding:13px;
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(8,22,9,.94),
-            rgba(3,9,4,.95)
-        );
-
-    border:1px solid rgba(124,252,0,.25);
-
-    border-radius:18px;
+.section-box{
+    background:#090909;
+    border:1px solid #1b321b;
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:12px;
 }
 
 .section-title{
     display:flex;
+    justify-content:space-between;
     align-items:center;
-    gap:7px;
-
     margin-bottom:11px;
-
-    color:var(--neon-primary);
-
-    font-family:'Orbitron',sans-serif;
-
-    font-size:12px;
-
-    letter-spacing:1px;
 }
 
-/* ACHIEVEMENTS */
+.section-title h3{
+    font-family:'Orbitron',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    color:#fff;
+}
 
-.items-grid{
+.section-title span{
+    font-family:'Orbitron',sans-serif;
+    font-size:7px;
+    color:var(--green);
+}
+
+/* =========================
+   ACHIEVEMENTS
+========================= */
+
+#achieveContainer{
     display:grid;
-
     grid-template-columns:repeat(3,1fr);
-
     gap:8px;
 }
 
-.item-card{
-    min-height:90px;
+.achievement{
+    min-height:82px;
 
-    padding:9px 5px;
-
-    text-align:center;
-
-    border-radius:12px;
-
-    border:1px solid rgba(124,252,0,.16);
-
-    background:rgba(124,252,0,.035);
-}
-
-.item-icon{
-    width:36px;
-    height:36px;
-
-    margin:0 auto 5px;
+    background:#050505;
+    border:1px solid #172717;
+    border-radius:9px;
 
     display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    padding:8px;
+    text-align:center;
+}
+
+.achievement i{
+    color:var(--green);
+    font-size:21px;
+    margin-bottom:6px;
+}
+
+.achievement-name{
+    color:#ddd;
+    font-size:9px;
+    font-weight:600;
+}
+
+.empty-state{
+    grid-column:1/-1;
+    padding:18px;
+    text-align:center;
+    color:#555;
+    font-size:12px;
+}
+
+/* =========================
+   CRYSTALS
+========================= */
+
+#crystalContainer{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.crystal{
+    min-height:65px;
+
+    background:#050505;
+    border:1px solid #172717;
+    border-radius:9px;
+
+    display:flex;
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-
-    border-radius:10px;
-
-    background:rgba(124,252,0,.08);
-
-    color:var(--neon-primary);
-
-    font-size:18px;
 }
 
-.item-name{
-    color:#fff;
-
-    font-size:12px;
-    font-weight:700;
+.crystal i{
+    color:#baff76;
+    font-size:19px;
+    margin-bottom:4px;
 }
 
-.item-desc{
-    margin-top:2px;
-
-    color:var(--text-muted);
-
-    font-size:9px;
-}
-
-/* CRYSTALS */
-
-.crystal-grid{
-    display:grid;
-
-    grid-template-columns:repeat(5,1fr);
-
-    gap:7px;
-}
-
-.crystal-card{
-    padding:8px 3px;
-
-    text-align:center;
-
-    border-radius:11px;
-
-    border:1px solid rgba(124,252,0,.14);
-
-    background:rgba(124,252,0,.035);
-}
-
-.crystal-icon{
-    font-size:22px;
-
-    color:var(--neon-primary);
-
-    margin-bottom:3px;
-
-    text-shadow:0 0 10px rgba(124,252,0,.35);
-}
-
-.crystal-name{
-    font-size:9px;
-    font-weight:700;
-}
-
-.crystal-level{
-    color:var(--text-muted);
+.crystal span{
+    color:#777;
     font-size:8px;
 }
 
-/* EMPTY */
-
-.empty-state{
-    padding:15px 5px;
-
-    text-align:center;
-
-    color:var(--text-muted);
-
-    font-size:12px;
-}
-
-/* MOTTO */
+/* =========================
+   MOTTO
+========================= */
 
 .motto{
-    margin:12px 0 20px;
+    padding:16px;
+    margin-bottom:12px;
 
-    padding:14px;
+    background:#090909;
+    border:1px solid #1b321b;
+    border-radius:14px;
 
     text-align:center;
+}
 
-    border:1px solid rgba(124,252,0,.22);
-
-    border-radius:16px;
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(124,252,0,.04),
-            rgba(124,252,0,.08),
-            rgba(124,252,0,.04)
-        );
+.motto small{
+    display:block;
+    color:var(--green);
+    font-family:'Orbitron',sans-serif;
+    font-size:7px;
+    letter-spacing:2px;
+    margin-bottom:6px;
 }
 
 .motto-text{
-    color:#fff;
-
+    color:#ddd;
     font-family:'Orbitron',sans-serif;
-
-    font-size:13px;
-
-    line-height:1.7;
-
-    letter-spacing:1px;
+    font-size:10px;
+    line-height:1.8;
 }
 
-.motto-text span{
-    color:var(--neon-primary);
+/* =========================
+   MODAL
+========================= */
 
-    text-shadow:0 0 9px rgba(124,252,0,.25);
-}
-
-/* MODAL */
-
-.modal-overlay{
+#customModal{
     position:fixed;
-
     inset:0;
 
-    z-index:1000;
-
     display:none;
-
     align-items:center;
     justify-content:center;
 
     padding:20px;
 
-    background:rgba(0,0,0,.76);
-
+    background:rgba(0,0,0,.78);
     backdrop-filter:blur(5px);
+
+    z-index:9999;
 }
 
-.modal-overlay.show{
-    display:flex;
-}
-
-.custom-modal{
+.modal-box{
     width:100%;
     max-width:390px;
 
-    background:
-        linear-gradient(
-            145deg,
-            #0b180b,
-            #030803
-        );
+    background:#090909;
+    border:1px solid var(--green);
+    border-radius:14px;
 
-    border:1px solid var(--neon-primary);
-
-    border-radius:20px;
-
-    padding:18px;
+    padding:20px;
 
     box-shadow:
-        0 0 30px rgba(124,252,0,.18),
-        inset 0 0 20px rgba(124,252,0,.025);
+        0 0 25px rgba(124,252,0,.12);
 }
 
-.modal-title{
-    margin:0 0 10px;
-
-    color:var(--neon-primary);
-
+#modalTitle{
     font-family:'Orbitron',sans-serif;
-
-    font-size:17px;
-}
-
-.modal-body{
-    color:#dce8dc;
-
     font-size:14px;
-
-    line-height:1.5;
+    color:var(--green);
+    margin-bottom:12px;
 }
 
-.modal-actions{
+#modalBody{
+    color:#bbb;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:15px;
+}
+
+.modal-input{
+    width:100%;
+    padding:11px;
+
+    background:#050505;
+    border:1px solid #263d26;
+    border-radius:8px;
+
+    color:#fff;
+    outline:none;
+
+    margin-bottom:10px;
+}
+
+.modal-buttons{
     display:flex;
-
-    gap:9px;
-
-    margin-top:16px;
+    flex-direction:column;
+    gap:8px;
 }
 
 .modal-btn{
-    flex:1;
+    width:100%;
+    min-height:40px;
 
-    min-height:42px;
+    border:1px solid #294529;
+    border-radius:8px;
 
-    border-radius:12px;
+    background:#0b0b0b;
+    color:var(--green);
 
-    border:1px solid rgba(124,252,0,.4);
-
-    background:rgba(124,252,0,.07);
-
-    color:#fff;
-
-    font-family:'Rajdhani',sans-serif;
-
-    font-size:14px;
-    font-weight:700;
+    font-family:'Orbitron',sans-serif;
+    font-size:9px;
 
     cursor:pointer;
 }
 
-.modal-btn.primary{
-    background:var(--neon-primary);
-    color:#031003;
-
-    border-color:var(--neon-primary);
-
-    box-shadow:0 0 14px rgba(124,252,0,.2);
+.modal-btn.buy{
+    background:var(--green);
+    color:#050505;
+    border-color:var(--green);
+    font-weight:800;
 }
 
-.modal-btn.danger{
-    border-color:rgba(255,65,65,.5);
-    color:#ff7070;
+.modal-btn.close{
+    color:#888;
 }
 
-/* INPUT */
-
-.modal-input{
-    width:100%;
-
-    margin-top:12px;
-
-    padding:11px;
-
-    border-radius:11px;
-
-    border:1px solid rgba(124,252,0,.25);
-
-    background:#050b05;
-
-    color:#fff;
-
-    outline:none;
-}
-
-.modal-input:focus{
-    border-color:var(--neon-primary);
-}
-
-/* TOAST */
+/* =========================
+   TOAST
+========================= */
 
 #toast{
     position:fixed;
-
     left:50%;
-
-    bottom:24px;
-
-    z-index:2000;
+    bottom:25px;
 
     transform:translate(-50%,20px);
 
     opacity:0;
-
     pointer-events:none;
+
+    background:#0b0b0b;
+    border:1px solid var(--green);
+    border-radius:8px;
+
+    color:var(--green);
 
     padding:10px 15px;
 
-    border-radius:12px;
+    font-family:'Orbitron',sans-serif;
+    font-size:8px;
 
-    background:#091109;
-
-    border:1px solid var(--neon-primary);
-
-    color:#fff;
-
-    font-size:13px;
-
-    box-shadow:0 0 18px rgba(124,252,0,.2);
-
+    z-index:10000;
     transition:.25s;
 }
 
@@ -853,363 +640,311 @@ body::before{
     transform:translate(-50%,0);
 }
 
-/* LOADING */
+/* =========================
+   LOADING
+========================= */
 
 #loadingScreen{
     position:fixed;
-
     inset:0;
 
-    z-index:3000;
+    background:#050505;
 
     display:flex;
-
     align-items:center;
     justify-content:center;
+    flex-direction:column;
 
-    background:#020502;
+    z-index:20000;
+}
 
-    color:var(--neon-primary);
-
+.loading-logo{
+    color:var(--green);
     font-family:'Orbitron',sans-serif;
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:3px;
+}
 
-    font-size:13px;
-
+.loading-text{
+    color:#555;
+    font-family:'Orbitron',sans-serif;
+    font-size:7px;
     letter-spacing:2px;
+    margin-top:8px;
 }
 
-.loader{
-    width:35px;
-    height:35px;
-
-    margin:0 auto 12px;
-
-    border-radius:50%;
-
-    border:3px solid rgba(124,252,0,.18);
-
-    border-top-color:var(--neon-primary);
-
-    animation:spin .8s linear infinite;
+.loading-bar{
+    width:160px;
+    height:2px;
+    background:#182018;
+    margin-top:14px;
+    overflow:hidden;
 }
 
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
-    }
+.loading-bar span{
+    display:block;
+    width:40%;
+    height:100%;
+    background:var(--green);
+    animation:loading 1s infinite;
 }
 
-/* RESPONSIVE */
+@keyframes loading{
+    from{transform:translateX(-100%)}
+    to{transform:translateX(350%)}
+}
 
-@media(max-width:430px){
+@media(max-width:380px){
 
     .app-viewport{
-        border-left:0;
-        border-right:0;
+        padding:10px;
     }
 
-    .profile-top{
-        gap:11px;
+    .profile-card{
+        padding:14px;
     }
 
     .avatar-wrap,
     #profileImage{
-        width:82px;
-        height:82px;
-        min-width:82px;
+        width:78px;
+        height:78px;
     }
 
-    .items-grid{
-        grid-template-columns:repeat(3,1fr);
+    #usernameText{
+        font-size:15px;
     }
 
+    .stat-value{
+        font-size:14px;
+    }
 }
-
 </style>
 </head>
 
 <body>
 
 <!-- LOADING -->
-
 <div id="loadingScreen">
-    <div style="text-align:center">
-        <div class="loader"></div>
-        FIT & GET
+    <div class="loading-logo">FIT & GET</div>
+    <div class="loading-text">LOADING PROFILE</div>
+    <div class="loading-bar">
+        <span></span>
     </div>
 </div>
 
 
-<!-- MAIN -->
-
 <div class="app-viewport">
 
-    <!-- HEADER -->
+<!-- ================= HEADER ================= -->
 
-    <header class="profile-header">
+<header class="top-header">
 
-        <div class="header-left">
-            <button class="back-btn" onclick="goBack()" aria-label="Back">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </div>
+    <div class="header-side">
+        <button class="icon-btn" onclick="goBack()">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+    </div>
 
-        <div class="header-center">
+    <div class="header-center">
 
-            <div class="username-line">
+        <div class="username-line">
 
-                <h1 id="usernameText">
-                    User
-                </h1>
+            <span id="usernameText">
+                User
+            </span>
 
-                <button
-                    class="edit-name-btn"
-                    onclick="openUsernameEditor()"
-                    aria-label="Edit username"
-                >
-                    <i class="fa-solid fa-pen"></i>
-                </button>
-
-            </div>
-
-            <div id="rankText">
-                Rank #--
-            </div>
+            <i
+                class="fa-solid fa-pen edit-name"
+                onclick="openUsernameEditor()">
+            </i>
 
         </div>
 
-        <div class="header-right">
-
-            <button
-                class="menu-btn"
-                onclick="openMenu()"
-                aria-label="Menu"
-            >
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </button>
-
+        <div id="rankText">
+            Rank #--
         </div>
 
-    </header>
+    </div>
+
+    <div class="header-side">
+
+        <button
+            class="icon-btn"
+            onclick="openMenu()">
+
+            <i class="fa-solid fa-ellipsis"></i>
+
+        </button>
+
+    </div>
+
+</header>
 
 
-    <!-- PROFILE CARD -->
+<!-- ================= PROFILE ================= -->
 
-    <section class="profile-card">
+<section class="profile-card">
 
-        <div class="profile-top">
+    <div class="profile-main">
 
-            <!-- AVATAR -->
+        <div class="avatar-wrap">
 
-            <div class="avatar-wrap">
+            <img
+                id="profileImage"
+                src=""
+                alt="Profile">
 
-                <img
-                    id="profileImage"
-                    src=""
-                    alt="Profile"
-                >
+            <div class="online-dot"></div>
 
-                <span class="online-dot"></span>
+            <label class="upload-btn">
 
-                <label
-                    class="upload-btn"
-                    for="imageInput"
-                    title="Change photo"
-                >
-                    <i class="fa-solid fa-camera"></i>
-                </label>
+                <i class="fa-solid fa-camera"></i>
 
                 <input
                     id="imageInput"
                     type="file"
                     accept="image/*"
                     hidden
-                    onchange="uploadImage(event)"
-                >
+                    onchange="uploadImage(event)">
 
+            </label>
+
+        </div>
+
+
+        <div class="profile-info">
+
+            <div class="bio-label">
+                BIO
             </div>
 
+            <textarea
+                id="bioText"
+                maxlength="20"
+                placeholder="Write something..."
+                oninput="updateBioCount()"></textarea>
 
-            <!-- BIO -->
+            <div class="bio-bottom">
 
-            <div class="profile-info">
+                <span id="charCount">
+                    0/20
+                </span>
 
-                <textarea
-                    id="bioText"
-                    maxlength="20"
-                    placeholder="Write your bio..."
-                    oninput="updateBioCount()"
-                    onblur="saveBio()"
-                ></textarea>
-
-                <div class="bio-bottom">
-
-                    <span id="charCount">
-                        0/20
-                    </span>
-
-                    <div class="profile-badges">
-
-                        <div
-                            class="like-badge"
-                            id="likeBadge"
-                            onclick="handleLike()"
-                        >
-                            <i class="fa-solid fa-heart"></i>
-                            <span id="likeCounter">0</span>
-                        </div>
-
-                        <div class="streak-badge">
-
-                            <i class="fa-solid fa-fire"></i>
-
-                            <span id="streakCounter">
-                                0
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                <span
+                    class="save-bio"
+                    onclick="saveBio()">
+                    SAVE
+                </span>
 
             </div>
 
         </div>
 
-
-        <!-- STATS -->
-
-        <div class="stats-row">
-
-            <div
-                class="stat-pill"
-                onclick="openShieldPopup()"
-            >
-
-                <div class="stat-icon">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="shieldCount"
-                >
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Shield
-                </div>
-
-            </div>
+    </div>
 
 
-            <div
-                class="stat-pill"
-                onclick="openRCPopup()"
-            >
+    <!-- LIKE / STREAK -->
 
-                <div class="stat-icon">
-                    <i class="fa-solid fa-bolt"></i>
-                </div>
+    <div class="profile-actions">
 
-                <div
-                    class="stat-value"
-                    id="rcCount"
-                >
-                    0
-                </div>
+        <div
+            class="action-badge like-badge"
+            onclick="giveLike()">
 
-                <div class="stat-label">
-                    RC
-                </div>
+            <i class="fa-solid fa-heart"></i>
 
-            </div>
+            <strong id="likeCounter">
+                0
+            </strong>
 
-
-            <div
-                class="stat-pill"
-                onclick="openTokenPopup()"
-            >
-
-                <div class="stat-icon">
-                    <i class="fa-solid fa-ticket"></i>
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="tokenCount"
-                >
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Token
-                </div>
-
-            </div>
+            <span>Likes</span>
 
         </div>
 
-    </section>
+
+        <div class="action-badge streak-badge">
+
+            <i class="fa-solid fa-fire"></i>
+
+            <strong id="streakCounter">
+                0
+            </strong>
+
+            <span>Streak</span>
+
+        </div>
+
+    </div>
+
+</section>
 
 
-    <!-- ACHIEVEMENTS -->
+<!-- ================= STATS ================= -->
 
-    <section class="section-card">
+<div class="stats-row">
 
-        <div class="section-title">
+    <div
+        class="stat-pill"
+        onclick="openShieldMenu()">
 
-            <i class="fa-solid fa-trophy"></i>
+        <div class="stat-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
 
-            ACHIEVEMENTS
-
+        <div class="stat-name">
+            SHIELD
         </div>
 
         <div
-            id="achieveContainer"
-            class="items-grid"
-        ></div>
+            class="stat-value"
+            id="shieldCount">
+            0
+        </div>
 
-    </section>
+    </div>
 
 
-    <!-- CRYSTALS -->
+    <div
+        class="stat-pill"
+        onclick="openRCMenu()">
 
-    <section class="section-card">
+        <div class="stat-icon">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
 
-        <div class="section-title">
-
-            <i class="fa-solid fa-gem"></i>
-
-            CRYSTALS
-
+        <div class="stat-name">
+            RC
         </div>
 
         <div
-            id="crystalContainer"
-            class="crystal-grid"
-        ></div>
+            class="stat-value"
+            id="rcCount">
+            0
+        </div>
 
-    </section>
+    </div>
 
 
-    <!-- MOTTO -->
+    <div
+        class="stat-pill"
+        onclick="showInfo(
+            'Eligibility Token',
+            'Your current Eligibility Token balance.'
+        )">
 
-    <div class="motto">
+        <div class="stat-icon">
+            <i class="fa-solid fa-ticket"></i>
+        </div>
 
-        <div class="motto-text">
+        <div class="stat-name">
+            TOKEN
+        </div>
 
-            <span>Dream.</span>
-            <br>
-
-            Believe.
-
-            <br>
-
-            <span>Become.</span>
-
+        <div
+            class="stat-value"
+            id="tokenCount">
+            0
         </div>
 
     </div>
@@ -1217,41 +952,90 @@ body::before{
 </div>
 
 
-<!-- MODAL -->
+<!-- ================= ACHIEVEMENTS ================= -->
 
-<div
-    id="customModal"
-    class="modal-overlay"
-    onclick="modalOutsideClick(event)"
->
+<section class="section-box">
 
-    <div class="custom-modal">
+    <div class="section-title">
 
-        <h2
-            id="modalTitle"
-            class="modal-title"
-        >
+        <h3>
+            ACHIEVEMENTS
+        </h3>
+
+        <span>
+            MEDALS
+        </span>
+
+    </div>
+
+    <div id="achieveContainer"></div>
+
+</section>
+
+
+<!-- ================= CRYSTALS ================= -->
+
+<section class="section-box">
+
+    <div class="section-title">
+
+        <h3>
+            CRYSTALS
+        </h3>
+
+        <span>
+            COLLECTION
+        </span>
+
+    </div>
+
+    <div id="crystalContainer"></div>
+
+</section>
+
+
+<!-- ================= MOTTO ================= -->
+
+<div class="motto">
+
+    <small>
+        MY MOTTO
+    </small>
+
+    <div class="motto-text">
+        Dream... Believe... Become...
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ================= MODAL ================= -->
+
+<div id="customModal">
+
+    <div class="modal-box">
+
+        <div id="modalTitle">
             FIT & GET
-        </h2>
+        </div>
 
-        <div
-            id="modalBody"
-            class="modal-body"
-        ></div>
+        <div id="modalBody"></div>
 
-        <div
-            id="modalInputArea"
-        ></div>
+        <div id="modalInputArea"></div>
 
-        <div
-            id="modalActions"
-            class="modal-actions"
-        >
+        <div class="modal-buttons">
 
             <button
+                id="modalActionBtn"
                 class="modal-btn"
-                onclick="closeModal()"
-            >
+                style="display:none">
+            </button>
+
+            <button
+                class="modal-btn close"
+                onclick="closeModal()">
                 CLOSE
             </button>
 
@@ -1267,24 +1051,18 @@ body::before{
 <div id="toast"></div>
 
 
-<script type="module">
+<!-- ================= FIREBASE ================= -->
 
-/* FIREBASE */
+<script type="module">
 
 import {
     initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
     getAuth,
     onAuthStateChanged
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
     getFirestore,
@@ -1296,124 +1074,83 @@ import {
     query,
     orderBy,
     getDocs,
-    runTransaction,
-    setDoc
-}
-from
-"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    runTransaction
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-/* CONFIG */
+/* ================= FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
-
-    authDomain:
-        "fitandget-b3461.firebaseapp.com",
-
-    projectId:
-        "fitandget-b3461",
-
-    storageBucket:
-        "fitandget-b3461.firebasestorage.app",
-
-    messagingSenderId:
-        "216178533513",
-
-    appId:
-        "1:216178533513:web:975f20599c7e77b9d01258"
-
+    apiKey:"AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+    authDomain:"fitandget-b3461.firebaseapp.com",
+    projectId:"fitandget-b3461",
+    storageBucket:"fitandget-b3461.firebasestorage.app",
+    messagingSenderId:"216178533513",
+    appId:"1:216178533513:web:975f20599c7e77b9d01258"
 };
 
-
-const app =
-    initializeApp(firebaseConfig);
-
-
-const auth =
-    getAuth(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
-const db =
-    getFirestore(app);
+/* ================= CLOUDINARY ================= */
+
+const CLOUDINARY_CLOUD_NAME = "ey7wjwyw";
+const CLOUDINARY_UPLOAD_PRESET = "FITANDGET";
 
 
-/* CLOUDINARY */
-
-const CLOUDINARY_CLOUD_NAME =
-    "ey7wjwyw";
-
-const CLOUDINARY_UPLOAD_PRESET =
-    "FITANDGET";
-
-
-/* GLOBALS */
+/* ================= GLOBAL ================= */
 
 let currentUser = null;
-
+let profileUid = null;
+let profileData = null;
 let unsubscribeUser = null;
 
-let targetUid = null;
 
-let targetUserData = {};
+/* ================= DEFAULT IMAGE ================= */
 
-let currentUserLikedTarget = false;
+const DEFAULT_IMAGE =
+    "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 
-/* GET PROFILE UID */
+/* ================= AUTH ================= */
 
-const urlParams =
-    new URLSearchParams(
+onAuthStateChanged(auth, async(user)=>{
+
+    if(!user){
+
+        window.location.href = "index.html";
+        return;
+
+    }
+
+    currentUser = user;
+
+    /*
+       ?uid=UID இருந்தால் அந்த user's profile.
+       இல்லையென்றால் current user's profile.
+    */
+
+    const params = new URLSearchParams(
         window.location.search
     );
 
-const requestedUid =
-    urlParams.get("uid");
+    profileUid =
+        params.get("uid") || currentUser.uid;
+
+    await startProfileListener();
+
+    await updateLeaderboardRank();
+
+    document.getElementById(
+        "loadingScreen"
+    ).style.display = "none";
+
+});
 
 
-/*
-If ?uid= is present,
-show that user's profile.
-
-Otherwise show logged-in user's profile.
-*/
-
-
-/* AUTH */
-
-onAuthStateChanged(
-    auth,
-    async (user) => {
-
-        if(!user){
-
-            window.location.href =
-                "index.html";
-
-            return;
-
-        }
-
-        currentUser = user;
-
-        targetUid =
-            requestedUid || user.uid;
-
-        await startProfileListener();
-
-        await updateLeaderboardRank();
-
-        document
-            .getElementById("loadingScreen")
-            .style.display = "none";
-
-    }
-);
-
-
-/* PROFILE LISTENER */
+/* ================= PROFILE LISTENER ================= */
 
 async function startProfileListener(){
 
@@ -1422,178 +1159,26 @@ async function startProfileListener(){
     }
 
     const userRef =
-        doc(
-            db,
-            "users",
-            targetUid
-        );
-
+        doc(db,"users",profileUid);
 
     unsubscribeUser =
         onSnapshot(
             userRef,
-            async (snap) => {
+            (snap)=>{
 
                 if(!snap.exists()){
 
-                    showToast(
-                        "Profile not found"
-                    );
-
+                    showToast("Profile not found");
                     return;
 
                 }
 
-                const data =
-                    snap.data();
+                profileData = snap.data();
 
-                targetUserData =
-                    data;
-
-
-                /* USERNAME */
-
-                document
-                    .getElementById(
-                        "usernameText"
-                    )
-                    .textContent =
-                    data.username ||
-                    "User";
-
-
-                /* PHOTO */
-
-                const photo =
-                    data.photoURL ||
-                    "";
-
-                document
-                    .getElementById(
-                        "profileImage"
-                    )
-                    .src =
-                    photo ||
-                    createAvatar(
-                        data.username ||
-                        "User"
-                    );
-
-
-                /* BIO */
-
-                const bio =
-                    data.bio || "";
-
-                const bioBox =
-                    document
-                    .getElementById(
-                        "bioText"
-                    );
-
-                bioBox.value =
-                    bio.substring(
-                        0,
-                        20
-                    );
-
-                updateBioCount();
-
-
-                /* LIKES */
-
-                const likes =
-                    Number(
-                        data.loveCount ??
-                        data.likes ??
-                        0
-                    );
-
-                document
-                    .getElementById(
-                        "likeCounter"
-                    )
-                    .textContent =
-                    formatNumber(likes);
-
-
-                /* STREAK */
-
-                document
-                    .getElementById(
-                        "streakCounter"
-                    )
-                    .textContent =
-                    formatNumber(
-                        data.dailyStreak ??
-                        0
-                    );
-
-
-                /* SHIELD */
-
-                document
-                    .getElementById(
-                        "shieldCount"
-                    )
-                    .textContent =
-                    formatNumber(
-                        data.shield ??
-                        0
-                    );
-
-
-                /* RC */
-
-                document
-                    .getElementById(
-                        "rcCount"
-                    )
-                    .textContent =
-                    formatNumber(
-                        data.rcPoints ??
-                        data.rc ??
-                        data.coins ??
-                        0
-                    );
-
-
-                /* TOKEN */
-
-                document
-                    .getElementById(
-                        "tokenCount"
-                    )
-                    .textContent =
-                    formatNumber(
-                        data.eligibilityTokens ??
-                        data.tokens ??
-                        0
-                    );
-
-
-                /* ACHIEVEMENTS */
-
-                renderAchievements(
-                    data.achievements ||
-                    []
-                );
-
-
-                /* CRYSTALS */
-
-                renderCrystals(
-                    data.crystals ||
-                    []
-                );
-
-
-                /* LIKE STATUS */
-
-                await checkLikeStatus();
+                renderProfile(profileData);
 
             },
-            (error) => {
+            (error)=>{
 
                 console.error(error);
 
@@ -1607,351 +1192,178 @@ async function startProfileListener(){
 }
 
 
-/* LIKE STATUS */
+/* ================= RENDER ================= */
 
-async function checkLikeStatus(){
+function renderProfile(data){
 
-    if(!currentUser || !targetUid){
-        return;
-    }
+    const username =
+        data.username || "User";
 
-    try{
+    document.getElementById(
+        "usernameText"
+    ).textContent = username;
 
-        const likeRef =
-            doc(
-                db,
-                "users",
-                targetUid,
-                "likes",
-                currentUser.uid
-            );
 
-        const likeSnap =
-            await getDoc(
-                likeRef
-            );
+    const image =
+        data.photoURL || DEFAULT_IMAGE;
 
-        currentUserLikedTarget =
-            likeSnap.exists();
-
-        updateLikeUI();
-
-    }
-    catch(error){
-
-        console.error(
-            "Like status error:",
-            error
-        );
-
-    }
-
-}
-
-
-/* LIKE UI */
-
-function updateLikeUI(){
-
-    const badge =
-        document.getElementById(
-            "likeBadge"
-        );
-
-    if(
-        currentUserLikedTarget
-    ){
-
-        badge.classList.add(
-            "liked"
-        );
-
-    }
-    else{
-
-        badge.classList.remove(
-            "liked"
-        );
-
-    }
-
-}
-
-
-/* LIKE */
-
-window.handleLike =
-async function(){
-
-    if(!currentUser){
-
-        showToast(
-            "Login required"
-        );
-
-        return;
-
-    }
-
-
-    if(!targetUid){
-
-        return;
-
-    }
-
-
-    const likeRef =
-        doc(
-            db,
-            "users",
-            targetUid,
-            "likes",
-            currentUser.uid
-        );
-
-
-    const profileRef =
-        doc(
-            db,
-            "users",
-            targetUid
-        );
-
-
-    try{
-
-        const result =
-            await runTransaction(
-                db,
-                async (transaction) => {
-
-                    const likeSnap =
-                        await transaction.get(
-                            likeRef
-                        );
-
-                    const profileSnap =
-                        await transaction.get(
-                            profileRef
-                        );
-
-
-                    if(!profileSnap.exists()){
-
-                        throw new Error(
-                            "Profile does not exist"
-                        );
-
-                    }
-
-
-                    if(likeSnap.exists()){
-
-                        return {
-                            alreadyLiked:true
-                        };
-
-                    }
-
-
-                    const data =
-                        profileSnap.data();
-
-
-                    const oldCount =
-                        Number(
-                            data.loveCount ??
-                            data.likes ??
-                            0
-                        );
-
-
-                    transaction.set(
-                        likeRef,
-                        {
-                            uid:
-                                currentUser.uid,
-
-                            createdAt:
-                                new Date()
-                        }
-                    );
-
-
-                    transaction.update(
-                        profileRef,
-                        {
-                            loveCount:
-                                oldCount + 1
-                        }
-                    );
-
-
-                    return {
-                        alreadyLiked:false
-                    };
-
-                }
-            );
-
-
-        if(
-            result.alreadyLiked
-        ){
-
-            currentUserLikedTarget =
-                true;
-
-            updateLikeUI();
-
-            showToast(
-                "You already liked this profile"
-            );
-
-            return;
-
-        }
-
-
-        currentUserLikedTarget =
-            true;
-
-        updateLikeUI();
-
-        showToast(
-            "❤️ Like added"
-        );
-
-    }
-    catch(error){
-
-        console.error(
-            "Like error:",
-            error
-        );
-
-        showToast(
-            "Like failed"
-        );
-
-    }
-
-};
-
-
-/* BIO COUNT */
-
-window.updateBioCount =
-function(){
-
-    const box =
-        document.getElementById(
-            "bioText"
-        );
-
-    if(box.value.length > 20){
-
-        box.value =
-            box.value.substring(
-                0,
-                20
-            );
-
-    }
-
-
-    document
-        .getElementById(
-            "charCount"
-        )
-        .textContent =
-        `${box.value.length}/20`;
-
-};
-
-
-/* SAVE BIO */
-
-window.saveBio =
-async function(){
-
-    if(
-        !currentUser ||
-        targetUid !== currentUser.uid
-    ){
-        return;
-    }
+    document.getElementById(
+        "profileImage"
+    ).src = image;
 
 
     const bio =
-        document
-        .getElementById(
-            "bioText"
-        )
-        .value
-        .trim()
-        .substring(
-            0,
-            20
-        );
+        data.bio || "";
+
+    document.getElementById(
+        "bioText"
+    ).value = bio.substring(0,20);
+
+    updateBioCount();
 
 
-    try{
+    const likes =
+        data.loveCount ??
+        data.likes ??
+        0;
 
-        await updateDoc(
-            doc(
-                db,
-                "users",
-                currentUser.uid
-            ),
-            {
-                bio:bio
-            }
-        );
+    document.getElementById(
+        "likeCounter"
+    ).textContent =
+        formatNumber(likes);
+
+
+    document.getElementById(
+        "streakCounter"
+    ).textContent =
+        data.dailyStreak ?? 0;
+
+
+    document.getElementById(
+        "shieldCount"
+    ).textContent =
+        data.shield ?? 0;
+
+
+    const rc =
+        data.rcPoints ??
+        data.rc ??
+        data.coins ??
+        0;
+
+    document.getElementById(
+        "rcCount"
+    ).textContent =
+        formatNumber(rc);
+
+
+    document.getElementById(
+        "tokenCount"
+    ).textContent =
+        data.eligibilityTokens ??
+        data.tokens ??
+        0;
+
+
+    renderAchievements(
+        data.achievements || []
+    );
+
+
+    renderCrystals(
+        data.crystals || []
+    );
+
+}
+
+
+/* ================= BIO ================= */
+
+window.updateBioCount = function(){
+
+    const textarea =
+        document.getElementById("bioText");
+
+    if(textarea.value.length > 20){
+
+        textarea.value =
+            textarea.value.substring(0,20);
 
     }
-    catch(error){
 
-        console.error(error);
-
-    }
+    document.getElementById(
+        "charCount"
+    ).textContent =
+        textarea.value.length + "/20";
 
 };
 
 
-/* IMAGE UPLOAD */
+window.saveBio = async function(){
 
-window.uploadImage =
-async function(event){
+    if(!currentUser) return;
 
-    if(
-        !currentUser ||
-        targetUid !== currentUser.uid
-    ){
+    /* Only own profile can edit */
+
+    if(profileUid !== currentUser.uid){
 
         showToast(
-            "You can only edit your own profile"
+            "You can edit only your profile"
         );
 
         return;
 
     }
 
+    try{
+
+        const bio =
+            document.getElementById(
+                "bioText"
+            ).value.trim();
+
+        await updateDoc(
+            doc(db,"users",currentUser.uid),
+            {
+                bio:bio.substring(0,20)
+            }
+        );
+
+        showToast("Bio saved");
+
+    }catch(error){
+
+        console.error(error);
+        showToast("Failed to save bio");
+
+    }
+
+};
+
+
+/* ================= IMAGE UPLOAD ================= */
+
+window.uploadImage = async function(event){
+
+    if(!currentUser) return;
+
+    if(profileUid !== currentUser.uid){
+
+        showToast(
+            "You can edit only your profile"
+        );
+
+        return;
+
+    }
 
     const file =
         event.target.files[0];
 
-
-    if(!file){
-        return;
-    }
+    if(!file) return;
 
 
-    if(
-        file.size >
-        5 * 1024 * 1024
-    ){
+    if(file.size > 5 * 1024 * 1024){
 
         showToast(
             "Image must be below 5MB"
@@ -1962,9 +1374,7 @@ async function(event){
     }
 
 
-    showToast(
-        "Uploading..."
-    );
+    showToast("Uploading image...");
 
 
     try{
@@ -1993,27 +1403,21 @@ async function(event){
             );
 
 
-        const result =
-            await response.json();
-
-
-        if(
-            !result.secure_url
-        ){
+        if(!response.ok){
 
             throw new Error(
-                "Upload failed"
+                "Cloudinary upload failed"
             );
 
         }
 
 
+        const result =
+            await response.json();
+
+
         await updateDoc(
-            doc(
-                db,
-                "users",
-                currentUser.uid
-            ),
+            doc(db,"users",currentUser.uid),
             {
                 photoURL:
                     result.secure_url
@@ -2021,12 +1425,10 @@ async function(event){
         );
 
 
-        showToast(
-            "Profile photo updated"
-        );
+        showToast("Profile photo updated");
 
-    }
-    catch(error){
+
+    }catch(error){
 
         console.error(error);
 
@@ -2039,81 +1441,568 @@ async function(event){
 };
 
 
-/* USERNAME EDITOR */
+/* ================= LIKE SYSTEM ================= */
 
-window.openUsernameEditor =
-function(){
+/*
+   One user = one like per target profile.
 
-    if(
-        !currentUser ||
-        targetUid !== currentUser.uid
-    ){
+   users/TARGET_UID/likes/LINKER_UID
+
+   Transaction makes the increment
+   atomic.
+*/
+
+window.giveLike = async function(){
+
+    if(!currentUser || !profileUid)
+        return;
+
+
+    const targetRef =
+        doc(db,"users",profileUid);
+
+    const likeRef =
+        doc(
+            db,
+            "users",
+            profileUid,
+            "likes",
+            currentUser.uid
+        );
+
+
+    try{
+
+        const alreadyLiked =
+            await runTransaction(
+                db,
+                async(transaction)=>{
+
+                    const likeSnap =
+                        await transaction.get(
+                            likeRef
+                        );
+
+                    if(likeSnap.exists()){
+
+                        return true;
+
+                    }
+
+
+                    const targetSnap =
+                        await transaction.get(
+                            targetRef
+                        );
+
+
+                    if(!targetSnap.exists()){
+
+                        throw new Error(
+                            "Profile not found"
+                        );
+
+                    }
+
+
+                    const data =
+                        targetSnap.data();
+
+
+                    const currentLikes =
+                        Number(
+                            data.loveCount ??
+                            data.likes ??
+                            0
+                        );
+
+
+                    transaction.set(
+                        likeRef,
+                        {
+                            uid:currentUser.uid,
+                            createdAt:
+                                Date.now()
+                        }
+                    );
+
+
+                    transaction.update(
+                        targetRef,
+                        {
+                            loveCount:
+                                currentLikes + 1
+                        }
+                    );
+
+
+                    return false;
+
+                }
+            );
+
+
+        if(alreadyLiked){
+
+            showToast(
+                "Already liked ❤️"
+            );
+
+        }else{
+
+            showToast(
+                "Liked ❤️"
+            );
+
+        }
+
+    }catch(error){
+
+        console.error(error);
 
         showToast(
-            "You can only edit your own profile"
+            "Like failed"
         );
+
+    }
+
+};
+
+
+/* ================= LEADERBOARD ================= */
+
+async function updateLeaderboardRank(){
+
+    if(!currentUser) return;
+
+    try{
+
+        const usersQuery =
+            query(
+                collection(db,"users"),
+                orderBy(
+                    "totalPoints",
+                    "desc"
+                )
+            );
+
+
+        const snap =
+            await getDocs(usersQuery);
+
+
+        let rank = 0;
+        let position = 0;
+        let previousPoints = null;
+
+
+        for(const userDoc of snap.docs){
+
+            position++;
+
+            const data =
+                userDoc.data();
+
+            const points =
+                Number(
+                    data.totalPoints || 0
+                );
+
+
+            if(
+                previousPoints === null ||
+                points < previousPoints
+            ){
+
+                rank = position;
+
+            }
+
+
+            if(
+                userDoc.id === profileUid
+            ){
+
+                document.getElementById(
+                    "rankText"
+                ).textContent =
+                    `Rank #${rank}`;
+
+                return;
+
+            }
+
+
+            previousPoints = points;
+
+        }
+
+
+        document.getElementById(
+            "rankText"
+        ).textContent =
+            "Rank #--";
+
+    }catch(error){
+
+        console.error(
+            "Leaderboard error:",
+            error
+        );
+
+        document.getElementById(
+            "rankText"
+        ).textContent =
+            "Rank #--";
+
+    }
+
+}
+
+
+/* ================= ACHIEVEMENTS ================= */
+
+function renderAchievements(items){
+
+    const container =
+        document.getElementById(
+            "achieveContainer"
+        );
+
+    container.innerHTML = "";
+
+
+    if(!Array.isArray(items) ||
+       items.length === 0){
+
+        container.innerHTML = `
+            <div class="empty-state">
+                No achievements yet
+            </div>
+        `;
 
         return;
 
     }
 
 
-    const currentName =
-        targetUserData.username ||
-        "User";
+    items.forEach(item=>{
+
+        let name = "Achievement";
+        let icon = "fa-trophy";
 
 
-    openModal(
-        "Edit Username",
-        `
-        <div>
-            Change your profile username.
-        </div>
-        `,
-        `
-        <input
-            id="usernameInput"
-            class="modal-input"
-            maxlength="30"
-            value="${escapeHTML(currentName)}"
-            placeholder="Username"
-        >
-        `,
-        `
-        <button
-            class="modal-btn"
-            onclick="closeModal()"
-        >
-            CANCEL
-        </button>
+        if(typeof item === "string"){
 
-        <button
-            class="modal-btn primary"
-            onclick="saveUsername()"
-        >
-            SAVE
-        </button>
-        `
+            name = item;
+
+        }else if(item){
+
+            name =
+                item.name ||
+                item.title ||
+                "Achievement";
+
+            icon =
+                item.icon ||
+                "fa-trophy";
+
+        }
+
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "achievement";
+
+
+        card.innerHTML = `
+            <i class="fa-solid ${escapeHTML(icon)}"></i>
+            <div class="achievement-name">
+                ${escapeHTML(name)}
+            </div>
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* ================= CRYSTALS ================= */
+
+function renderCrystals(items){
+
+    const container =
+        document.getElementById(
+            "crystalContainer"
+        );
+
+    container.innerHTML = "";
+
+
+    if(!Array.isArray(items) ||
+       items.length === 0){
+
+        container.innerHTML = `
+            <div class="empty-state">
+                No crystals collected
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    items.forEach(item=>{
+
+        let name = "Crystal";
+
+
+        if(typeof item === "string"){
+
+            name = item;
+
+        }else if(item){
+
+            name =
+                item.name ||
+                item.title ||
+                "Crystal";
+
+        }
+
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "crystal";
+
+
+        card.innerHTML = `
+            <i class="fa-solid fa-gem"></i>
+            <span>${escapeHTML(name)}</span>
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* ================= SHIELD MENU ================= */
+
+window.openShieldMenu = function(){
+
+    const shield =
+        profileData?.shield ?? 0;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "SHIELD";
+
+
+    document.getElementById(
+        "modalBody"
+    ).innerHTML = `
+        <b style="color:#7CFC00">
+            Current Shield: ${shield}
+        </b>
+        <br><br>
+        Shield protects your progress
+        according to the FIT & GET rules.
+    `;
+
+
+    const action =
+        document.getElementById(
+            "modalActionBtn"
+        );
+
+
+    action.style.display =
+        "block";
+
+    action.className =
+        "modal-btn buy";
+
+    action.textContent =
+        "BUY SHIELD";
+
+
+    action.onclick = function(){
+
+        /*
+           Shop.html-ல் shield item
+           handle பண்ணினால் #shield use ஆகும்.
+        */
+
+        window.location.href =
+            "Shop.html#shield";
+
+    };
+
+
+    document.getElementById(
+        "modalInputArea"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+        "customModal"
+    ).style.display =
+        "flex";
+
+};
+
+
+/* ================= RC MENU ================= */
+
+window.openRCMenu = function(){
+
+    const rc =
+        profileData?.rcPoints ??
+        profileData?.rc ??
+        profileData?.coins ??
+        0;
+
+
+    showInfo(
+        "RC",
+        `Your current RC balance is ${formatNumber(rc)}.`
     );
 
 };
 
 
-/* SAVE USERNAME */
+/* ================= INFO MODAL ================= */
 
-window.saveUsername =
-async function(){
+window.showInfo = function(
+    title,
+    message
+){
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        title;
+
+
+    document.getElementById(
+        "modalBody"
+    ).textContent =
+        message;
+
+
+    document.getElementById(
+        "modalInputArea"
+    ).innerHTML = "";
+
+
+    const action =
+        document.getElementById(
+            "modalActionBtn"
+        );
+
+    action.style.display =
+        "none";
+
+
+    document.getElementById(
+        "customModal"
+    ).style.display =
+        "flex";
+
+};
+
+
+/* ================= USERNAME ================= */
+
+window.openUsernameEditor = function(){
+
+    if(profileUid !== currentUser.uid){
+
+        showToast(
+            "You can edit only your profile"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "CHANGE USERNAME";
+
+
+    document.getElementById(
+        "modalBody"
+    ).textContent =
+        "Enter your new username.";
+
+
+    document.getElementById(
+        "modalInputArea"
+    ).innerHTML = `
+        <input
+            id="usernameInput"
+            class="modal-input"
+            maxlength="30"
+            placeholder="New username"
+            value="${escapeHTML(
+                profileData?.username || ""
+            )}">
+    `;
+
+
+    const action =
+        document.getElementById(
+            "modalActionBtn"
+        );
+
+
+    action.style.display =
+        "block";
+
+    action.className =
+        "modal-btn";
+
+    action.textContent =
+        "SAVE USERNAME";
+
+
+    action.onclick =
+        saveUsername;
+
+
+    document.getElementById(
+        "customModal"
+    ).style.display =
+        "flex";
+
+};
+
+
+async function saveUsername(){
+
+    if(!currentUser) return;
+
 
     const input =
         document.getElementById(
             "usernameInput"
         );
-
-
-    if(!input){
-        return;
-    }
-
 
     const username =
         input.value.trim();
@@ -2122,7 +2011,7 @@ async function(){
     if(!username){
 
         showToast(
-            "Enter username"
+            "Enter a username"
         );
 
         return;
@@ -2133,14 +2022,9 @@ async function(){
     try{
 
         await updateDoc(
-            doc(
-                db,
-                "users",
-                currentUser.uid
-            ),
+            doc(db,"users",currentUser.uid),
             {
-                username:
-                    username
+                username:username
             }
         );
 
@@ -2151,562 +2035,95 @@ async function(){
             "Username updated"
         );
 
-    }
-    catch(error){
+
+    }catch(error){
 
         console.error(error);
 
         showToast(
-            "Unable to update username"
+            "Username update failed"
         );
 
     }
 
-};
+}
 
 
-/* SHIELD POPUP */
+/* ================= MENU ================= */
 
-window.openShieldPopup =
-function(){
+window.openMenu = function(){
 
-    const count =
-        targetUserData.shield ??
-        0;
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "PROFILE MENU";
 
 
-    openModal(
-        "Shield",
-        `
-        <div>
-            <b style="color:#7CFC00">
-                Current Shield: ${formatNumber(count)}
-            </b>
+    document.getElementById(
+        "modalBody"
+    ).textContent =
+        "Choose an option.";
 
-            <br><br>
 
-            Shield protects your FIT & GET
-            progress from supported game events.
-        </div>
-        `,
-        "",
-        `
+    document.getElementById(
+        "modalInputArea"
+    ).innerHTML = `
         <button
             class="modal-btn"
-            onclick="closeModal()"
-        >
-            CLOSE
-        </button>
-
-        <button
-            class="modal-btn primary"
-            onclick="goToShieldShop()"
-        >
-            BUY
-        </button>
-        `
-    );
-
-};
-
-
-/* GO SHOP */
-
-window.goToShieldShop =
-function(){
-
-    closeModal();
-
-    window.location.href =
-        "Shop.html#shield";
-
-};
-
-
-/* RC POPUP */
-
-window.openRCPopup =
-function(){
-
-    const rc =
-        targetUserData.rcPoints ??
-        targetUserData.rc ??
-        targetUserData.coins ??
-        0;
-
-
-    openModal(
-        "RC POINTS",
-        `
-        <div>
-
-            <div
-                style="
-                    font-family:Orbitron;
-                    font-size:28px;
-                    color:#7CFC00;
-                    margin-bottom:8px;
-                "
-            >
-                ${formatNumber(rc)}
-            </div>
-
-            <div>
-                Your current RC balance.
-            </div>
-
-            <br>
-
-            <div
-                style="color:#8fa98f"
-            >
-                RC can be used for supported
-                FIT & GET rewards and features.
-            </div>
-
-        </div>
-        `,
-        "",
-        `
-        <button
-            class="modal-btn primary"
-            onclick="closeModal()"
-        >
-            OK
-        </button>
-        `
-    );
-
-};
-
-
-/* TOKEN POPUP */
-
-window.openTokenPopup =
-function(){
-
-    const tokens =
-        targetUserData.eligibilityTokens ??
-        targetUserData.tokens ??
-        0;
-
-
-    openModal(
-        "ELIGIBILITY TOKEN",
-        `
-        <div>
-
-            <div
-                style="
-                    font-family:Orbitron;
-                    font-size:28px;
-                    color:#7CFC00;
-                    margin-bottom:8px;
-                "
-            >
-                ${formatNumber(tokens)}
-            </div>
-
-            <div>
-                Your current Eligibility Token balance.
-            </div>
-
-        </div>
-        `,
-        "",
-        `
-        <button
-            class="modal-btn primary"
-            onclick="closeModal()"
-        >
-            OK
-        </button>
-        `
-    );
-
-};
-
-
-/* ACHIEVEMENTS */
-
-function renderAchievements(
-    achievements
-){
-
-    const container =
-        document.getElementById(
-            "achieveContainer"
-        );
-
-
-    container.innerHTML = "";
-
-
-    if(
-        !Array.isArray(
-            achievements
-        ) ||
-        achievements.length === 0
-    ){
-
-        container.innerHTML = `
-            <div
-                class="empty-state"
-                style="grid-column:1/-1"
-            >
-                <i class="fa-solid fa-trophy"></i>
-                <br>
-                No achievements yet.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    achievements
-        .slice(0,6)
-        .forEach(
-            (achievement) => {
-
-                let name =
-                    "Achievement";
-
-                let desc =
-                    "Completed";
-
-                let icon =
-                    "fa-medal";
-
-
-                if(
-                    typeof achievement ===
-                    "string"
-                ){
-
-                    name =
-                        achievement;
-
-                }
-                else if(
-                    achievement &&
-                    typeof achievement ===
-                    "object"
-                ){
-
-                    name =
-                        achievement.name ||
-                        achievement.title ||
-                        name;
-
-                    desc =
-                        achievement.description ||
-                        achievement.desc ||
-                        achievement.status ||
-                        desc;
-
-                    icon =
-                        achievement.icon ||
-                        icon;
-
-                }
-
-
-                container.innerHTML += `
-
-                    <div class="item-card">
-
-                        <div class="item-icon">
-
-                            <i class="fa-solid ${escapeHTML(icon)}"></i>
-
-                        </div>
-
-                        <div class="item-name">
-                            ${escapeHTML(name)}
-                        </div>
-
-                        <div class="item-desc">
-                            ${escapeHTML(desc)}
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        );
-
-}
-
-
-/* CRYSTALS */
-
-function renderCrystals(
-    crystals
-){
-
-    const container =
-        document.getElementById(
-            "crystalContainer"
-        );
-
-
-    container.innerHTML = "";
-
-
-    if(
-        !Array.isArray(
-            crystals
-        ) ||
-        crystals.length === 0
-    ){
-
-        container.innerHTML = `
-
-            <div
-                class="empty-state"
-                style="grid-column:1/-1"
-            >
-                <i class="fa-solid fa-gem"></i>
-                <br>
-                No crystals yet.
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    crystals
-        .slice(0,5)
-        .forEach(
-            (crystal) => {
-
-                let name =
-                    "Crystal";
-
-                let level =
-                    "Level 1";
-
-
-                if(
-                    typeof crystal ===
-                    "string"
-                ){
-
-                    name =
-                        crystal;
-
-                }
-                else if(
-                    crystal &&
-                    typeof crystal ===
-                    "object"
-                ){
-
-                    name =
-                        crystal.name ||
-                        crystal.title ||
-                        name;
-
-                    level =
-                        crystal.level ||
-                        crystal.rank ||
-                        level;
-
-                }
-
-
-                container.innerHTML += `
-
-                    <div class="crystal-card">
-
-                        <div class="crystal-icon">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-
-                        <div class="crystal-name">
-                            ${escapeHTML(name)}
-                        </div>
-
-                        <div class="crystal-level">
-                            ${escapeHTML(String(level))}
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        );
-
-}
-
-
-/* LEADERBOARD RANK */
-
-async function updateLeaderboardRank(){
-
-    if(!currentUser){
-        return;
-    }
-
-
-    try{
-
-        const usersRef =
-            collection(
-                db,
-                "users"
-            );
-
-
-        const q =
-            query(
-                usersRef,
-                orderBy(
-                    "totalPoints",
-                    "desc"
-                )
-            );
-
-
-        const snapshot =
-            await getDocs(q);
-
-
-        let position = 0;
-
-        let rank = 0;
-
-        let previousPoints =
-            null;
-
-
-        snapshot.forEach(
-            (userDoc) => {
-
-                position++;
-
-
-                const data =
-                    userDoc.data();
-
-
-                const points =
-                    Number(
-                        data.totalPoints ||
-                        0
-                    );
-
-
-                if(
-                    previousPoints === null ||
-                    points < previousPoints
-                ){
-
-                    rank =
-                        position;
-
-                }
-
-
-                if(
-                    userDoc.id ===
-                    targetUid
-                ){
-
-                    document
-                        .getElementById(
-                            "rankText"
-                        )
-                        .textContent =
-                        `Rank #${rank}`;
-
-                }
-
-
-                previousPoints =
-                    points;
-
-            }
-        );
-
-
-    }
-    catch(error){
-
-        console.error(
-            "Leaderboard error:",
-            error
-        );
-
-
-        document
-            .getElementById(
-                "rankText"
-            )
-            .textContent =
-            "Rank #--";
-
-    }
-
-}
-
-
-/* MENU */
-
-window.openMenu =
-function(){
-
-    openModal(
-        "Profile Menu",
-        `
-        <div>
-            Choose an option.
-        </div>
-        `,
-        "",
-        `
-        <button
-            class="modal-btn primary"
-            onclick="goSettings()"
-        >
+            onclick="window.location.href='settings.html'">
             <i class="fa-solid fa-gear"></i>
             SETTINGS
         </button>
-
-        <button
-            class="modal-btn"
-            onclick="closeModal()"
-        >
-            CLOSE
-        </button>
-        `
-    );
-
-};
+    `;
 
 
-/* SETTINGS */
+    document.getElementById(
+        "modalActionBtn"
+    ).style.display =
+        "none";
 
-window.goSettings =
-function(){
 
-    window.location.href =
-        "settings.html";
+    document.getElementById(
+        "customModal"
+    ).style.display =
+        "flex";
 
 };
 
 
-/* BACK */
+/* ================= CLOSE MODAL ================= */
 
-window.goBack =
-function(){
+window.closeModal = function(){
+
+    document.getElementById(
+        "customModal"
+    ).style.display =
+        "none";
+
+};
+
+
+/* outside click */
+
+document.getElementById(
+    "customModal"
+).addEventListener(
+    "click",
+    function(e){
+
+        if(e.target === this){
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+/* ================= BACK ================= */
+
+window.goBack = function(){
 
     if(
         window.history.length > 1
@@ -2714,8 +2131,7 @@ function(){
 
         window.history.back();
 
-    }
-    else{
+    }else{
 
         window.location.href =
             "home.html";
@@ -2725,258 +2141,63 @@ function(){
 };
 
 
-/* MODAL */
+/* ================= TOAST ================= */
 
-function openModal(
-    title,
-    body,
-    inputHTML = "",
-    actionsHTML = ""
-){
-
-    document
-        .getElementById(
-            "modalTitle"
-        )
-        .textContent =
-        title;
-
-
-    document
-        .getElementById(
-            "modalBody"
-        )
-        .innerHTML =
-        body;
-
-
-    document
-        .getElementById(
-            "modalInputArea"
-        )
-        .innerHTML =
-        inputHTML;
-
-
-    document
-        .getElementById(
-            "modalActions"
-        )
-        .innerHTML =
-        actionsHTML;
-
-
-    document
-        .getElementById(
-            "customModal"
-        )
-        .classList.add(
-            "show"
-        );
-
-}
-
-
-/* CLOSE MODAL */
-
-window.closeModal =
-function(){
-
-    document
-        .getElementById(
-            "customModal"
-        )
-        .classList.remove(
-            "show"
-        );
-
-};
-
-
-/* OUTSIDE CLICK */
-
-window.modalOutsideClick =
-function(event){
-
-    if(
-        event.target.id ===
-        "customModal"
-    ){
-
-        closeModal();
-
-    }
-
-};
-
-
-/* TOAST */
-
-window.showToast =
-function(message){
+window.showToast = function(message){
 
     const toast =
-        document.getElementById(
-            "toast"
-        );
-
+        document.getElementById("toast");
 
     toast.textContent =
         message;
 
-
-    toast.classList.add(
-        "show"
-    );
+    toast.classList.add("show");
 
 
-    clearTimeout(
-        window.toastTimer
-    );
+    setTimeout(()=>{
 
+        toast.classList.remove("show");
 
-    window.toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2200
-        );
+    },2200);
 
 };
 
 
-/* FORMAT */
+/* ================= HELPERS ================= */
 
-function formatNumber(
-    number
-){
+function formatNumber(num){
 
-    const value =
-        Number(number || 0);
+    num = Number(num) || 0;
 
-
-    if(
-        value >= 1000000
-    ){
+    if(num >= 1000000){
 
         return (
-            value / 1000000
+            num / 1000000
         ).toFixed(1) + "M";
 
     }
 
-
-    if(
-        value >= 1000
-    ){
+    if(num >= 1000){
 
         return (
-            value / 1000
+            num / 1000
         ).toFixed(1) + "K";
 
     }
 
-
-    return String(value);
-
-}
-
-
-/* ESCAPE HTML */
-
-function escapeHTML(
-    value
-){
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
+    return num.toString();
 
 }
 
 
-/* DEFAULT AVATAR */
+function escapeHTML(value){
 
-function createAvatar(
-    name
-){
-
-    const letter =
-        String(name || "U")
-        .trim()
-        .charAt(0)
-        .toUpperCase();
-
-
-    const svg = `
-
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="200"
-            height="200"
-        >
-
-            <rect
-                width="200"
-                height="200"
-                fill="#071007"
-            />
-
-            <circle
-                cx="100"
-                cy="100"
-                r="78"
-                fill="#102010"
-                stroke="#7CFC00"
-                stroke-width="4"
-            />
-
-            <text
-                x="100"
-                y="120"
-                text-anchor="middle"
-                font-size="80"
-                font-family="Arial"
-                font-weight="bold"
-                fill="#7CFC00"
-            >
-                ${letter}
-            </text>
-
-        </svg>
-
-    `;
-
-
-    return (
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(svg)
-    );
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
