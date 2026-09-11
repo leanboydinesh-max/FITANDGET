@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>FIT & GET - Profile</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -17,64 +16,39 @@
 }
 
 body{
-    background:#050807;
+    background:#030604;
     color:#fff;
     font-family:Poppins,sans-serif;
     min-height:100vh;
-}
-
-body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    background:
-        linear-gradient(135deg,transparent 0%,rgba(124,255,0,.025) 50%,transparent 100%);
-    z-index:-1;
 }
 
 .app{
     width:100%;
     max-width:480px;
     margin:auto;
-    min-height:100vh;
-    padding-bottom:30px;
+    padding-bottom:35px;
 }
 
 /* HEADER */
 
 .header{
-    height:82px;
+    height:78px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:0 18px;
+    padding:0 15px;
     border-bottom:1px solid rgba(124,255,0,.35);
 }
 
-.header-btn{
-    width:58px;
-    height:58px;
-    border:1px solid #7cff00;
-    border-radius:12px;
-    background:#071007;
-    color:#9dff00;
-    font-size:29px;
+.logo{
     display:flex;
     align-items:center;
-    justify-content:center;
-    cursor:pointer;
-}
-
-.logo-area{
-    display:flex;
-    align-items:center;
-    gap:8px;
+    gap:7px;
 }
 
 .logo-mark{
     color:#9dff00;
-    font-family:Orbitron,sans-serif;
+    font-family:Orbitron;
     font-size:31px;
     font-weight:900;
     font-style:italic;
@@ -82,61 +56,75 @@ body::before{
 
 .logo-text{
     color:#9dff00;
-    font-size:23px;
+    font-family:Orbitron;
+    font-size:20px;
     font-weight:700;
-    letter-spacing:-1px;
 }
 
-/* PROFILE CARD */
+.header-btn{
+    width:55px;
+    height:55px;
+    border:1px solid #9dff00;
+    border-radius:12px;
+    background:#071007;
+    color:#9dff00;
+    font-size:28px;
+    cursor:pointer;
+}
+
+/* PROFILE */
 
 .profile-card{
-    margin:22px 18px 0;
+    margin:18px 15px 0;
     padding:18px;
-    border:1px solid rgba(124,255,0,.35);
-    border-radius:18px;
-    background:linear-gradient(145deg,#08100a,#050807);
+    border:1px solid #4c9d1a;
+    border-radius:17px;
+    background:linear-gradient(145deg,#071007,#030604);
 }
 
-.profile-top{
-    display:flex;
-    align-items:center;
+.profile-main{
+    display:grid;
+    grid-template-columns:115px 1fr;
     gap:15px;
 }
 
-.avatar-wrap{
+.photo-area{
     position:relative;
-    flex-shrink:0;
 }
 
-.avatar{
-    width:112px;
-    height:112px;
+.profile-photo{
+    width:110px;
+    height:110px;
     border-radius:50%;
     object-fit:cover;
     border:2px solid #9dff00;
-    box-shadow:0 0 20px rgba(124,255,0,.25);
     background:#071007;
+    box-shadow:0 0 20px rgba(124,255,0,.25);
 }
 
-.camera-btn{
+.camera{
     position:absolute;
     right:-2px;
-    bottom:0;
+    bottom:3px;
     width:38px;
     height:38px;
     border-radius:50%;
-    border:2px solid #050807;
     background:#9dff00;
-    color:#071007;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    color:#061006;
+    border:3px solid #030604;
     cursor:pointer;
-    font-size:17px;
+}
+
+.change-photo{
+    margin-top:8px;
+    color:#9dff00;
+    font-size:11px;
+    text-decoration:underline;
+    cursor:pointer;
+    white-space:nowrap;
 }
 
 .profile-info{
-    flex:1;
     min-width:0;
 }
 
@@ -147,7 +135,7 @@ body::before{
 }
 
 .username{
-    font-family:Orbitron,sans-serif;
+    font-family:Orbitron;
     font-size:22px;
     font-weight:700;
     overflow:hidden;
@@ -155,28 +143,35 @@ body::before{
     white-space:nowrap;
 }
 
-.edit-name{
+.edit{
     color:#9dff00;
     cursor:pointer;
 }
 
 .bio{
-    margin-top:6px;
-    color:#c9d0c9;
+    margin-top:7px;
+    color:#d0d5d0;
     font-size:13px;
     line-height:1.45;
+    word-break:break-word;
 }
 
-.location-box{
+/* JOIN */
+
+.join-box{
     margin-top:12px;
-    padding:9px 11px;
-    border:1px solid rgba(124,255,0,.2);
+    border:1px solid rgba(124,255,0,.3);
     border-radius:11px;
+    padding:9px;
     font-size:11px;
-    color:#cdd5cd;
+    color:#ddd;
 }
 
-.location-box span{
+.join-box div+div{
+    margin-top:5px;
+}
+
+.green{
     color:#9dff00;
 }
 
@@ -185,56 +180,56 @@ body::before{
 .stats{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:9px;
-    margin-top:18px;
+    gap:8px;
+    margin-top:15px;
 }
 
 .stat{
-    min-height:72px;
-    border:1px solid rgba(124,255,0,.3);
-    border-radius:12px;
-    background:#071007;
+    min-height:67px;
+    border:1px solid #356d19;
+    border-radius:11px;
+    background:#061006;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:3px;
 }
 
 .stat-icon{
     color:#9dff00;
-    font-size:21px;
+    font-size:20px;
 }
 
 .stat-value{
-    font-family:Orbitron,sans-serif;
+    font-family:Orbitron;
+    font-size:16px;
     font-weight:700;
-    font-size:17px;
 }
 
 .stat-label{
-    color:#9ca69c;
+    color:#9ca49c;
     font-size:10px;
 }
 
 /* STREAK */
 
 .streak-card{
-    margin:22px 18px 0;
-    min-height:104px;
-    padding:18px;
-    border-radius:17px;
-    border:1px solid rgba(124,255,0,.45);
-    background:linear-gradient(110deg,#0b190c,#061006);
+    margin:20px 15px 0;
+    min-height:105px;
+    padding:17px;
+    border:1px solid #6aaa28;
+    border-radius:16px;
+    background:linear-gradient(110deg,#0a1909,#030604);
     display:flex;
     align-items:center;
     justify-content:space-between;
+    cursor:pointer;
 }
 
 .streak-left{
     display:flex;
     align-items:center;
-    gap:14px;
+    gap:13px;
 }
 
 .fire{
@@ -242,147 +237,122 @@ body::before{
 }
 
 .streak-title{
-    color:#b5ff54;
-    font-size:20px;
+    color:#baff63;
+    font-size:19px;
     font-weight:700;
 }
 
 .streak-sub{
-    color:#a4ada4;
-    font-size:12px;
-    margin-top:2px;
+    color:#9ba39b;
+    font-size:11px;
 }
 
-.streak-number{
+.streak-num{
     text-align:right;
 }
 
-.streak-number strong{
+.streak-num strong{
     display:block;
     color:#9dff00;
-    font-family:Orbitron,sans-serif;
+    font-family:Orbitron;
     font-size:34px;
 }
 
-.streak-number span{
+.streak-num span{
     color:#9dff00;
-    font-size:12px;
+    font-size:11px;
 }
 
 /* LOVE */
 
 .love-card{
-    margin:18px 18px 0;
+    margin:16px 15px 0;
     min-height:78px;
-    padding:15px 18px;
-    border:1px solid rgba(255,255,255,.18);
-    border-radius:15px;
-    background:#080b0a;
+    padding:14px 17px;
     display:flex;
     align-items:center;
+    border:1px solid #284b37;
+    border-radius:15px;
+    background:#050807;
     cursor:pointer;
 }
 
-.love-heart{
-    font-size:33px;
-    margin-right:17px;
-    filter:grayscale(1);
-    transition:.2s;
+.heart{
+    font-size:34px;
+    margin-right:16px;
 }
 
-.love-heart.liked{
-    filter:none;
-}
-
-.love-text{
+.love-title{
     flex:1;
     font-size:18px;
     font-weight:600;
 }
 
 .love-count{
-    font-family:Orbitron,sans-serif;
-    font-size:26px;
+    font-family:Orbitron;
+    font-size:27px;
     font-weight:700;
 }
 
+.red-dot{
+    width:8px;
+    height:8px;
+    margin-left:9px;
+    border-radius:50%;
+    background:#ff3030;
+    box-shadow:0 0 9px rgba(255,30,30,.9);
+}
+
 .arrow{
-    margin-left:12px;
     color:#aaa;
-    font-size:30px;
+    font-size:31px;
+    margin-left:9px;
 }
 
 /* SECTION */
 
 .section{
-    margin:20px 18px 0;
-    padding:18px;
-    border:1px solid rgba(255,255,255,.16);
-    border-radius:17px;
-    background:#080b0a;
+    margin:18px 15px 0;
+    padding:17px;
+    border:1px solid #315c24;
+    border-radius:16px;
+    background:#050807;
+}
+
+.section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
 }
 
 .section-title{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    margin-bottom:16px;
+    gap:9px;
 }
 
-.section-title-left{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.section-icon{
+.section-title span{
     color:#9dff00;
     font-size:23px;
 }
 
 .section-title h2{
-    font-size:19px;
-    font-weight:700;
+    font-size:18px;
 }
 
 .section-link{
     color:#aaa;
-    font-size:12px;
-}
-
-/* TABS */
-
-.tabs{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:9px;
-    margin-bottom:18px;
-}
-
-.tab{
-    height:45px;
-    border-radius:11px;
-    border:1px solid rgba(255,255,255,.18);
-    background:#071007;
-    color:#aaa;
-    font-weight:600;
-    cursor:pointer;
-}
-
-.tab.active{
-    background:#9dff00;
-    color:#061006;
-    border-color:#9dff00;
+    font-size:11px;
 }
 
 /* MEDALS */
 
 .horizontal{
     display:flex;
-    gap:12px;
+    gap:10px;
     overflow-x:auto;
     scrollbar-width:none;
-    padding-bottom:4px;
 }
 
 .horizontal::-webkit-scrollbar{
@@ -390,105 +360,196 @@ body::before{
 }
 
 .medal{
-    flex:0 0 126px;
-    height:153px;
-    border:1px solid rgba(124,255,0,.3);
-    border-radius:12px;
-    background:#071007;
+    flex:0 0 116px;
+    height:150px;
+    border:1px solid #287014;
+    border-radius:11px;
+    background:#061006;
     display:flex;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
+    align-items:center;
     gap:8px;
 }
 
 .medal-icon{
-    font-size:58px;
+    font-size:56px;
 }
 
 .medal-name{
+    font-size:11px;
     font-weight:600;
-    font-size:12px;
 }
 
 .medal.locked{
     filter:grayscale(1);
-    opacity:.55;
+    opacity:.45;
 }
 
-.progress-line{
-    height:7px;
-    background:#172018;
+.progress{
+    width:100%;
+    height:6px;
+    margin-top:14px;
     border-radius:20px;
-    margin-top:15px;
+    background:#142016;
     overflow:hidden;
 }
 
-.progress-line div{
-    width:38%;
+.progress-fill{
     height:100%;
+    width:20%;
     background:#9dff00;
-    border-radius:20px;
 }
 
 /* CRYSTALS */
 
 .crystal{
-    flex:0 0 112px;
+    flex:0 0 calc((100% - 30px)/4);
+    min-width:0;
     height:145px;
-    border:1px solid rgba(124,255,0,.3);
-    border-radius:12px;
-    background:#071007;
+    border:1px solid #287014;
+    border-radius:11px;
+    background:#061006;
     display:flex;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
-    gap:8px;
+    align-items:center;
+    gap:7px;
 }
 
 .crystal-icon{
-    font-size:52px;
+    font-size:43px;
 }
 
 .crystal-name{
-    font-size:11px;
+    font-size:9px;
+    text-align:center;
     font-weight:600;
 }
 
 .crystal.locked{
-    opacity:.4;
     filter:grayscale(1);
+    opacity:.4;
 }
 
-.swipe-hint{
-    text-align:right;
+.swipe{
     color:#aaa;
     font-size:11px;
-    margin-bottom:10px;
 }
 
 /* MOTTO */
 
 .motto{
-    margin:20px 18px 0;
-    padding:20px;
-    border:1px solid rgba(124,255,0,.4);
+    margin:18px 15px 0;
+    padding:18px;
+    border:1px solid #477c23;
     border-left:8px solid #9dff00;
-    border-radius:12px;
-    background:#080d09;
+    border-radius:13px;
+    background:#061006;
 }
 
 .motto-small{
-    color:#888;
-    font-size:10px;
+    color:#879087;
     letter-spacing:3px;
+    font-size:10px;
 }
 
 .motto-main{
+    margin-top:6px;
     color:#b5ff54;
-    font-family:Orbitron,sans-serif;
+    font-family:Orbitron;
     font-size:17px;
-    margin-top:7px;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.82);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:1000;
+}
+
+.modal-box{
+    width:100%;
+    max-width:420px;
+    background:#071007;
+    border:1px solid #9dff00;
+    border-radius:16px;
+    padding:20px;
+}
+
+.modal-title{
+    color:#9dff00;
+    font-family:Orbitron;
+    font-size:17px;
+    margin-bottom:17px;
+}
+
+.input{
+    width:100%;
+    padding:12px;
+    margin-bottom:11px;
+    border:1px solid #315c24;
+    border-radius:9px;
+    outline:none;
+    background:#030604;
+    color:#fff;
+    font-family:Poppins;
+}
+
+textarea{
+    resize:none;
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:9px;
+    background:#9dff00;
+    color:#061006;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.btn-secondary{
+    margin-top:8px;
+    background:transparent;
+    color:#aaa;
+    border:1px solid #294329;
+}
+
+/* REWARDS */
+
+.reward{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:13px;
+    margin-bottom:9px;
+    border:1px solid #273927;
+    border-radius:10px;
+    background:#030604;
+    font-size:12px;
+}
+
+.reward-status{
+    color:#777;
+    font-size:10px;
+    font-weight:700;
+}
+
+.reward.unlocked{
+    border-color:#9dff00;
+}
+
+.reward.unlocked .reward-status{
+    color:#9dff00;
 }
 
 /* LOADING */
@@ -496,138 +557,52 @@ body::before{
 .loading{
     position:fixed;
     inset:0;
-    background:#050807;
-    z-index:1000;
+    z-index:2000;
+    background:#030604;
     display:flex;
+    flex-direction:column;
     align-items:center;
     justify-content:center;
-    flex-direction:column;
 }
 
-.loading-logo{
+.loading-title{
     color:#9dff00;
-    font-family:Orbitron,sans-serif;
+    font-family:Orbitron;
     font-size:25px;
     font-weight:700;
 }
 
 .loader{
+    width:40px;
+    height:40px;
     margin-top:15px;
-    width:45px;
-    height:45px;
-    border:3px solid #1c321c;
+    border:3px solid #1a3018;
     border-top-color:#9dff00;
     border-radius:50%;
     animation:spin .8s linear infinite;
 }
 
 @keyframes spin{
-    to{transform:rotate(360deg);}
+    to{transform:rotate(360deg)}
 }
-
-/* TOAST */
 
 .toast{
     position:fixed;
     left:50%;
     bottom:25px;
-    transform:translateX(-50%) translateY(100px);
-    background:#9dff00;
-    color:#061006;
+    transform:translate(-50%,100px);
     padding:12px 18px;
     border-radius:10px;
-    font-size:13px;
-    font-weight:600;
-    z-index:2000;
+    background:#9dff00;
+    color:#061006;
+    font-size:12px;
+    font-weight:700;
+    z-index:3000;
     transition:.3s;
 }
 
 .toast.show{
-    transform:translateX(-50%) translateY(0);
-}
-
-/* EDIT MODAL */
-
-.modal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.8);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:1500;
-    padding:20px;
-}
-
-.modal-box{
-    width:100%;
-    max-width:420px;
-    background:#081009;
-    border:1px solid #9dff00;
-    border-radius:17px;
-    padding:22px;
-}
-
-.modal-title{
-    font-family:Orbitron,sans-serif;
-    color:#9dff00;
-    margin-bottom:18px;
-}
-
-.input{
-    width:100%;
-    background:#050807;
-    color:#fff;
-    border:1px solid #294329;
-    border-radius:10px;
-    padding:13px;
-    margin-bottom:12px;
-    outline:none;
-}
-
-.input:focus{
-    border-color:#9dff00;
-}
-
-.save-btn{
-    width:100%;
-    padding:13px;
-    border:0;
-    border-radius:10px;
-    background:#9dff00;
-    color:#061006;
-    font-weight:700;
-}
-
-.cancel-btn{
-    width:100%;
-    padding:12px;
-    border:1px solid #293929;
-    border-radius:10px;
-    background:transparent;
-    color:#aaa;
-    margin-top:8px;
-}
-
-/* MOBILE */
-
-@media(max-width:360px){
-    .avatar{
-        width:92px;
-        height:92px;
-    }
-
-    .username{
-        font-size:18px;
-    }
-
-    .logo-text{
-        font-size:18px;
-    }
-
-    .stat{
-        min-height:65px;
-    }
+    transform:translate(-50%,0);
 }
 </style>
 </head>
@@ -635,492 +610,448 @@ body::before{
 <body>
 
 <div class="loading" id="loading">
-    <div class="loading-logo">FIT & GET</div>
+    <div class="loading-title">FIT & GET</div>
     <div class="loader"></div>
 </div>
 
 <div class="app">
 
-    <!-- HEADER -->
+<!-- HEADER -->
 
-    <header class="header">
+<header class="header">
 
-        <button class="header-btn" id="backBtn">←</button>
+    <button class="header-btn" id="backBtn">
+        ←
+    </button>
 
-        <div class="logo-area">
-            <div class="logo-mark">F</div>
-            <div class="logo-text">FIT & GET</div>
+    <div class="logo">
+        <div class="logo-mark">F</div>
+        <div class="logo-text">FIT & GET</div>
+    </div>
+
+    <button class="header-btn" id="menuBtn">
+        ☰
+    </button>
+
+</header>
+
+
+<!-- PROFILE -->
+
+<section class="profile-card">
+
+    <div class="profile-main">
+
+        <div class="photo-area">
+
+            <img
+                id="profilePhoto"
+                class="profile-photo"
+                src="logo.png"
+            >
+
+            <button
+                class="camera"
+                id="cameraBtn">
+                📷
+            </button>
+
+            <div
+                class="change-photo"
+                id="changePhoto">
+                📷 Change Photo
+            </div>
+
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/*"
+                hidden
+            >
+
         </div>
 
-        <button class="header-btn" id="menuBtn">☰</button>
 
-    </header>
+        <div class="profile-info">
 
+            <div class="name-row">
 
-    <!-- PROFILE -->
+                <div
+                    class="username"
+                    id="username">
+                    User
+                </div>
 
-    <section class="profile-card">
-
-        <div class="profile-top">
-
-            <div class="avatar-wrap">
-
-                <img
-                    id="avatar"
-                    class="avatar"
-                    src="logo.png"
-                    alt="Profile"
-                >
-
-                <button class="camera-btn" id="photoBtn">📷</button>
-
-                <input
-                    type="file"
-                    id="photoInput"
-                    accept="image/*"
-                    hidden
-                >
+                <span
+                    class="edit"
+                    id="editBtn">
+                    ✎
+                </span>
 
             </div>
 
 
-            <div class="profile-info">
+            <div
+                class="bio"
+                id="bio">
+                Dream. Believe. Become.
+            </div>
 
-                <div class="name-row">
 
-                    <div
-                        class="username"
-                        id="username"
-                    >
-                        User
-                    </div>
+            <div class="join-box">
 
-                    <span
-                        class="edit-name"
-                        id="editBtn"
-                    >
-                        ✎
+                <div>
+                    📍 <span class="green">Chennai</span>
+                </div>
+
+                <div>
+                    📅 <span id="joined">
+                        Joined 2026
                     </span>
-
-                </div>
-
-                <div
-                    class="bio"
-                    id="bio"
-                >
-                    Dream. Believe. Become.
-                </div>
-
-                <div class="location-box">
-
-                    <div>
-                        📍 <span>Chennai</span>
-                    </div>
-
-                    <div>
-                        ▦ <span id="joinedDate">Joined 2026</span>
-                    </div>
-
                 </div>
 
             </div>
 
         </div>
 
-
-        <!-- STATS -->
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <div class="stat-icon">🛡</div>
-
-                <div
-                    class="stat-value"
-                    id="shield"
-                >
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Shield
-                </div>
-
-            </div>
+    </div>
 
 
-            <div class="stat">
+    <!-- STATS -->
 
-                <div class="stat-icon">◉</div>
+    <div class="stats">
 
-                <div
-                    class="stat-value"
-                    id="rc"
-                >
-                    0
-                </div>
-
-                <div class="stat-label">
-                    RC
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-icon">🎟</div>
-
-                <div
-                    class="stat-value"
-                    id="token"
-                >
-                    0
-                </div>
-
-                <div class="stat-label">
-                    Token
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- DAILY STREAK -->
-
-    <section class="streak-card">
-
-        <div class="streak-left">
-
-            <div class="fire">
-                🔥
-            </div>
-
-            <div>
-
-                <div class="streak-title">
-                    DAILY STREAK
-                </div>
-
-                <div class="streak-sub">
-                    Keep your consistency alive
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="streak-number">
-
-            <strong id="streak">
+        <div class="stat">
+            <div class="stat-icon">🛡</div>
+            <div
+                class="stat-value"
+                id="shield">
                 0
-            </strong>
+            </div>
+            <div class="stat-label">
+                Shield
+            </div>
+        </div>
 
-            <span>
-                Days
-            </span>
+
+        <div class="stat">
+            <div class="stat-icon">◉</div>
+            <div
+                class="stat-value"
+                id="rc">
+                0
+            </div>
+            <div class="stat-label">
+                RC
+            </div>
+        </div>
+
+
+        <div class="stat">
+            <div class="stat-icon">🎟</div>
+            <div
+                class="stat-value"
+                id="tokens">
+                0
+            </div>
+            <div class="stat-label">
+                Token
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- DAILY STREAK -->
+
+<section
+    class="streak-card"
+    id="streakCard">
+
+    <div class="streak-left">
+
+        <div class="fire">🔥</div>
+
+        <div>
+
+            <div class="streak-title">
+                DAILY STREAK
+            </div>
+
+            <div class="streak-sub">
+                Keep your consistency alive
+            </div>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <!-- LOVE -->
+    <div class="streak-num">
 
-    <section
-        class="love-card"
-        id="loveBtn"
-    >
-
-        <div
-            class="love-heart"
-            id="loveHeart"
-        >
-            ❤️
-        </div>
-
-        <div class="love-text">
-            Love
-        </div>
-
-        <div
-            class="love-count"
-            id="loveCount"
-        >
+        <strong id="streak">
             0
-        </div>
+        </strong>
 
-        <div class="arrow">
-            ›
-        </div>
+        <span>
+            Days
+        </span>
 
-    </section>
+    </div>
+
+</section>
 
 
-    <!-- ACHIEVEMENTS -->
+<!-- LOVE -->
 
-    <section class="section">
+<section
+    class="love-card"
+    id="loveCard">
+
+    <div class="heart">
+        ❤️
+    </div>
+
+    <div class="love-title">
+        Love
+    </div>
+
+    <div
+        class="love-count"
+        id="loveCount">
+        0
+    </div>
+
+    <div class="red-dot"></div>
+
+    <div class="arrow">
+        ›
+    </div>
+
+</section>
+
+
+<!-- ACHIEVEMENTS -->
+
+<section class="section">
+
+    <div class="section-head">
 
         <div class="section-title">
 
-            <div class="section-title-left">
+            <span>🏆</span>
 
-                <div class="section-icon">
-                    🏆
-                </div>
+            <h2>
+                ACHIEVEMENTS
+            </h2>
 
-                <h2>
-                    ACHIEVEMENTS
-                </h2>
+        </div>
 
+        <div class="section-link">
+            Your Journey ›
+        </div>
+
+    </div>
+
+
+    <!-- MEDALS ONLY -->
+
+    <div class="horizontal">
+
+        <div class="medal">
+
+            <div class="medal-icon">
+                🥉
             </div>
 
-            <div class="section-link">
-                Your Journey ›
+            <div class="medal-name">
+                Starter
             </div>
 
         </div>
 
-
-        <div class="tabs">
-
-            <button
-                class="tab active"
-                id="medalTab"
-            >
-                🏅 Medals
-            </button>
-
-            <button
-                class="tab"
-                id="crystalTab"
-            >
-                💎 Crystals
-            </button>
-
-        </div>
-
-
-        <!-- MEDALS -->
 
         <div
-            id="medalsView"
-            class="horizontal"
-        >
+            class="medal locked"
+            id="risingMedal">
 
-            <div class="medal">
-
-                <div class="medal-icon">
-                    🥉
-                </div>
-
-                <div class="medal-name">
-                    Starter
-                </div>
-
+            <div class="medal-icon">
+                🥈
             </div>
 
-
-            <div class="medal">
-
-                <div class="medal-icon">
-                    🥈
-                </div>
-
-                <div class="medal-name">
-                    Rising
-                </div>
-
-            </div>
-
-
-            <div class="medal">
-
-                <div class="medal-icon">
-                    🥇
-                </div>
-
-                <div class="medal-name">
-                    Champion
-                </div>
-
-            </div>
-
-
-            <div class="medal locked">
-
-                <div class="medal-icon">
-                    🛡️
-                </div>
-
-                <div class="medal-name">
-                    Elite
-                </div>
-
-            </div>
-
-
-            <div class="medal locked">
-
-                <div class="medal-icon">
-                    🔒
-                </div>
-
-                <div class="medal-name">
-                    Master
-                </div>
-
+            <div class="medal-name">
+                Rising
             </div>
 
         </div>
 
-
-        <!-- CRYSTALS -->
 
         <div
-            id="crystalsView"
-            style="display:none"
-        >
+            class="medal locked"
+            id="championMedal">
 
-            <div class="swipe-hint">
-                Swipe →
+            <div class="medal-icon">
+                🥇
             </div>
 
-            <div class="horizontal">
-
-                <div class="crystal">
-
-                    <div class="crystal-icon">
-                        💚
-                    </div>
-
-                    <div class="crystal-name">
-                        Emerald I
-                    </div>
-
-                </div>
-
-
-                <div class="crystal">
-
-                    <div class="crystal-icon">
-                        💚
-                    </div>
-
-                    <div class="crystal-name">
-                        Emerald II
-                    </div>
-
-                </div>
-
-
-                <div class="crystal">
-
-                    <div class="crystal-icon">
-                        💚
-                    </div>
-
-                    <div class="crystal-name">
-                        Emerald III
-                    </div>
-
-                </div>
-
-
-                <div class="crystal">
-
-                    <div class="crystal-icon">
-                        💚
-                    </div>
-
-                    <div class="crystal-name">
-                        Emerald IV
-                    </div>
-
-                </div>
-
-
-                <div class="crystal locked">
-
-                    <div class="crystal-icon">
-                        💎
-                    </div>
-
-                    <div class="crystal-name">
-                        Diamond I
-                    </div>
-
-                </div>
-
-
-                <div class="crystal locked">
-
-                    <div class="crystal-icon">
-                        💎
-                    </div>
-
-                    <div class="crystal-name">
-                        Diamond II
-                    </div>
-
-                </div>
-
-
-                <div class="crystal locked">
-
-                    <div class="crystal-icon">
-                        💎
-                    </div>
-
-                    <div class="crystal-name">
-                        Diamond III
-                    </div>
-
-                </div>
-
-
-                <div class="crystal locked">
-
-                    <div class="crystal-icon">
-                        💎
-                    </div>
-
-                    <div class="crystal-name">
-                        Diamond IV
-                    </div>
-
-                </div>
-
+            <div class="medal-name">
+                Champion
             </div>
 
         </div>
 
 
-        <div class="progress-line">
-            <div></div>
+        <div
+            class="medal locked"
+            id="eliteMedal">
+
+            <div class="medal-icon">
+                🛡️
+            </div>
+
+            <div class="medal-name">
+                Elite
+            </div>
+
         </div>
 
-    </section>
 
+        <div
+            class="medal locked"
+            id="masterMedal">
 
-    <!-- MOTTO -->
+            <div class="medal-icon">
+                🔒
+            </div>
 
-    <section class="motto">
+            <div class="medal-name">
+                Master
+            </div>
 
-        <div class="motto-small">
-            FIT & GET
         </div>
 
-        <div class="motto-main">
-            Dream. Believe. Become.
+    </div>
+
+
+    <div class="progress">
+        <div
+            class="progress-fill"
+            id="achievementProgress">
+        </div>
+    </div>
+
+</section>
+
+
+<!-- CRYSTALS ONLY -->
+
+<section class="section">
+
+    <div class="section-head">
+
+        <div class="section-title">
+
+            <span>💎</span>
+
+            <h2>
+                CRYSTALS
+            </h2>
+
         </div>
 
-    </section>
+        <div class="swipe">
+            Swipe →
+        </div>
+
+    </div>
+
+
+    <div class="horizontal">
+
+        <div class="crystal">
+            <div class="crystal-icon">💚</div>
+            <div class="crystal-name">
+                Emerald I
+            </div>
+        </div>
+
+        <div class="crystal">
+            <div class="crystal-icon">💚</div>
+            <div class="crystal-name">
+                Emerald II
+            </div>
+        </div>
+
+        <div class="crystal">
+            <div class="crystal-icon">💚</div>
+            <div class="crystal-name">
+                Emerald III
+            </div>
+        </div>
+
+        <div class="crystal">
+            <div class="crystal-icon">💚</div>
+            <div class="crystal-name">
+                Emerald IV
+            </div>
+        </div>
+
+        <div class="crystal locked">
+            <div class="crystal-icon">💎</div>
+            <div class="crystal-name">
+                Diamond I
+            </div>
+        </div>
+
+        <div class="crystal locked">
+            <div class="crystal-icon">💎</div>
+            <div class="crystal-name">
+                Diamond II
+            </div>
+        </div>
+
+        <div class="crystal locked">
+            <div class="crystal-icon">💎</div>
+            <div class="crystal-name">
+                Diamond III
+            </div>
+        </div>
+
+        <div class="crystal locked">
+            <div class="crystal-icon">💎</div>
+            <div class="crystal-name">
+                Diamond IV
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="progress">
+        <div
+            class="progress-fill"
+            id="crystalProgress">
+        </div>
+    </div>
+
+</section>
+
+
+<!-- MOTTO -->
+
+<section class="motto">
+
+    <div class="motto-small">
+        FIT & GET
+    </div>
+
+    <div class="motto-main">
+        Dream. Believe. Become.
+    </div>
+
+</section>
 
 </div>
 
@@ -1129,8 +1060,7 @@ body::before{
 
 <div
     class="modal"
-    id="editModal"
->
+    id="editModal">
 
     <div class="modal-box">
 
@@ -1150,21 +1080,88 @@ body::before{
             id="bioInput"
             maxlength="150"
             rows="4"
-            placeholder="Bio"
-        ></textarea>
+            placeholder="Bio">
+        </textarea>
 
         <button
-            class="save-btn"
-            id="saveBtn"
-        >
+            class="btn"
+            id="saveProfile">
             SAVE
         </button>
 
         <button
-            class="cancel-btn"
-            id="cancelBtn"
-        >
+            class="btn btn-secondary"
+            id="cancelEdit">
             CANCEL
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- STREAK REWARD MODAL -->
+
+<div
+    class="modal"
+    id="streakModal">
+
+    <div class="modal-box">
+
+        <div class="modal-title">
+            🔥 STREAK REWARDS
+        </div>
+
+
+        <div
+            class="reward"
+            id="reward1">
+
+            <span>
+                🎁 Day 1 Reward
+            </span>
+
+            <span class="reward-status">
+                LOCKED
+            </span>
+
+        </div>
+
+
+        <div
+            class="reward"
+            id="reward7">
+
+            <span>
+                🏅 Day 7 Badge
+            </span>
+
+            <span class="reward-status">
+                LOCKED
+            </span>
+
+        </div>
+
+
+        <div
+            class="reward"
+            id="reward30">
+
+            <span>
+                🏆 Day 30 First Achievement
+            </span>
+
+            <span class="reward-status">
+                LOCKED
+            </span>
+
+        </div>
+
+
+        <button
+            class="btn btn-secondary"
+            id="closeStreak">
+            CLOSE
         </button>
 
     </div>
@@ -1174,11 +1171,9 @@ body::before{
 
 <div
     class="toast"
-    id="toast"
-></div>
+    id="toast">
+</div>
 
-
-<!-- FIREBASE -->
 
 <script type="module">
 
@@ -1203,7 +1198,7 @@ import {
 
 
 /* =========================
-   FIREBASE CONFIG
+   FIREBASE
 ========================= */
 
 const firebaseConfig = {
@@ -1244,12 +1239,9 @@ const db =
 ========================= */
 
 let currentUser = null;
-
 let profileUid = null;
-
 let profileData = {};
-
-let unsubscribeProfile = null;
+let unsubscribe = null;
 
 
 /* =========================
@@ -1258,33 +1250,6 @@ let unsubscribeProfile = null;
 
 const loading =
     document.getElementById("loading");
-
-const username =
-    document.getElementById("username");
-
-const bio =
-    document.getElementById("bio");
-
-const avatar =
-    document.getElementById("avatar");
-
-const streak =
-    document.getElementById("streak");
-
-const shield =
-    document.getElementById("shield");
-
-const rc =
-    document.getElementById("rc");
-
-const token =
-    document.getElementById("token");
-
-const loveCount =
-    document.getElementById("loveCount");
-
-const loveHeart =
-    document.getElementById("loveHeart");
 
 const toast =
     document.getElementById("toast");
@@ -1301,9 +1266,7 @@ function showToast(message){
     toast.classList.add("show");
 
     setTimeout(() => {
-
         toast.classList.remove("show");
-
     },2200);
 
 }
@@ -1318,90 +1281,75 @@ function renderProfile(data){
     profileData = data || {};
 
 
-    username.textContent =
+    document.getElementById("username").textContent =
         data.username ||
         data.name ||
         "User";
 
 
-    bio.textContent =
-        data.bio ||
-        "Dream. Believe. Become.";
+    document.getElementById("bio").textContent =
+        data.bio || "";
 
 
-    streak.textContent =
-        data.dailyStreak ??
-        data.streak ??
-        0;
+    document.getElementById("shield").textContent =
+        data.shield ?? 0;
 
 
-    shield.textContent =
-        data.shield ??
-        data.shields ??
-        0;
+    document.getElementById("rc").textContent =
+        data.rcPoints ?? 0;
 
 
-    rc.textContent =
-        data.rcPoints ??
-        data.rc ??
-        0;
+    document.getElementById("tokens").textContent =
+        data.eligibilityTokens ?? 0;
 
 
-    token.textContent =
-        data.eligibilityTokens ??
-        data.tokens ??
-        0;
+    document.getElementById("streak").textContent =
+        data.dailyStreak ?? 0;
 
 
-    /*
-       IMPORTANT:
-       coins = LOVE COUNT
-       NOT coins UI
-    */
+    /* coins = LOVE COUNT */
 
-    loveCount.textContent =
+    document.getElementById("loveCount").textContent =
         data.coins ?? 0;
 
 
+    /* PROFILE PHOTO */
+
     if(data.photoURL){
 
-        avatar.src =
+        document.getElementById("profilePhoto").src =
             data.photoURL;
 
     }
-    else if(data.profilePhoto){
 
-        avatar.src =
-            data.profilePhoto;
 
-    }
-
+    /* JOIN DATE */
 
     if(data.registered){
 
-        let date;
+        let date = null;
 
         if(
             typeof data.registered === "object" &&
             data.registered.toDate
         ){
 
-            date =
-                data.registered.toDate();
+            date = data.registered.toDate();
 
         }
         else{
 
-            date =
-                new Date(data.registered);
+            date = new Date(data.registered);
 
         }
 
-        if(!isNaN(date.getTime())){
 
-            document.getElementById(
-                "joinedDate"
-            ).textContent =
+        if(
+            date &&
+            !isNaN(date.getTime())
+        ){
+
+            document.getElementById("joined").textContent =
                 "Joined " +
                 date.toLocaleDateString(
                     "en-IN",
@@ -1415,6 +1363,80 @@ function renderProfile(data){
 
     }
 
+
+    updateAchievements(
+        Number(data.dailyStreak || 0)
+    );
+
+}
+
+
+/* =========================
+   ACHIEVEMENTS
+========================= */
+
+function updateAchievements(days){
+
+    unlockMedal(
+        document.getElementById("risingMedal"),
+        days >= 7
+    );
+
+
+    unlockMedal(
+        document.getElementById("championMedal"),
+        days >= 30
+    );
+
+
+    unlockMedal(
+        document.getElementById("eliteMedal"),
+        days >= 60
+    );
+
+
+    unlockMedal(
+        document.getElementById("masterMedal"),
+        days >= 100
+    );
+
+
+    const progress =
+        Math.min(days,100);
+
+
+    document.getElementById(
+        "achievementProgress"
+    ).style.width =
+        progress + "%";
+
+
+    document.getElementById(
+        "crystalProgress"
+    ).style.width =
+        progress + "%";
+
+}
+
+
+function unlockMedal(element, unlocked){
+
+    if(!element){
+        return;
+    }
+
+
+    if(unlocked){
+
+        element.classList.remove("locked");
+
+    }
+    else{
+
+        element.classList.add("locked");
+
+    }
+
 }
 
 
@@ -1424,18 +1446,22 @@ function renderProfile(data){
 
 async function loadProfile(uid){
 
-    if(unsubscribeProfile){
+    if(unsubscribe){
 
-        unsubscribeProfile();
+        unsubscribe();
 
     }
 
 
     const ref =
-        doc(db,"users",uid);
+        doc(
+            db,
+            "users",
+            uid
+        );
 
 
-    unsubscribeProfile =
+    unsubscribe =
         onSnapshot(
             ref,
 
@@ -1454,6 +1480,7 @@ async function loadProfile(uid){
 
                 }
 
+
                 loading.style.display =
                     "none";
 
@@ -1461,14 +1488,19 @@ async function loadProfile(uid){
 
             error => {
 
-                console.error(error);
+                console.error(
+                    "Profile error:",
+                    error
+                );
+
+
+                loading.style.display =
+                    "none";
+
 
                 showToast(
                     "Profile loading failed"
                 );
-
-                loading.style.display =
-                    "none";
 
             }
         );
@@ -1520,16 +1552,6 @@ onAuthStateChanged(
    EDIT PROFILE
 ========================= */
 
-const editModal =
-    document.getElementById("editModal");
-
-const usernameInput =
-    document.getElementById("usernameInput");
-
-const bioInput =
-    document.getElementById("bioInput");
-
-
 document
 .getElementById("editBtn")
 .addEventListener(
@@ -1550,43 +1572,55 @@ document
         }
 
 
-        usernameInput.value =
+        document.getElementById(
+            "usernameInput"
+        ).value =
             profileData.username ||
             profileData.name ||
             "";
 
 
-        bioInput.value =
+        document.getElementById(
+            "bioInput"
+        ).value =
             profileData.bio ||
             "";
 
 
-        editModal.style.display =
+        document.getElementById(
+            "editModal"
+        ).style.display =
             "flex";
 
     }
 );
 
 
-/* CANCEL */
+/* =========================
+   CANCEL EDIT
+========================= */
 
 document
-.getElementById("cancelBtn")
+.getElementById("cancelEdit")
 .addEventListener(
     "click",
     () => {
 
-        editModal.style.display =
+        document.getElementById(
+            "editModal"
+        ).style.display =
             "none";
 
     }
 );
 
 
-/* SAVE */
+/* =========================
+   SAVE PROFILE
+========================= */
 
 document
-.getElementById("saveBtn")
+.getElementById("saveProfile")
 .addEventListener(
     "click",
     async () => {
@@ -1601,15 +1635,25 @@ document
         }
 
 
-        const newUsername =
-            usernameInput.value.trim();
+        const username =
+            document
+            .getElementById(
+                "usernameInput"
+            )
+            .value
+            .trim();
 
 
-        const newBio =
-            bioInput.value.trim();
+        const bio =
+            document
+            .getElementById(
+                "bioInput"
+            )
+            .value
+            .trim();
 
 
-        if(!newUsername){
+        if(!username){
 
             showToast(
                 "Username required"
@@ -1629,16 +1673,15 @@ document
                     currentUser.uid
                 ),
                 {
-                    username:
-                        newUsername,
-
-                    bio:
-                        newBio
+                    username: username,
+                    bio: bio
                 }
             );
 
 
-            editModal.style.display =
+            document.getElementById(
+                "editModal"
+            ).style.display =
                 "none";
 
 
@@ -1652,7 +1695,7 @@ document
             console.error(error);
 
             showToast(
-                "Update failed"
+                "Profile update failed"
             );
 
         }
@@ -1662,201 +1705,45 @@ document
 
 
 /* =========================
-   LIKE / LOVE
+   PHOTO PICKER
 ========================= */
 
-document
-.getElementById("loveBtn")
-.addEventListener(
-    "click",
-    async () => {
+function openPhotoPicker(){
 
-        if(!currentUser){
+    if(
+        !currentUser ||
+        profileUid !== currentUser.uid
+    ){
 
-            return;
+        showToast(
+            "You can change only your photo"
+        );
 
-        }
-
-
-        if(profileUid === currentUser.uid){
-
-            showToast(
-                "You can't Love yourself"
-            );
-
-            return;
-
-        }
-
-
-        try{
-
-            const targetRef =
-                doc(
-                    db,
-                    "users",
-                    profileUid
-                );
-
-
-            const likeRef =
-                doc(
-                    db,
-                    "users",
-                    profileUid,
-                    "likes",
-                    currentUser.uid
-                );
-
-
-            await runTransaction(
-                db,
-                async transaction => {
-
-                    const likeSnap =
-                        await transaction.get(
-                            likeRef
-                        );
-
-
-                    const targetSnap =
-                        await transaction.get(
-                            targetRef
-                        );
-
-
-                    if(!targetSnap.exists()){
-
-                        throw new Error(
-                            "Profile not found"
-                        );
-
-                    }
-
-
-                    if(likeSnap.exists()){
-
-                        transaction.delete(
-                            likeRef
-                        );
-
-
-                        transaction.update(
-                            targetRef,
-                            {
-                                coins:
-                                    increment(-1)
-                            }
-                        );
-
-                    }
-                    else{
-
-                        transaction.set(
-                            likeRef,
-                            {
-                                uid:
-                                    currentUser.uid,
-
-                                createdAt:
-                                    Date.now()
-                            }
-                        );
-
-
-                        transaction.update(
-                            targetRef,
-                            {
-                                coins:
-                                    increment(1)
-                            }
-                        );
-
-                    }
-
-                }
-            );
-
-
-            const newLike =
-                await getDoc(
-                    doc(
-                        db,
-                        "users",
-                        profileUid,
-                        "likes",
-                        currentUser.uid
-                    )
-                );
-
-
-            if(newLike.exists()){
-
-                loveHeart.classList.add(
-                    "liked"
-                );
-
-                showToast(
-                    "❤️ Love added"
-                );
-
-            }
-            else{
-
-                loveHeart.classList.remove(
-                    "liked"
-                );
-
-                showToast(
-                    "Love removed"
-                );
-
-            }
-
-        }
-        catch(error){
-
-            console.error(error);
-
-            showToast(
-                "Love update failed"
-            );
-
-        }
+        return;
 
     }
+
+
+    document.getElementById(
+        "photoInput"
+    ).click();
+
+}
+
+
+document
+.getElementById("cameraBtn")
+.addEventListener(
+    "click",
+    openPhotoPicker
 );
 
 
-/* =========================
-   PHOTO BUTTON
-========================= */
-
 document
-.getElementById("photoBtn")
+.getElementById("changePhoto")
 .addEventListener(
     "click",
-    () => {
-
-        if(
-            !currentUser ||
-            profileUid !== currentUser.uid
-        ){
-
-            showToast(
-                "You can change only your photo"
-            );
-
-            return;
-
-        }
-
-
-        document
-        .getElementById("photoInput")
-        .click();
-
-    }
+    openPhotoPicker
 );
 
 
@@ -1931,7 +1818,7 @@ document
             if(!result.secure_url){
 
                 throw new Error(
-                    "Upload failed"
+                    "Cloudinary upload failed"
                 );
 
             }
@@ -1951,13 +1838,17 @@ document
 
 
             showToast(
-                "Profile photo updated"
+                "Photo updated"
             );
 
         }
         catch(error){
 
-            console.error(error);
+            console.error(
+                "Photo error:",
+                error
+            );
+
 
             showToast(
                 "Photo upload failed"
@@ -1970,76 +1861,136 @@ document
 
 
 /* =========================
-   TABS
+   DAILY STREAK REWARDS
 ========================= */
 
-const medalTab =
-    document.getElementById(
-        "medalTab"
-    );
-
-const crystalTab =
-    document.getElementById(
-        "crystalTab"
-    );
-
-const medalsView =
-    document.getElementById(
-        "medalsView"
-    );
-
-const crystalsView =
-    document.getElementById(
-        "crystalsView"
-    );
-
-
-medalTab.addEventListener(
+document
+.getElementById("streakCard")
+.addEventListener(
     "click",
     () => {
 
-        medalTab.classList.add(
-            "active"
-        );
+        updateStreakRewards();
 
-        crystalTab.classList.remove(
-            "active"
-        );
 
-        medalsView.style.display =
+        document.getElementById(
+            "streakModal"
+        ).style.display =
             "flex";
 
-        crystalsView.style.display =
+    }
+);
+
+
+/* CLOSE STREAK */
+
+document
+.getElementById("closeStreak")
+.addEventListener(
+    "click",
+    () => {
+
+        document.getElementById(
+            "streakModal"
+        ).style.display =
             "none";
 
     }
 );
 
 
-crystalTab.addEventListener(
+/* UPDATE REWARDS */
+
+function updateStreakRewards(){
+
+    const days =
+        Number(
+            profileData.dailyStreak || 0
+        );
+
+
+    setReward(
+        "reward1",
+        days >= 1
+    );
+
+
+    setReward(
+        "reward7",
+        days >= 7
+    );
+
+
+    setReward(
+        "reward30",
+        days >= 30
+    );
+
+}
+
+
+function setReward(id, unlocked){
+
+    const element =
+        document.getElementById(id);
+
+
+    if(!element){
+        return;
+    }
+
+
+    const status =
+        element.querySelector(
+            ".reward-status"
+        );
+
+
+    if(unlocked){
+
+        element.classList.add(
+            "unlocked"
+        );
+
+
+        status.textContent =
+            "UNLOCKED";
+
+    }
+    else{
+
+        element.classList.remove(
+            "unlocked"
+        );
+
+
+        status.textContent =
+            "LOCKED";
+
+    }
+
+}
+
+
+/* =========================
+   LOVE → HEART.HTML
+========================= */
+
+document
+.getElementById("loveCard")
+.addEventListener(
     "click",
     () => {
 
-        crystalTab.classList.add(
-            "active"
-        );
-
-        medalTab.classList.remove(
-            "active"
-        );
-
-        medalsView.style.display =
-            "none";
-
-        crystalsView.style.display =
-            "block";
+        window.location.href =
+            "heart.html";
 
     }
 );
 
 
 /* =========================
-   BACK
+   BACK BUTTON
 ========================= */
 
 document
@@ -2049,7 +2000,10 @@ document
     () => {
 
         if(
-            window.history.length > 1
+            document.referrer &&
+            document.referrer.includes(
+                location.origin
+            )
         ){
 
             history.back();
