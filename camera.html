@@ -198,30 +198,31 @@ font-weight:700;
 // Camera Access
 const video = document.getElementById("camera");
 
-navigator.mediaDevices.getUserMedia({
-    video: {
-        facingMode: "user"
-    },
-    audio: false
-})
-.then(stream => {
-    video.srcObject = stream;
-})
-navigator.mediaDevices.getUserMedia({
-    video:{
-        facingMode:"user"
-    },
-    audio:false
-})
-.then(stream=>{
-    video.srcObject = stream;
-})
-.catch(err=>{
-    alert(
-        "Camera Error: " + err.name +
-        "\n" + err.message
-    );
-});
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "user"
+            },
+            audio: false
+        });
+
+        video.srcObject = stream;
+
+    } catch (err) {
+        console.error(err);
+
+        alert(
+            "Camera Error: " +
+            err.name +
+            "\n" +
+            err.message
+        );
+    }
+}
+
+startCamera();
+
 
 // Timer
 let sec = 0;
@@ -233,14 +234,24 @@ setInterval(() => {
     let s = sec % 60;
 
     document.getElementById("time").innerText =
-        String(min).padStart(2,"0") + ":" +
-        String(s).padStart(2,"0");
-},1000);
+        String(min).padStart(2, "0") + ":" +
+        String(s).padStart(2, "0");
+
+}, 1000);
+
 
 // Quit Button
 document.querySelector(".quit-btn").onclick = () => {
-    window.location.href = "dailytask.html";
+
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => {
+            track.stop();
+        });
+    }
+
+    window.location.href = "daily-task.html";
 };
+
 
 // Next Button
 document.getElementById("nextBtn").onclick = () => {
