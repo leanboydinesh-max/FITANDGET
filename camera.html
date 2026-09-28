@@ -252,14 +252,18 @@ body{
 </div>
 
 
-<!-- MEDIAPIPE -->
+<!-- =========================
+     MEDIAPIPE
+========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
 
-<!-- FIREBASE -->
+<!-- =========================
+     FIREBASE
+========================= -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
@@ -269,6 +273,7 @@ body{
 
 
 <script>
+
 
 /* =========================
    FIREBASE
@@ -296,10 +301,13 @@ const firebaseConfig = {
 
 };
 
+
 firebase.initializeApp(firebaseConfig);
+
 
 const db =
     firebase.firestore();
+
 
 
 /* =========================
@@ -322,6 +330,7 @@ const workouts = [
 ];
 
 
+
 /* =========================
    SELECTED WORKOUT
 ========================= */
@@ -331,8 +340,12 @@ const params =
         window.location.search
     );
 
+
 let workoutIndex =
-    parseInt(params.get("workout"));
+    parseInt(
+        params.get("workout")
+    );
+
 
 if(
     isNaN(workoutIndex) ||
@@ -344,13 +357,16 @@ if(
 
 }
 
+
 const exerciseName =
     workouts[workoutIndex];
+
 
 document.getElementById(
     "exerciseName"
 ).innerText =
     exerciseName;
+
 
 
 /* =========================
@@ -367,7 +383,10 @@ let saving = false;
 
 let stage = "up";
 
+let cameraStarted = false;
+
 let poseReady = false;
+
 
 
 /* =========================
@@ -375,16 +394,28 @@ let poseReady = false;
 ========================= */
 
 const video =
-    document.getElementById("camera");
+    document.getElementById(
+        "camera"
+    );
+
 
 const repDisplay =
-    document.getElementById("repCount");
+    document.getElementById(
+        "repCount"
+    );
+
 
 const completeBtn =
-    document.getElementById("completeBtn");
+    document.getElementById(
+        "completeBtn"
+    );
+
 
 const aiStatus =
-    document.getElementById("aiStatus");
+    document.getElementById(
+        "aiStatus"
+    );
+
 
 
 /* =========================
@@ -392,7 +423,8 @@ const aiStatus =
 ========================= */
 
 firebase.auth()
-.onAuthStateChanged(async(user) => {
+.onAuthStateChanged(
+async(user) => {
 
     if(!user){
 
@@ -403,7 +435,9 @@ firebase.auth()
 
     }
 
+
     currentUser = user;
+
 
     try{
 
@@ -413,10 +447,12 @@ firebase.auth()
             .doc(user.uid)
             .get();
 
+
         if(userDoc.exists){
 
             const data =
                 userDoc.data();
+
 
             completedTasks =
                 Array.isArray(
@@ -424,6 +460,7 @@ firebase.auth()
                 )
                 ? data.completedTasks
                 : [];
+
 
             if(
                 completedTasks.includes(
@@ -435,45 +472,34 @@ firebase.auth()
                     "This workout is already completed!"
                 );
 
+
                 window.location.href =
                     "daily-task.html";
+
+                return;
 
             }
 
         }
 
-    }catch(error){
+
+        startAI();
+
+    }
+    catch(error){
 
         console.error(
             "User loading error:",
             error
         );
 
+        aiStatus.innerText =
+            "User loading error";
+
     }
 
 });
 
-
-/* =========================
-   CAMERA
-========================= */
-
-const camera =
-    new Camera(
-        video,
-        {
-            onFrame: async () => {
-
-                await pose.send({
-                    image: video
-                });
-
-            },
-
-            width: 720,
-            height: 1280
-        }
-    );
 
 
 /* =========================
@@ -485,12 +511,12 @@ const pose =
 
         locateFile: (file) => {
 
-            return
-            `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+            return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
 
         }
 
     });
+
 
 
 pose.setOptions({
@@ -510,9 +536,56 @@ pose.setOptions({
 });
 
 
+
 pose.onResults(
     onPoseResults
 );
+
+
+
+/* =========================
+   CAMERA
+========================= */
+
+const camera =
+    new Camera(
+        video,
+        {
+
+            onFrame: async () => {
+
+                if(!cameraStarted){
+
+                    return;
+
+                }
+
+
+                try{
+
+                    await pose.send({
+                        image:video
+                    });
+
+                }
+                catch(error){
+
+                    console.error(
+                        "Pose frame error:",
+                        error
+                    );
+
+                }
+
+            },
+
+            width:720,
+
+            height:1280
+
+        }
+    );
+
 
 
 /* =========================
@@ -521,22 +594,44 @@ pose.onResults(
 
 async function startAI(){
 
+    if(cameraStarted){
+
+        return;
+
+    }
+
+
     try{
 
         aiStatus.innerText =
             "Starting Camera AI...";
 
+
+        cameraStarted = true;
+
+
         await camera.start();
 
-    }catch(error){
+
+        aiStatus.innerText =
+            "Show your full body";
+
+
+    }
+    catch(error){
+
+        cameraStarted = false;
+
 
         console.error(
-            "AI camera error:",
+            "Camera error:",
             error
         );
 
+
         aiStatus.innerText =
             "Camera Error";
+
 
         alert(
             "Camera permission required."
@@ -545,6 +640,7 @@ async function startAI(){
     }
 
 }
+
 
 
 /* =========================
@@ -568,10 +664,14 @@ function calculateAngle(
             a.x - b.x
         );
 
+
     let angle =
         Math.abs(
-            radians * 180 / Math.PI
+            radians *
+            180 /
+            Math.PI
         );
+
 
     if(angle > 180){
 
@@ -580,9 +680,11 @@ function calculateAngle(
 
     }
 
+
     return angle;
 
 }
+
 
 
 /* =========================
@@ -597,15 +699,19 @@ function addRep(){
 
     }
 
+
     repCount++;
+
 
     repDisplay.innerText =
         repCount;
+
 
     completeBtn.disabled =
         false;
 
 }
+
 
 
 /* =========================
@@ -615,11 +721,16 @@ function addRep(){
 function onPoseResults(results){
 
     if(
+        !results ||
         !results.poseLandmarks
     ){
 
+        poseReady = false;
+
+
         aiStatus.innerText =
             "Move into camera view";
+
 
         return;
 
@@ -628,34 +739,14 @@ function onPoseResults(results){
 
     poseReady = true;
 
-    aiStatus.innerText =
-        "AI Detecting • Ready";
-
 
     const lm =
         results.poseLandmarks;
 
 
-    /*
-       MEDIAPIPE LANDMARKS
-
-       11 = LEFT SHOULDER
-       12 = RIGHT SHOULDER
-       13 = LEFT ELBOW
-       14 = RIGHT ELBOW
-       15 = LEFT WRIST
-       16 = RIGHT WRIST
-       23 = LEFT HIP
-       24 = RIGHT HIP
-       25 = LEFT KNEE
-       26 = RIGHT KNEE
-       27 = LEFT ANKLE
-       28 = RIGHT ANKLE
-    */
-
-
     if(
-        exerciseName === "Push Up"
+        exerciseName ===
+        "Push Up"
     ){
 
         detectPushUp(lm);
@@ -664,7 +755,8 @@ function onPoseResults(results){
 
 
     else if(
-        exerciseName === "Squat"
+        exerciseName ===
+        "Squat"
     ){
 
         detectSquat(lm);
@@ -674,19 +766,13 @@ function onPoseResults(results){
 
     else{
 
-        /*
-           Other workouts are
-           temporarily kept safe.
-           They won't generate
-           fake reps.
-        */
-
         aiStatus.innerText =
             "AI Ready • Follow the movement";
 
     }
 
 }
+
 
 
 /* =========================
@@ -715,6 +801,20 @@ function detectPushUp(lm){
         lm[16];
 
 
+    if(
+        !leftShoulder ||
+        !leftElbow ||
+        !leftWrist ||
+        !rightShoulder ||
+        !rightElbow ||
+        !rightWrist
+    ){
+
+        return;
+
+    }
+
+
     const leftAngle =
         calculateAngle(
             leftShoulder,
@@ -738,6 +838,7 @@ function detectPushUp(lm){
         ) / 2;
 
 
+
     /*
        DOWN
     */
@@ -749,10 +850,12 @@ function detectPushUp(lm){
 
         stage = "down";
 
+
         aiStatus.innerText =
             "Down detected";
 
     }
+
 
 
     /*
@@ -766,7 +869,9 @@ function detectPushUp(lm){
 
         stage = "up";
 
+
         addRep();
+
 
         aiStatus.innerText =
             "Rep detected ✓";
@@ -774,6 +879,7 @@ function detectPushUp(lm){
     }
 
 }
+
 
 
 /* =========================
@@ -802,6 +908,20 @@ function detectSquat(lm){
         lm[28];
 
 
+    if(
+        !leftHip ||
+        !leftKnee ||
+        !leftAnkle ||
+        !rightHip ||
+        !rightKnee ||
+        !rightAnkle
+    ){
+
+        return;
+
+    }
+
+
     const leftAngle =
         calculateAngle(
             leftHip,
@@ -825,6 +945,7 @@ function detectSquat(lm){
         ) / 2;
 
 
+
     /*
        DOWN
     */
@@ -836,10 +957,12 @@ function detectSquat(lm){
 
         stage = "down";
 
+
         aiStatus.innerText =
             "Squat down detected";
 
     }
+
 
 
     /*
@@ -853,7 +976,9 @@ function detectSquat(lm){
 
         stage = "up";
 
+
         addRep();
+
 
         aiStatus.innerText =
             "Rep detected ✓";
@@ -863,36 +988,50 @@ function detectSquat(lm){
 }
 
 
+
 /* =========================
    TIMER
 ========================= */
 
 let sec = 0;
 
+
 const timer =
-    setInterval(() => {
+    setInterval(
+        () => {
 
-        sec++;
+            sec++;
 
-        const min =
-            Math.floor(sec / 60);
 
-        const seconds =
-            sec % 60;
+            const min =
+                Math.floor(
+                    sec / 60
+                );
 
-        document.getElementById(
-            "time"
-        ).innerText =
 
-            String(min)
-            .padStart(2,"0")
+            const seconds =
+                sec % 60;
 
-            + ":" +
 
-            String(seconds)
-            .padStart(2,"0");
+            document.getElementById(
+                "time"
+            ).innerText =
 
-    },1000);
+                String(min)
+                .padStart(2,"0")
+
+                + ":"
+
+                +
+
+                String(seconds)
+                .padStart(2,"0");
+
+
+        },
+        1000
+    );
+
 
 
 /* =========================
@@ -901,18 +1040,25 @@ const timer =
 
 function stopCamera(){
 
+    cameraStarted = false;
+
+
     if(video.srcObject){
 
         video.srcObject
         .getTracks()
         .forEach(
-            track =>
-                track.stop()
+            track => {
+
+                track.stop();
+
+            }
         );
 
     }
 
 }
+
 
 
 /* =========================
@@ -925,12 +1071,17 @@ document.getElementById(
 
     stopCamera();
 
-    clearInterval(timer);
+
+    clearInterval(
+        timer
+    );
+
 
     /*
        IMPORTANT:
        QUIT DOES NOT SAVE
     */
+
 
     window.location.href =
         "daily-task.html";
@@ -938,8 +1089,9 @@ document.getElementById(
 };
 
 
+
 /* =========================
-   COMPLETE
+   COMPLETE WORKOUT
 ========================= */
 
 completeBtn.onclick =
@@ -951,6 +1103,7 @@ async() => {
 
     }
 
+
     if(!currentUser){
 
         alert(
@@ -960,6 +1113,7 @@ async() => {
         return;
 
     }
+
 
     if(repCount <= 0){
 
@@ -974,8 +1128,10 @@ async() => {
 
     saving = true;
 
+
     completeBtn.disabled =
         true;
+
 
     completeBtn.innerText =
         "SAVING...";
@@ -1009,8 +1165,10 @@ async() => {
             : [];
 
 
+
         /*
-           DOUBLE REWARD PROTECTION
+           DOUBLE REWARD
+           PROTECTION
         */
 
         if(
@@ -1023,12 +1181,15 @@ async() => {
                 "Workout already completed."
             );
 
+
             window.location.href =
                 "daily-task.html";
+
 
             return;
 
         }
+
 
 
         /*
@@ -1038,6 +1199,7 @@ async() => {
         tasks.push(
             workoutIndex
         );
+
 
 
         /*
@@ -1052,6 +1214,7 @@ async() => {
 
         const newRC =
             oldRC + repCount;
+
 
 
         /*
@@ -1071,15 +1234,22 @@ async() => {
         });
 
 
+
         stopCamera();
 
-        clearInterval(timer);
+
+        clearInterval(
+            timer
+        );
 
 
         alert(
-            "Workout Complete! 🎉\n\n" +
-            "+" +
-            repCount +
+            "Workout Complete! 🎉\n\n"
+            +
+            "+"
+            +
+            repCount
+            +
             " RC"
         );
 
@@ -1088,7 +1258,8 @@ async() => {
             "daily-task.html";
 
 
-    }catch(error){
+    }
+    catch(error){
 
         console.error(
             "Workout save error:",
@@ -1103,8 +1274,10 @@ async() => {
 
         saving = false;
 
+
         completeBtn.disabled =
             false;
+
 
         completeBtn.innerText =
             "COMPLETE WORKOUT ✓";
@@ -1112,6 +1285,7 @@ async() => {
     }
 
 };
+
 
 
 /* =========================
@@ -1127,12 +1301,6 @@ window.addEventListener(
     }
 );
 
-
-/* =========================
-   START
-========================= */
-
-startAI();
 
 </script>
 
