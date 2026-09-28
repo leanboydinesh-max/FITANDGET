@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FIT & GET - Camera</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>FIT & GET Camera</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -12,107 +13,126 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
 }
 
+html,
 body{
     margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
     background:#050805;
     color:white;
     font-family:Poppins,sans-serif;
-    overflow:hidden;
 }
 
 .page{
     width:100%;
-    height:100vh;
+    height:100dvh;
     display:flex;
     flex-direction:column;
-    align-items:center;
 }
 
-/* TOP */
+/* ================= TOP ================= */
+
 .top{
-    width:100%;
-    height:62px;
+    height:60px;
+    min-height:60px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:8px 12px;
+    padding:7px 10px;
     position:relative;
-    z-index:10;
+    z-index:20;
 }
 
 .title{
-    font-size:17px;
+    font-size:15px;
     font-weight:700;
 }
 
-.workout{
+.title span{
     color:#9dff00;
 }
 
 .actions{
     display:flex;
-    gap:7px;
+    gap:6px;
 }
 
 button{
     border:0;
     font-family:Poppins,sans-serif;
     font-weight:700;
-    cursor:pointer;
-}
-
-.quit{
-    background:#242424;
-    color:white;
-    padding:8px 12px;
-    border-radius:9px;
 }
 
 .finish{
     background:#9dff00;
     color:#071000;
-    padding:8px 12px;
     border-radius:9px;
+    padding:8px 11px;
 }
 
-/* CAMERA AREA */
+.quit{
+    background:#242424;
+    color:white;
+    border-radius:9px;
+    padding:8px 11px;
+}
+
+/* ================= CAMERA ================= */
+
+.cameraWrap{
+    flex:1;
+    min-height:0;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:0 7px;
+}
+
 .cameraBox{
     position:relative;
-    width:min(94vw,500px);
-    height:calc(100vh - 125px);
-    max-height:760px;
+
+    width:min(97vw,520px);
+    height:100%;
+
+    max-height:calc(100dvh - 123px);
+
     background:#000;
-    border:2px solid #242424;
-    border-radius:18px;
+
+    border:2px solid #252525;
+    border-radius:16px;
+
     overflow:hidden;
-    flex-shrink:1;
 }
 
 /*
-IMPORTANT:
-video + canvas use exactly the same box.
-No drawing outside cameraBox.
+ IMPORTANT:
+ Video and canvas occupy EXACTLY
+ the same camera viewport.
 */
+
 #video,
 #canvas{
     position:absolute;
     inset:0;
+
     width:100%;
     height:100%;
-    object-fit:contain;
+
+    display:block;
 }
 
 #video{
-    display:block;
+    object-fit:cover;
     background:#000;
 }
 
@@ -120,17 +140,26 @@ No drawing outside cameraBox.
     pointer-events:none;
 }
 
-/* top status inside camera */
+/* ================= STATUS ================= */
+
 .status{
     position:absolute;
+    z-index:10;
+
     top:12px;
     left:50%;
+
     transform:translateX(-50%);
-    z-index:5;
-    background:rgba(0,0,0,.72);
-    padding:7px 15px;
+
+    padding:7px 14px;
+
     border-radius:20px;
-    font-size:12px;
+
+    background:rgba(0,0,0,.72);
+
+    font-size:11px;
+    font-weight:600;
+
     white-space:nowrap;
 }
 
@@ -140,30 +169,66 @@ No drawing outside cameraBox.
 }
 
 .status.warn{
-    color:#fff;
+    color:white;
 }
 
-/* timer */
+/* ================= GUIDE TEXT ================= */
+
+.guide{
+    position:absolute;
+
+    left:50%;
+    bottom:48px;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    width:max-content;
+    max-width:90%;
+
+    background:rgba(0,0,0,.68);
+
+    padding:6px 11px;
+
+    border-radius:10px;
+
+    font-size:10px;
+    color:#ddd;
+
+    text-align:center;
+}
+
+/* ================= TIMER ================= */
+
 .timer{
     position:absolute;
-    bottom:12px;
+
+    z-index:10;
+
+    bottom:10px;
     left:50%;
+
     transform:translateX(-50%);
-    z-index:5;
-    background:rgba(0,0,0,.75);
-    padding:6px 16px;
+
+    background:rgba(0,0,0,.72);
+
+    padding:5px 14px;
+
     border-radius:18px;
-    font-size:13px;
+
+    font-size:12px;
 }
 
-/* bottom */
+/* ================= BOTTOM ================= */
+
 .bottom{
-    width:100%;
     height:63px;
+    min-height:63px;
+
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:30px;
 }
 
 .repBox{
@@ -171,48 +236,42 @@ No drawing outside cameraBox.
 }
 
 .repNumber{
-    font-size:24px;
+    font-size:25px;
+    line-height:25px;
     font-weight:700;
     color:#9dff00;
-    line-height:24px;
 }
 
 .repText{
-    font-size:10px;
-    color:#aaa;
+    font-size:9px;
+    color:#888;
 }
 
-/* guide legend */
-.guide{
-    position:absolute;
-    left:10px;
-    bottom:10px;
-    z-index:5;
-    background:rgba(0,0,0,.6);
-    padding:6px 9px;
-    border-radius:8px;
-    font-size:10px;
-    color:#ddd;
-}
+/* ================= MOBILE ================= */
 
-/* mobile */
 @media(max-width:500px){
-    .cameraBox{
-        width:96vw;
-        height:calc(100vh - 125px);
-        border-radius:14px;
+
+    .top{
+        padding:7px 8px;
     }
 
     .title{
-        font-size:14px;
+        font-size:13px;
     }
 
-    .quit,
-    .finish{
+    .finish,
+    .quit{
         padding:7px 9px;
-        font-size:11px;
+        font-size:10px;
     }
+
+    .cameraBox{
+        width:97vw;
+        border-radius:14px;
+    }
+
 }
+
 </style>
 </head>
 
@@ -221,87 +280,161 @@ No drawing outside cameraBox.
 <div class="page">
 
     <div class="top">
+
         <div class="title">
-            FIT & GET • <span class="workout" id="workoutName">Workout</span>
+            FIT & GET • <span id="workoutName">Workout</span>
         </div>
 
         <div class="actions">
-            <button class="finish" id="finishBtn">FINISH ✓</button>
-            <button class="quit" id="quitBtn">QUIT</button>
-        </div>
-    </div>
 
-    <div class="cameraBox">
+            <button
+                class="finish"
+                id="finishBtn">
+                FINISH ✓
+            </button>
 
-        <video id="video" autoplay playsinline muted></video>
-        <canvas id="canvas"></canvas>
+            <button
+                class="quit"
+                id="quitBtn">
+                QUIT
+            </button>
 
-        <div class="status warn" id="status">
-            Starting Camera...
-        </div>
-
-        <div class="timer" id="time">
-            00:00
-        </div>
-
-        <div class="guide" id="guideText">
-            Position yourself inside the guide
         </div>
 
     </div>
+
+
+    <div class="cameraWrap">
+
+        <div class="cameraBox">
+
+            <video
+                id="video"
+                autoplay
+                playsinline
+                muted>
+            </video>
+
+            <canvas id="canvas"></canvas>
+
+            <div
+                id="status"
+                class="status warn">
+                Starting Camera...
+            </div>
+
+            <div
+                id="guideText"
+                class="guide">
+                Move into the guide
+            </div>
+
+            <div
+                id="time"
+                class="timer">
+                00:00
+            </div>
+
+        </div>
+
+    </div>
+
 
     <div class="bottom">
 
         <div class="repBox">
-            <div class="repNumber" id="repCount">0</div>
-            <div class="repText">REPS</div>
+
+            <div
+                id="repCount"
+                class="repNumber">
+                0
+            </div>
+
+            <div class="repText">
+                REPS
+            </div>
+
         </div>
 
     </div>
 
 </div>
 
+
 <script>
 
-/* =========================
+/* =====================================================
    FIREBASE
-========================= */
+===================================================== */
 
 const firebaseConfig = {
-    apiKey:"AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
-    authDomain:"fitandget-b3461.firebaseapp.com",
-    projectId:"fitandget-b3461",
-    storageBucket:"fitandget-b3461.firebasestorage.app",
-    messagingSenderId:"216178533513",
-    appId:"1:216178533513:web:975f20599c7e77b9d01258"
+
+    apiKey:
+    "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+
+    authDomain:
+    "fitandget-b3461.firebaseapp.com",
+
+    projectId:
+    "fitandget-b3461",
+
+    storageBucket:
+    "fitandget-b3461.firebasestorage.app",
+
+    messagingSenderId:
+    "216178533513",
+
+    appId:
+    "1:216178533513:web:975f20599c7e77b9d01258"
 };
 
 firebase.initializeApp(firebaseConfig);
 
-const db = firebase.firestore();
+const db =
+    firebase.firestore();
 
-/* =========================
+
+/* =====================================================
    ELEMENTS
-========================= */
+===================================================== */
 
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const video =
+    document.getElementById("video");
 
-const statusEl = document.getElementById("status");
-const workoutNameEl = document.getElementById("workoutName");
-const repEl = document.getElementById("repCount");
-const timeEl = document.getElementById("time");
-const guideText = document.getElementById("guideText");
+const canvas =
+    document.getElementById("canvas");
 
-const quitBtn = document.getElementById("quitBtn");
-const finishBtn = document.getElementById("finishBtn");
+const ctx =
+    canvas.getContext("2d");
 
-/* =========================
+const statusEl =
+    document.getElementById("status");
+
+const guideText =
+    document.getElementById("guideText");
+
+const workoutNameEl =
+    document.getElementById("workoutName");
+
+const repEl =
+    document.getElementById("repCount");
+
+const timeEl =
+    document.getElementById("time");
+
+const finishBtn =
+    document.getElementById("finishBtn");
+
+const quitBtn =
+    document.getElementById("quitBtn");
+
+
+/* =====================================================
    WORKOUT
-========================= */
+===================================================== */
 
-const params = new URLSearchParams(location.search);
+const params =
+    new URLSearchParams(location.search);
 
 let workout =
     params.get("workout") ||
@@ -309,184 +442,293 @@ let workout =
     localStorage.getItem("selectedWorkout") ||
     "Push Up";
 
-workout = decodeURIComponent(workout);
+workout =
+    decodeURIComponent(workout);
 
-workoutNameEl.innerText = workout;
+workout =
+    workout.trim();
 
-/* =========================
+workoutNameEl.innerText =
+    workout;
+
+
+/* =====================================================
+   ONLY THESE TWO
+===================================================== */
+
+const isPushUp =
+    workout.toLowerCase().replace(/\s/g,"") ===
+    "pushup";
+
+const isSquat =
+    workout.toLowerCase().replace(/\s/g,"") ===
+    "squat";
+
+
+/* =====================================================
    VARIABLES
-========================= */
+===================================================== */
 
 let currentUser = null;
-
-let repCount = 0;
 
 let cameraStarted = false;
 
 let poseReady = false;
 
-let secondsPassed = 0;
-
-let timerStarted = false;
-
-let timer = null;
+let repCount = 0;
 
 let saving = false;
 
-/* movement states */
+let timerStarted = false;
 
-let pushStage = "up";
-let squatStage = "up";
-let jackStage = "closed";
-let lungeStage = "up";
-let kneeStage = "down";
-let mountainStage = "away";
-let burpeeStage = "up";
-let stretchStage = "down";
-let cooldownStage = "down";
+let secondsPassed = 0;
 
-let plankStart = 0;
-let plankCounted = false;
+let timer = null;
 
-/* =========================
+
+/* =====================================================
+   MOVEMENT STATES
+===================================================== */
+
+/*
+ PUSH UP
+
+ UP
+ ↓
+ DOWN
+ ↓
+ UP = REP
+*/
+
+let pushState =
+    "up";
+
+
+/*
+ SQUAT
+
+ UP
+ ↓
+ DOWN
+ ↓
+ UP = REP
+*/
+
+let squatState =
+    "up";
+
+
+/*
+ Used to stop noisy AI
+ from changing state every frame.
+*/
+
+let pushDownFrames = 0;
+let pushUpFrames = 0;
+
+let squatDownFrames = 0;
+let squatUpFrames = 0;
+
+
+/* =====================================================
    MEDIAPIPE
-========================= */
+===================================================== */
 
-const pose = new Pose({
-    locateFile:(file)=>{
-        return "https://cdn.jsdelivr.net/npm/@mediapipe/pose/" + file;
-    }
-});
+const pose =
+    new Pose({
+
+        locateFile:(file)=>{
+
+            return
+            "https://cdn.jsdelivr.net/npm/@mediapipe/pose/"
+            + file;
+
+        }
+
+    });
+
 
 pose.setOptions({
+
     modelComplexity:1,
+
     smoothLandmarks:true,
+
     enableSegmentation:false,
+
     smoothSegmentation:false,
-    minDetectionConfidence:.55,
-    minTrackingConfidence:.55
+
+    minDetectionConfidence:.60,
+
+    minTrackingConfidence:.60
+
 });
 
-pose.onResults(onPoseResults);
 
-/* =========================
+pose.onResults(
+    onPoseResults
+);
+
+
+/* =====================================================
    CAMERA
-========================= */
+===================================================== */
 
-const camera = new Camera(video,{
-    onFrame:async()=>{
-        if(!cameraStarted) return;
+const camera =
+    new Camera(video,{
 
-        try{
-            await pose.send({
-                image:video
-            });
-        }catch(error){
-            console.error(error);
-        }
-    },
+        onFrame:async()=>{
 
-    width:720,
-    height:1280
-});
+            if(!cameraStarted)
+                return;
 
-/* =========================
+            try{
+
+                await pose.send({
+                    image:video
+                });
+
+            }catch(error){
+
+                console.error(error);
+
+            }
+
+        },
+
+        width:720,
+        height:1280
+
+    });
+
+
+/* =====================================================
    AUTH
-========================= */
+===================================================== */
 
-firebase.auth().onAuthStateChanged(async(user)=>{
+firebase
+.auth()
+.onAuthStateChanged(async(user)=>{
 
     if(!user){
-        window.location.href="index.html";
+
+        window.location.href =
+            "index.html";
+
         return;
+
     }
 
-    currentUser = user;
+    currentUser =
+        user;
 
-    startAI();
+    startCamera();
+
 });
 
-/* =========================
-   CAMERA START
-========================= */
 
-async function startAI(){
+/* =====================================================
+   START CAMERA
+===================================================== */
 
-    if(cameraStarted) return;
+async function startCamera(){
+
+    if(cameraStarted)
+        return;
 
     try{
 
-        setStatus("Starting Camera AI...","warn");
+        setStatus(
+            "Starting Camera...",
+            "warn"
+        );
 
-        cameraStarted = true;
+        cameraStarted =
+            true;
 
         await camera.start();
 
-        setStatus("Show your full body","warn");
+        guideText.innerText =
+            isPushUp
+            ? "Show shoulders + chest + arms"
+            : "Show hips + thighs + legs";
 
     }catch(error){
 
         console.error(error);
 
-        cameraStarted = false;
+        cameraStarted =
+            false;
 
         setStatus(
             "Camera permission required",
             "warn"
         );
+
     }
+
 }
 
-/* =========================
+
+/* =====================================================
    STATUS
-========================= */
+===================================================== */
 
-function setStatus(text,type="warn"){
+function setStatus(
+    text,
+    type="warn"
+){
 
-    statusEl.innerText = text;
+    statusEl.innerText =
+        text;
 
     statusEl.className =
         "status " + type;
+
 }
 
-/* =========================
+
+/* =====================================================
    TIMER
-========================= */
+===================================================== */
 
 function startTimer(){
 
-    if(timerStarted) return;
+    if(timerStarted)
+        return;
 
-    timerStarted = true;
+    timerStarted =
+        true;
 
-    timer = setInterval(()=>{
+    timer =
+        setInterval(()=>{
 
-        secondsPassed++;
+            secondsPassed++;
 
-        const minutes =
-            Math.floor(secondsPassed/60);
+            const min =
+                Math.floor(
+                    secondsPassed/60
+                );
 
-        const seconds =
-            secondsPassed%60;
+            const sec =
+                secondsPassed%60;
 
-        timeEl.innerText =
-            String(minutes).padStart(2,"0") +
-            ":" +
-            String(seconds).padStart(2,"0");
+            timeEl.innerText =
+                String(min).padStart(2,"0")
+                + ":"
+                +
+                String(sec).padStart(2,"0");
 
-    },1000);
+        },1000);
+
 }
 
-/* =========================
-   CANVAS
-========================= */
+
+/* =====================================================
+   CANVAS RESIZE
+===================================================== */
 
 function resizeCanvas(){
-
-    /*
-    Canvas follows the actual camera box.
-    Drawing is clipped inside canvas.
-    */
 
     const rect =
         canvas.getBoundingClientRect();
@@ -495,10 +737,14 @@ function resizeCanvas(){
         window.devicePixelRatio || 1;
 
     canvas.width =
-        Math.round(rect.width*dpr);
+        Math.round(
+            rect.width*dpr
+        );
 
     canvas.height =
-        Math.round(rect.height*dpr);
+        Math.round(
+            rect.height*dpr
+        );
 
     ctx.setTransform(
         dpr,
@@ -508,7 +754,9 @@ function resizeCanvas(){
         0,
         0
     );
+
 }
+
 
 window.addEventListener(
     "resize",
@@ -520,25 +768,25 @@ setTimeout(
     500
 );
 
-/* =========================
-   VIDEO → CANVAS MAPPING
-========================= */
 
-/*
-MediaPipe coordinates are based on video.
-Video uses object-fit:contain.
+/* =====================================================
+   LANDMARK → CAMERA POSITION
+===================================================== */
 
-So we calculate the real displayed
-video rectangle first.
+function getPoint(lm){
 
-This prevents lines from going
-outside the camera.
-*/
-
-function getVideoRect(){
-
-    const box =
+    const rect =
         canvas.getBoundingClientRect();
+
+    /*
+    VIDEO IS OBJECT-FIT:COVER.
+
+    Therefore calculate cover scale,
+    then crop amount.
+
+    This is the important fix for
+    lines leaving the camera.
+    */
 
     const vw =
         video.videoWidth || 720;
@@ -546,455 +794,429 @@ function getVideoRect(){
     const vh =
         video.videoHeight || 1280;
 
-    const cw = box.width;
-    const ch = box.height;
+    const cw =
+        rect.width;
+
+    const ch =
+        rect.height;
 
     const scale =
-        Math.min(cw/vw,ch/vh);
+        Math.max(
+            cw/vw,
+            ch/vh
+        );
 
-    const dw = vw*scale;
-    const dh = vh*scale;
+    const shownW =
+        vw*scale;
 
-    const ox = (cw-dw)/2;
-    const oy = (ch-dh)/2;
+    const shownH =
+        vh*scale;
+
+    const cropX =
+        (shownW-cw)/2;
+
+    const cropY =
+        (shownH-ch)/2;
+
+    let x =
+        lm.x*shownW-cropX;
+
+    let y =
+        lm.y*shownH-cropY;
+
+    /*
+    HARD CLAMP.
+
+    Nothing can leave camera.
+    */
+
+    x =
+        Math.max(
+            0,
+            Math.min(cw,x)
+        );
+
+    y =
+        Math.max(
+            0,
+            Math.min(ch,y)
+        );
 
     return {
-        x:ox,
-        y:oy,
-        width:dw,
-        height:dh
+        x:x,
+        y:y
     };
+
 }
 
-/* =========================
-   LANDMARK POSITION
-========================= */
 
-function point(lm){
-
-    const r = getVideoRect();
-
-    return {
-        x:r.x + lm.x*r.width,
-        y:r.y + lm.y*r.height
-    };
-}
-
-/* =========================
-   CLAMP
-========================= */
-
-function clamp(v,min,max){
-
-    return Math.max(
-        min,
-        Math.min(max,v)
-    );
-}
-
-/* =========================
+/* =====================================================
    DRAW POINT
-========================= */
+===================================================== */
 
 function drawPoint(
     lm,
     radius=5
 ){
 
-    if(!lm) return;
+    if(!lm)
+        return;
 
-    const p = point(lm);
-
-    const r =
-        canvas.getBoundingClientRect();
-
-    const x =
-        clamp(p.x,0,r.width);
-
-    const y =
-        clamp(p.y,0,r.height);
+    const p =
+        getPoint(lm);
 
     ctx.beginPath();
 
     ctx.arc(
-        x,
-        y,
+        p.x,
+        p.y,
         radius,
         0,
         Math.PI*2
     );
 
-    ctx.fillStyle="#9dff00";
+    ctx.fillStyle =
+        "#9dff00";
 
     ctx.fill();
+
 }
 
-/* =========================
+
+/* =====================================================
    DRAW LINE
-========================= */
+===================================================== */
 
-function drawLine(a,b){
+function drawLine(
+    a,
+    b,
+    width=4
+){
 
-    if(!a || !b) return;
+    if(!a || !b)
+        return;
 
-    const p1 = point(a);
-    const p2 = point(b);
+    const p1 =
+        getPoint(a);
 
-    const r =
-        canvas.getBoundingClientRect();
-
-    const x1 =
-        clamp(p1.x,0,r.width);
-
-    const y1 =
-        clamp(p1.y,0,r.height);
-
-    const x2 =
-        clamp(p2.x,0,r.width);
-
-    const y2 =
-        clamp(p2.y,0,r.height);
+    const p2 =
+        getPoint(b);
 
     ctx.beginPath();
 
-    ctx.moveTo(x1,y1);
-    ctx.lineTo(x2,y2);
+    ctx.moveTo(
+        p1.x,
+        p1.y
+    );
+
+    ctx.lineTo(
+        p2.x,
+        p2.y
+    );
 
     ctx.strokeStyle =
         "#9dff00";
 
-    ctx.lineWidth=4;
+    ctx.lineWidth =
+        width;
+
+    ctx.lineCap =
+        "round";
 
     ctx.stroke();
-}
-
-/* =========================
-   DRAW TARGET PART
-========================= */
-
-function drawPart(
-    lm,
-    label
-){
-
-    if(!lm) return;
-
-    drawPoint(lm,6);
 
 }
 
-/* =========================
-   WORKOUT GUIDE
-========================= */
 
-function drawWorkoutGuide(lm){
+/* =====================================================
+   PUSH-UP GUIDE
+===================================================== */
+
+function drawPushGuide(lm){
 
     /*
-    ONLY workout-specific body
-    parts are drawn.
+    ONLY:
+
+    shoulder
+    elbow
+    wrist
+    chest/shoulder connection
     */
 
-    if(workout==="Push Up"){
+    drawLine(
+        lm[11],
+        lm[13]
+    );
 
-        drawLine(
-            lm[11],
-            lm[13]
-        );
+    drawLine(
+        lm[13],
+        lm[15]
+    );
 
-        drawLine(
-            lm[13],
-            lm[15]
-        );
+    drawLine(
+        lm[12],
+        lm[14]
+    );
 
-        drawLine(
-            lm[12],
-            lm[14]
-        );
+    drawLine(
+        lm[14],
+        lm[16]
+    );
 
-        drawLine(
-            lm[14],
-            lm[16]
-        );
+    drawLine(
+        lm[11],
+        lm[12]
+    );
 
-        drawLine(
-            lm[11],
-            lm[12]
-        );
+    drawPoint(
+        lm[11],
+        6
+    );
 
-        drawLine(
-            lm[23],
-            lm[24]
-        );
+    drawPoint(
+        lm[12],
+        6
+    );
 
-    }
+    drawPoint(
+        lm[13],
+        5
+    );
 
-    else if(workout==="Squat"){
+    drawPoint(
+        lm[14],
+        5
+    );
 
-        drawLine(
-            lm[23],
-            lm[25]
-        );
+    drawPoint(
+        lm[15],
+        5
+    );
 
-        drawLine(
-            lm[25],
-            lm[27]
-        );
+    drawPoint(
+        lm[16],
+        5
+    );
 
-        drawLine(
-            lm[24],
-            lm[26]
-        );
-
-        drawLine(
-            lm[26],
-            lm[28]
-        );
-
-        drawLine(
-            lm[23],
-            lm[24]
-        );
-    }
-
-    else if(workout==="High Knees"){
-
-        drawLine(
-            lm[23],
-            lm[25]
-        );
-
-        drawLine(
-            lm[24],
-            lm[26]
-        );
-
-        drawLine(
-            lm[25],
-            lm[27]
-        );
-
-        drawLine(
-            lm[26],
-            lm[28]
-        );
-
-        drawLine(
-            lm[23],
-            lm[24]
-        );
-    }
-
-    else if(workout==="Lunges"){
-
-        drawLine(lm[23],lm[25]);
-        drawLine(lm[25],lm[27]);
-
-        drawLine(lm[24],lm[26]);
-        drawLine(lm[26],lm[28]);
-
-        drawLine(lm[23],lm[24]);
-    }
-
-    else if(workout==="Mountain Climber"){
-
-        drawLine(lm[11],lm[23]);
-        drawLine(lm[12],lm[24]);
-
-        drawLine(lm[23],lm[25]);
-        drawLine(lm[24],lm[26]);
-
-        drawLine(lm[25],lm[27]);
-        drawLine(lm[26],lm[28]);
-    }
-
-    else if(workout==="Jumping Jack"){
-
-        drawLine(lm[11],lm[13]);
-        drawLine(lm[13],lm[15]);
-
-        drawLine(lm[12],lm[14]);
-        drawLine(lm[14],lm[16]);
-
-        drawLine(lm[23],lm[25]);
-        drawLine(lm[25],lm[27]);
-
-        drawLine(lm[24],lm[26]);
-        drawLine(lm[26],lm[28]);
-    }
-
-    else if(workout==="Burpees"){
-
-        drawLine(lm[11],lm[13]);
-        drawLine(lm[13],lm[15]);
-
-        drawLine(lm[12],lm[14]);
-        drawLine(lm[14],lm[16]);
-
-        drawLine(lm[23],lm[25]);
-        drawLine(lm[25],lm[27]);
-
-        drawLine(lm[24],lm[26]);
-        drawLine(lm[26],lm[28]);
-    }
-
-    else if(workout==="Plank"){
-
-        drawLine(lm[11],lm[23]);
-        drawLine(lm[12],lm[24]);
-
-        drawLine(lm[23],lm[25]);
-        drawLine(lm[24],lm[26]);
-    }
-
-    else if(workout==="Stretching"){
-
-        drawLine(lm[11],lm[13]);
-        drawLine(lm[13],lm[15]);
-
-        drawLine(lm[12],lm[14]);
-        drawLine(lm[14],lm[16]);
-    }
-
-    else if(workout==="Cool Down"){
-
-        drawLine(lm[11],lm[13]);
-        drawLine(lm[13],lm[15]);
-
-        drawLine(lm[12],lm[14]);
-        drawLine(lm[14],lm[16]);
-
-        drawLine(lm[11],lm[12]);
-    }
 }
 
-/* =========================
+
+/* =====================================================
+   SQUAT GUIDE
+===================================================== */
+
+function drawSquatGuide(lm){
+
+    /*
+    ONLY:
+
+    hip
+    thigh
+    knee
+    lower leg
+    */
+
+    drawLine(
+        lm[23],
+        lm[25]
+    );
+
+    drawLine(
+        lm[25],
+        lm[27]
+    );
+
+    drawLine(
+        lm[24],
+        lm[26]
+    );
+
+    drawLine(
+        lm[26],
+        lm[28]
+    );
+
+    drawLine(
+        lm[23],
+        lm[24]
+    );
+
+    drawPoint(
+        lm[23],
+        6
+    );
+
+    drawPoint(
+        lm[24],
+        6
+    );
+
+    drawPoint(
+        lm[25],
+        5
+    );
+
+    drawPoint(
+        lm[26],
+        5
+    );
+
+    drawPoint(
+        lm[27],
+        5
+    );
+
+    drawPoint(
+        lm[28],
+        5
+    );
+
+}
+
+
+/* =====================================================
    ANGLE
-========================= */
+===================================================== */
 
-function angle(a,b,c){
+function angle(
+    a,
+    b,
+    c
+){
 
-    const abx=a.x-b.x;
-    const aby=a.y-b.y;
+    const abx =
+        a.x-b.x;
 
-    const cbx=c.x-b.x;
-    const cby=c.y-b.y;
+    const aby =
+        a.y-b.y;
+
+    const cbx =
+        c.x-b.x;
+
+    const cby =
+        c.y-b.y;
 
     const dot =
-        abx*cbx +
+        abx*cbx+
         aby*cby;
 
     const mag1 =
         Math.sqrt(
-            abx*abx +
+            abx*abx+
             aby*aby
         );
 
     const mag2 =
         Math.sqrt(
-            cbx*cbx +
+            cbx*cbx+
             cby*cby
         );
 
-    if(!mag1 || !mag2){
+    if(
+        !mag1 ||
+        !mag2
+    )
         return 180;
-    }
 
     let value =
         Math.acos(
-            clamp(
-                dot/(mag1*mag2),
+            Math.max(
                 -1,
-                1
+                Math.min(
+                    1,
+                    dot/(mag1*mag2)
+                )
             )
-        )*180/Math.PI;
+        )
+        *180/Math.PI;
 
     return value;
+
 }
 
-/* =========================
-   POSITION CHECK
-========================= */
 
-function checkPosition(lm){
+/* =====================================================
+   VISIBILITY
+===================================================== */
 
-    if(!lm) return false;
+function visible(
+    lm,
+    ids
+){
 
-    /*
-    Basic visibility.
-    */
-
-    const important = [
-        11,12,
-        23,24,
-        25,26,
-        27,28
-    ];
-
-    let visible=0;
-
-    important.forEach(i=>{
+    for(
+        const id of ids
+    ){
 
         if(
-            lm[i] &&
-            (lm[i].visibility === undefined ||
-             lm[i].visibility > .45)
+            !lm[id] ||
+            (
+                lm[id].visibility !== undefined &&
+                lm[id].visibility < .50
+            )
         ){
-            visible++;
+
+            return false;
+
         }
 
-    });
-
-    if(visible < 6){
-        return false;
-    }
-
-    /*
-    Workout-specific readiness.
-    */
-
-    if(workout==="Push Up"){
-
-        return (
-            lm[11].visibility>.5 &&
-            lm[12].visibility>.5 &&
-            lm[13].visibility>.5 &&
-            lm[14].visibility>.5 &&
-            lm[15].visibility>.5 &&
-            lm[16].visibility>.5 &&
-            lm[23].visibility>.5 &&
-            lm[24].visibility>.5
-        );
-    }
-
-    if(workout==="Squat"){
-
-        return (
-            lm[23].visibility>.5 &&
-            lm[24].visibility>.5 &&
-            lm[25].visibility>.5 &&
-            lm[26].visibility>.5 &&
-            lm[27].visibility>.5 &&
-            lm[28].visibility>.5
-        );
     }
 
     return true;
+
 }
 
-/* =========================
-   PUSH UP
-========================= */
+
+/* =====================================================
+   PUSH-UP READY
+===================================================== */
+
+function pushUpReady(lm){
+
+    return visible(
+        lm,
+        [
+            11,12,
+            13,14,
+            15,16
+        ]
+    );
+
+}
+
+
+/* =====================================================
+   SQUAT READY
+===================================================== */
+
+function squatReady(lm){
+
+    return visible(
+        lm,
+        [
+            23,24,
+            25,26,
+            27,28
+        ]
+    );
+
+}
+
+
+/* =====================================================
+   PUSH-UP DETECTION
+===================================================== */
 
 function detectPushUp(lm){
 
-    const left =
+    const leftElbow =
         angle(
             lm[11],
             lm[13],
             lm[15]
         );
 
-    const right =
+    const rightElbow =
         angle(
             lm[12],
             lm[14],
@@ -1002,48 +1224,108 @@ function detectPushUp(lm){
         );
 
     const elbow =
-        (left+right)/2;
+        (
+            leftElbow+
+            rightElbow
+        )/2;
 
-    if(pushStage==="up" && elbow<100){
 
-        pushStage="down";
+    /*
+    DOWN
 
-        setStatus(
-            "DOWN",
-            "ready"
-        );
-    }
+    Need BOTH arms to bend
+    enough before changing state.
+    */
 
-    else if(
-        pushStage==="down" &&
-        elbow>155
+    if(
+        pushState==="up"
+        &&
+        elbow < 105
     ){
 
-        pushStage="up";
+        pushDownFrames++;
 
-        addRep();
+        pushUpFrames=0;
 
-        setStatus(
-            "GOOD • PUSH UP",
-            "ready"
-        );
+        if(
+            pushDownFrames>=4
+        ){
+
+            pushState=
+                "down";
+
+            pushDownFrames=0;
+
+            setStatus(
+                "DOWN",
+                "ready"
+            );
+
+        }
+
     }
+
+    /*
+    UP
+
+    Arms must actually become
+    almost straight again.
+    */
+
+    else if(
+        pushState==="down"
+        &&
+        elbow > 155
+    ){
+
+        pushUpFrames++;
+
+        pushDownFrames=0;
+
+        if(
+            pushUpFrames>=4
+        ){
+
+            pushState=
+                "up";
+
+            pushUpFrames=0;
+
+            addRep();
+
+            setStatus(
+                "PUSH UP • +1",
+                "ready"
+            );
+
+        }
+
+    }
+
+    else{
+
+        pushDownFrames=0;
+        pushUpFrames=0;
+
+    }
+
 }
 
-/* =========================
-   SQUAT
-========================= */
+
+/* =====================================================
+   SQUAT DETECTION
+===================================================== */
 
 function detectSquat(lm){
 
-    const left =
+    const leftKnee =
         angle(
             lm[23],
             lm[25],
             lm[27]
         );
 
-    const right =
+    const rightKnee =
         angle(
             lm[24],
             lm[26],
@@ -1051,374 +1333,112 @@ function detectSquat(lm){
         );
 
     const knee =
-        (left+right)/2;
+        (
+            leftKnee+
+            rightKnee
+        )/2;
+
+
+    /*
+    DOWN
+    */
 
     if(
-        squatStage==="up" &&
-        knee<105
+        squatState==="up"
+        &&
+        knee < 110
     ){
 
-        squatStage="down";
+        squatDownFrames++;
 
-        setStatus(
-            "DOWN",
-            "ready"
-        );
-    }
-
-    else if(
-        squatStage==="down" &&
-        knee>155
-    ){
-
-        squatStage="up";
-
-        addRep();
-
-        setStatus(
-            "GOOD • SQUAT",
-            "ready"
-        );
-    }
-}
-
-/* =========================
-   HIGH KNEES
-========================= */
-
-function detectHighKnees(lm){
-
-    const leftHigh =
-        lm[25].y <
-        lm[23].y-.08;
-
-    const rightHigh =
-        lm[26].y <
-        lm[24].y-.08;
-
-    if(
-        kneeStage==="down" &&
-        (leftHigh || rightHigh)
-    ){
-
-        kneeStage="up";
-
-        addRep();
-
-    }
-
-    if(
-        kneeStage==="up" &&
-        !leftHigh &&
-        !rightHigh
-    ){
-
-        kneeStage="down";
-    }
-}
-
-/* =========================
-   LUNGES
-========================= */
-
-function detectLunge(lm){
-
-    const left =
-        angle(
-            lm[23],
-            lm[25],
-            lm[27]
-        );
-
-    const right =
-        angle(
-            lm[24],
-            lm[26],
-            lm[28]
-        );
-
-    const bent =
-        left<110 ||
-        right<110;
-
-    const straight =
-        left>155 &&
-        right>155;
-
-    if(
-        lungeStage==="up" &&
-        bent
-    ){
-
-        lungeStage="down";
-    }
-
-    else if(
-        lungeStage==="down" &&
-        straight
-    ){
-
-        lungeStage="up";
-
-        addRep();
-    }
-}
-
-/* =========================
-   MOUNTAIN CLIMBER
-========================= */
-
-function detectMountainClimber(lm){
-
-    const leftKnee =
-        lm[25].x;
-
-    const rightKnee =
-        lm[26].x;
-
-    const leftHip =
-        lm[23].x;
-
-    const rightHip =
-        lm[24].x;
-
-    const leftMove =
-        Math.abs(leftKnee-leftHip);
-
-    const rightMove =
-        Math.abs(rightKnee-rightHip);
-
-    if(
-        mountainStage==="away" &&
-        (leftMove<.16 || rightMove<.16)
-    ){
-
-        mountainStage="near";
-
-        addRep();
-    }
-
-    if(
-        mountainStage==="near" &&
-        leftMove>.20 &&
-        rightMove>.20
-    ){
-
-        mountainStage="away";
-    }
-}
-
-/* =========================
-   JUMPING JACK
-========================= */
-
-function detectJumpingJack(lm){
-
-    const armsUp =
-        lm[15].y < lm[11].y-.05 &&
-        lm[16].y < lm[12].y-.05;
-
-    const feetApart =
-        Math.abs(
-            lm[27].x-lm[28].x
-        )>.25;
-
-    const open =
-        armsUp && feetApart;
-
-    if(
-        jackStage==="closed" &&
-        open
-    ){
-
-        jackStage="open";
-
-        addRep();
-    }
-
-    if(
-        jackStage==="open" &&
-        !open
-    ){
-
-        jackStage="closed";
-    }
-}
-
-/* =========================
-   BURPEE
-========================= */
-
-function detectBurpee(lm){
-
-    const leftKnee =
-        angle(
-            lm[23],
-            lm[25],
-            lm[27]
-        );
-
-    const rightKnee =
-        angle(
-            lm[24],
-            lm[26],
-            lm[28]
-        );
-
-    const kneeBend =
-        leftKnee<110 ||
-        rightKnee<110;
-
-    const standing =
-        leftKnee>155 &&
-        rightKnee>155;
-
-    if(
-        burpeeStage==="up" &&
-        kneeBend
-    ){
-
-        burpeeStage="down";
-    }
-
-    else if(
-        burpeeStage==="down" &&
-        standing
-    ){
-
-        burpeeStage="up";
-
-        addRep();
-    }
-}
-
-/* =========================
-   PLANK
-========================= */
-
-function detectPlank(lm){
-
-    const bodyAngle =
-        angle(
-            lm[11],
-            lm[23],
-            lm[25]
-        );
-
-    const isPlank =
-        bodyAngle>150;
-
-    if(isPlank){
-
-        if(!plankStart){
-
-            plankStart =
-                Date.now();
-        }
+        squatUpFrames=0;
 
         if(
-            !plankCounted &&
-            Date.now()-plankStart>=1000
+            squatDownFrames>=4
         ){
 
-            plankCounted=true;
+            squatState=
+                "down";
+
+            squatDownFrames=0;
+
+            setStatus(
+                "SQUAT DOWN",
+                "ready"
+            );
+
+        }
+
+    }
+
+
+    /*
+    UP
+    */
+
+    else if(
+        squatState==="down"
+        &&
+        knee > 155
+    ){
+
+        squatUpFrames++;
+
+        squatDownFrames=0;
+
+        if(
+            squatUpFrames>=4
+        ){
+
+            squatState=
+                "up";
+
+            squatUpFrames=0;
 
             addRep();
 
             setStatus(
-                "1 SEC • PLANK",
+                "SQUAT • +1",
                 "ready"
             );
+
         }
 
-    }else{
-
-        plankStart=0;
-        plankCounted=false;
     }
+
+    else{
+
+        squatDownFrames=0;
+        squatUpFrames=0;
+
+    }
+
 }
 
-/* =========================
-   STRETCHING
-========================= */
 
-function detectStretching(lm){
-
-    const handsUp =
-        lm[15].y <
-        lm[11].y-.12 &&
-        lm[16].y <
-        lm[12].y-.12;
-
-    if(
-        stretchStage==="down" &&
-        handsUp
-    ){
-
-        stretchStage="up";
-
-        addRep();
-    }
-
-    if(
-        stretchStage==="up" &&
-        !handsUp
-    ){
-
-        stretchStage="down";
-    }
-}
-
-/* =========================
-   COOL DOWN
-========================= */
-
-function detectCoolDown(lm){
-
-    const handsUp =
-        lm[15].y <
-        lm[11].y-.08 &&
-        lm[16].y <
-        lm[12].y-.08;
-
-    if(
-        cooldownStage==="down" &&
-        handsUp
-    ){
-
-        cooldownStage="up";
-
-        addRep();
-    }
-
-    if(
-        cooldownStage==="up" &&
-        !handsUp
-    ){
-
-        cooldownStage="down";
-    }
-}
-
-/* =========================
+/* =====================================================
    REP
-========================= */
+===================================================== */
 
 function addRep(){
 
-    if(!poseReady) return;
+    if(!poseReady)
+        return;
 
-    if(repCount>=50) return;
+    if(repCount>=50)
+        return;
 
     repCount++;
 
     repEl.innerText =
         repCount;
+
 }
 
-/* =========================
+
+/* =====================================================
    POSE RESULTS
-========================= */
+===================================================== */
 
 function onPoseResults(results){
 
@@ -1434,6 +1454,7 @@ function onPoseResults(results){
         rect.height
     );
 
+
     if(
         !results.poseLandmarks
     ){
@@ -1441,112 +1462,128 @@ function onPoseResults(results){
         poseReady=false;
 
         setStatus(
-            "Show your full body",
+            "Show target body parts",
             "warn"
         );
 
         return;
+
     }
+
 
     const lm =
         results.poseLandmarks;
 
-    /*
-    First check body visibility.
-    */
 
-    const ready =
-        checkPosition(lm);
+    /* ================================================
+       PUSH UP
+    ================================================ */
 
-    if(!ready){
+    if(isPushUp){
 
-        poseReady=false;
+        drawPushGuide(lm);
 
-        drawWorkoutGuide(lm);
+        if(
+            !pushUpReady(lm)
+        ){
 
-        setStatus(
-            "Move into the guide",
-            "warn"
-        );
+            poseReady=false;
+
+            setStatus(
+                "Show shoulders + arms",
+                "warn"
+            );
+
+            return;
+
+        }
+
+        if(!poseReady){
+
+            poseReady=true;
+
+            startTimer();
+
+            setStatus(
+                "READY • PUSH UP",
+                "ready"
+            );
+
+        }
+
+        detectPushUp(lm);
 
         return;
+
     }
 
-    /*
-    Once ready, start timer.
-    */
 
-    if(!poseReady){
+    /* ================================================
+       SQUAT
+    ================================================ */
 
-        poseReady=true;
+    if(isSquat){
 
-        setStatus(
-            "READY • START",
-            "ready"
-        );
+        drawSquatGuide(lm);
 
-        startTimer();
-    }
+        if(
+            !squatReady(lm)
+        ){
 
-    /*
-    Draw ONLY target workout
-    body parts.
-    */
+            poseReady=false;
 
-    drawWorkoutGuide(lm);
+            setStatus(
+                "Show hips + legs",
+                "warn"
+            );
 
-    /*
-    Detection
-    */
+            return;
 
-    if(workout==="Push Up"){
-        detectPushUp(lm);
-    }
+        }
 
-    else if(workout==="Squat"){
+        if(!poseReady){
+
+            poseReady=true;
+
+            startTimer();
+
+            setStatus(
+                "READY • SQUAT",
+                "ready"
+            );
+
+        }
+
         detectSquat(lm);
+
+        return;
+
     }
 
-    else if(workout==="High Knees"){
-        detectHighKnees(lm);
-    }
 
-    else if(workout==="Lunges"){
-        detectLunge(lm);
-    }
+    /* ================================================
+       OTHER WORKOUT
+    ================================================ */
 
-    else if(workout==="Mountain Climber"){
-        detectMountainClimber(lm);
-    }
+    poseReady=false;
 
-    else if(workout==="Jumping Jack"){
-        detectJumpingJack(lm);
-    }
+    setStatus(
+        "Push Up / Squat only",
+        "warn"
+    );
 
-    else if(workout==="Burpees"){
-        detectBurpee(lm);
-    }
-
-    else if(workout==="Plank"){
-        detectPlank(lm);
-    }
-
-    else if(workout==="Stretching"){
-        detectStretching(lm);
-    }
-
-    else if(workout==="Cool Down"){
-        detectCoolDown(lm);
-    }
 }
 
-/* =========================
-   SAVE COMPLETION
-========================= */
 
-async function finishWorkout(){
+/* =====================================================
+   FINISH
+===================================================== */
 
-    if(saving) return;
+finishBtn.onclick =
+async function(){
+
+    if(saving)
+        return;
 
     if(repCount<=0){
 
@@ -1556,75 +1593,90 @@ async function finishWorkout(){
         );
 
         return;
+
     }
 
-    if(!currentUser) return;
+    if(!currentUser)
+        return;
 
     saving=true;
 
     finishBtn.disabled=true;
 
-    finishBtn.innerText="SAVING...";
+    finishBtn.innerText=
+        "SAVING...";
+
 
     try{
 
         const uid =
             currentUser.uid;
 
-        const userRef =
-            db.collection("users").doc(uid);
+        const ref =
+            db
+            .collection("users")
+            .doc(uid);
 
         const snap =
-            await userRef.get();
+            await ref.get();
 
         const data =
-            snap.exists ?
-            snap.data() :
-            {};
+            snap.exists
+            ? snap.data()
+            : {};
 
         const oldPoints =
-            Number(data.totalPoints || 0);
+            Number(
+                data.totalPoints || 0
+            );
 
-        const oldCompleted =
-            Array.isArray(data.completedTasks)
+        const oldTasks =
+            Array.isArray(
+                data.completedTasks
+            )
             ? data.completedTasks
             : [];
 
         const today =
-            new Date().toISOString().slice(0,10);
+            new Date()
+            .toISOString()
+            .slice(0,10);
 
         const taskKey =
             today+"_"+workout;
 
         if(
-            !oldCompleted.includes(taskKey)
+            !oldTasks.includes(taskKey)
         ){
 
-            await userRef.set({
+            await ref.set({
 
                 totalPoints:
                     oldPoints+repCount,
 
                 completedTasks:[
-                    ...oldCompleted,
+                    ...oldTasks,
                     taskKey
                 ]
 
-            },{merge:true});
+            },{
+                merge:true
+            });
 
         }
+
+        stopCamera();
+
+        if(timer)
+            clearInterval(timer);
 
         window.location.href=
             "daily-task.html";
 
+
     }catch(error){
 
         console.error(error);
-
-        setStatus(
-            "Save failed. Try again.",
-            "warn"
-        );
 
         saving=false;
 
@@ -1632,20 +1684,20 @@ async function finishWorkout(){
 
         finishBtn.innerText=
             "FINISH ✓";
+
+        setStatus(
+            "Save failed",
+            "warn"
+        );
+
     }
-}
 
-/* =========================
-   FINISH
-========================= */
-
-finishBtn.onclick=()=>{
-    finishWorkout();
 };
 
-/* =========================
-   QUIT
-========================= */
+
+/* =====================================================
+   STOP CAMERA
+===================================================== */
 
 function stopCamera(){
 
@@ -1654,29 +1706,45 @@ function stopCamera(){
     if(video.srcObject){
 
         video.srcObject
-            .getTracks()
-            .forEach(track=>{
+        .getTracks()
+        .forEach(
+            track=>{
                 track.stop();
-            });
+            }
+        );
+
     }
+
 }
 
-quitBtn.onclick=()=>{
+
+/* =====================================================
+   QUIT
+===================================================== */
+
+quitBtn.onclick =
+function(){
 
     stopCamera();
 
-    if(timer){
+    if(timer)
         clearInterval(timer);
-    }
 
     /*
-    IMPORTANT:
-    QUIT = NO SAVE
+    NO SAVE
     */
 
     window.location.href=
         "daily-task.html";
+
 };
+
+
+/* =====================================================
+   INITIAL CANVAS
+===================================================== */
+
+resizeCanvas();
 
 </script>
 
