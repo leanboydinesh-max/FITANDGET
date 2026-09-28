@@ -1,469 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fit & Get - Daily Task</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>FIT & GET - Daily Tasks</title>
 
 <style>
 
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Poppins,sans-serif;
 }
 
 body{
-
-background:#000;
-color:#fff;
-overflow-x:hidden;
-
+    background:#050505;
+    color:white;
+    min-height:100vh;
 }
 
 .container{
-
-width:100%;
-max-width:430px;
-margin:auto;
-min-height:100vh;
-background:#050505;
-
+    width:100%;
+    max-width:430px;
+    margin:auto;
+    min-height:100vh;
+    padding:20px;
+    padding-bottom:40px;
 }
+
+
+/* HEADER */
 
 .header{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:20px;
-
-background:#0d0d0d;
-
-border-bottom:1px solid rgba(130,255,0,.25);
-
-position:sticky;
-top:0;
-z-index:100;
-
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
 }
 
-.logo{
-
-display:flex;
-align-items:center;
-gap:10px;
-
+.back-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:1px solid #9DFF00;
+    background:#111;
+    color:#9DFF00;
+    font-size:20px;
 }
 
-.logo img{
-
-width:45px;
-height:45px;
-border-radius:50%;
-
-}
-
-.logo h2{
-
-font-size:22px;
-font-weight:700;
-color:#9DFF00;
-
-}
-
-.rc-box{
-
-display:flex;
-align-items:center;
-gap:8px;
-
-background:#131313;
-
-padding:8px 14px;
-
-border-radius:30px;
-
-border:1px solid #9DFF00;
-
-}
-
-.rc-icon{
-
-width:14px;
-height:14px;
-
-background:#9DFF00;
-
-border-radius:50%;
-
-box-shadow:0 0 15px #9DFF00;
-
+.header h1{
+    font-size:22px;
 }
 
 .rc{
-
-font-size:15px;
-font-weight:700;
-
-color:#fff;
-
+    color:#9DFF00;
+    font-weight:700;
 }
 
-.page-title{
 
-padding:22px 20px 10px;
+/* INFO */
 
+.info-card{
+    background:#111;
+    border:1px solid #222;
+    border-radius:20px;
+    padding:18px;
+    margin-bottom:18px;
 }
 
-.page-title h1{
-
-font-size:28px;
-
-font-weight:800;
-
+.info-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-.page-title p{
-
-margin-top:5px;
-
-color:#9a9a9a;
-
-font-size:14px;
-
-}
-.progress-card{
-
-margin:20px;
-padding:18px;
-
-background:#111;
-
-border:1px solid rgba(157,255,0,.25);
-
-border-radius:20px;
-
+.info-title{
+    font-size:15px;
+    color:#aaa;
 }
 
-.progress-head{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-margin-bottom:12px;
-
+.info-value{
+    color:#9DFF00;
+    font-size:18px;
+    font-weight:700;
 }
 
-.progress-head h3{
-
-font-size:18px;
-font-weight:600;
-
+.progress-bg{
+    width:100%;
+    height:8px;
+    background:#222;
+    border-radius:20px;
+    margin-top:15px;
+    overflow:hidden;
 }
 
-.progress-head span{
-
-color:#9DFF00;
-font-weight:700;
-
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:#9DFF00;
+    border-radius:20px;
+    transition:.3s;
 }
 
-.progress{
 
-width:100%;
-height:10px;
+/* WORKOUT LIST */
 
-background:#222;
-
-border-radius:30px;
-
-overflow:hidden;
-
-}
-
-.progress-fill{
-
-width:20%;
-
-height:100%;
-
-background:#9DFF00;
-
-box-shadow:0 0 12px #9DFF00;
-
-border-radius:30px;
-
-}
-
-.task-list{
-
-padding:0 20px 110px;
-
+.section-title{
+    font-size:18px;
+    margin:22px 0 12px;
 }
 
 .task{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-background:#111;
-
-padding:16px;
-
-margin-bottom:15px;
-
-border-radius:18px;
-
-border:1px solid rgba(157,255,0,.18);
-
-transition:.3s;
-
+    background:#111;
+    border:1px solid #252525;
+    border-radius:18px;
+    padding:16px;
+    margin-bottom:12px;
+    transition:.2s;
 }
 
-.task:hover{
-
-transform:scale(1.02);
-
-border-color:#9DFF00;
-
+.task.selected{
+    border:1px solid #9DFF00;
+    box-shadow:0 0 12px rgba(157,255,0,.12);
 }
 
-.left{
-
-display:flex;
-align-items:center;
-gap:14px;
-
+.task-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
 
-.number{
-
-width:34px;
-height:34px;
-
-border-radius:50%;
-
-background:#1b1b1b;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-color:#9DFF00;
-
-font-weight:700;
-
+.task-left{
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
-.exercise{
+.task-number{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:#1b1b1b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#9DFF00;
+    font-weight:700;
+}
 
-font-size:16px;
-
-font-weight:600;
-
+.task-name{
+    font-weight:600;
 }
 
 .status{
-
-color:#9DFF00;
-
-font-size:22px;
-
-font-weight:bold;
-
+    color:#777;
+    font-size:20px;
 }
+
+.task.selected .status{
+    color:#9DFF00;
+}
+
+.task-bottom{
+    margin-top:10px;
+    color:#777;
+    font-size:12px;
+}
+
+
+/* START BUTTON */
 
 .start-btn{
-
-position:fixed;
-
-left:20px;
-right:20px;
-bottom:25px;
-
-height:58px;
-
-border:none;
-
-border-radius:18px;
-
-background:#9DFF00;
-
-color:#000;
-
-font-size:18px;
-
-font-weight:700;
-
-cursor:pointer;
-
-box-shadow:0 0 20px rgba(157,255,0,.5);
-
+    width:100%;
+    height:56px;
+    margin-top:8px;
+    border:none;
+    border-radius:16px;
+    background:#9DFF00;
+    color:#000;
+    font-size:17px;
+    font-weight:800;
 }
-</style>
 
+.start-btn:disabled{
+    background:#222;
+    color:#666;
+}
+
+
+/* NOTE */
+
+.note{
+    text-align:center;
+    color:#666;
+    font-size:12px;
+    margin-top:14px;
+}
+
+</style>
 </head>
+
 
 <body>
 
 <div class="container">
 
-<div class="header">
 
-<div class="logo">
-<img src="logo.png" alt="Fit & Get">
-<h2>FIT & GET</h2>
-</div>
+    <!-- HEADER -->
 
-<div class="rc-box">
-<div class="rc-icon"></div>
-<span class="rc">250 RC</span>
-</div>
+    <div class="header">
 
-</div>
+        <button class="back-btn" id="backBtn">
+            ←
+        </button>
 
-<div class="page-title">
+        <h1>Daily Tasks</h1>
 
-<h1>Today's Task</h1>
+        <span class="rc" id="rcDisplay">
+            0 RC
+        </span>
 
-<p>Complete all 10 workouts and earn RC Points.</p>
+    </div>
 
-</div>
 
-<div class="progress-card">
+    <!-- PROGRESS -->
 
-<div class="progress-head">
+    <div class="info-card">
 
-<h3>Today's Progress</h3>
+        <div class="info-top">
 
-<span>2 / 10</span>
+            <div>
 
-</div>
+                <div class="info-title">
+                    Today's Progress
+                </div>
 
-<div class="progress">
+                <div class="info-value">
+                    <span id="completedCount">0</span> / 10
+                </div>
 
-<div class="progress-fill"></div>
+            </div>
 
-</div>
+            <div class="info-value">
+                🔥 <span id="streak">0</span>
+            </div>
 
-</div>
-<div class="task-list">
+        </div>
 
-<!-- 1 -->
-<div class="task">
-<div class="left">
-<div class="number">1</div>
-<div class="exercise">Stretching</div>
-</div>
-<div class="status">○</div>
-</div>
 
-<!-- 2 -->
-<div class="task">
-<div class="left">
-<div class="number">2</div>
-<div class="exercise">Push Up</div>
-</div>
-<div class="status">○</div>
-</div>
+        <div class="progress-bg">
 
-<!-- 3 -->
-<div class="task">
-<div class="left">
-<div class="number">3</div>
-<div class="exercise">Squat</div>
-</div>
-<div class="status">○</div>
-</div>
+            <div
+                class="progress-bar"
+                id="progressBar">
+            </div>
 
-<!-- 4 -->
-<div class="task">
-<div class="left">
-<div class="number">4</div>
-<div class="exercise">High Knees</div>
-</div>
-<div class="status">○</div>
-</div>
+        </div>
 
-<!-- 5 -->
-<div class="task">
-<div class="left">
-<div class="number">5</div>
-<div class="exercise">Lunges</div>
-</div>
-<div class="status">○</div>
-</div>
+    </div>
 
-<!-- 6 -->
-<div class="task">
-<div class="left">
-<div class="number">6</div>
-<div class="exercise">Mountain Climber</div>
-</div>
-<div class="status">○</div>
-</div>
 
-<!-- 7 -->
-<div class="task">
-<div class="left">
-<div class="number">7</div>
-<div class="exercise">Jumping Jack</div>
-</div>
-<div class="status">○</div>
-</div>
+    <!-- WORKOUTS -->
 
-<!-- 8 -->
-<div class="task">
-<div class="left">
-<div class="number">8</div>
-<div class="exercise">Burpees</div>
-</div>
-<div class="status">○</div>
-</div>
+    <div class="section-title">
+        Choose Your Workout
+    </div>
 
-<!-- 9 -->
-<div class="task">
-<div class="left">
-<div class="number">9</div>
-<div class="exercise">Plank</div>
-</div>
-<div class="status">○</div>
-</div>
 
-<!-- 10 -->
-<div class="task">
-<div class="left">
-<div class="number">10</div>
-<div class="exercise">Cool Down</div>
-</div>
-<div class="status">○</div>
-</div>
+    <div id="taskList"></div>
+
+
+    <!-- START -->
+
+    <button
+        class="start-btn"
+        id="startBtn"
+        disabled>
+
+        SELECT WORKOUT
+
+    </button>
+
+
+    <div class="note">
+        Do Your Max • Maximum 50 Reps • 1 Set
+    </div>
 
 </div>
 
-<button class="start-btn">START WORKOUT</button>
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
 
 <script>
 
-document.querySelector(".start-btn").addEventListener("click",()=>{
+/* =========================
+   FIREBASE
+========================= */
 
-window.location.href="camera.html";
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+
+    authDomain:
+    "fitandget-b3461.firebaseapp.com",
+
+    projectId:
+    "fitandget-b3461",
+
+    storageBucket:
+    "fitandget-b3461.firebasestorage.app",
+
+    messagingSenderId:
+    "216178533513",
+
+    appId:
+    "1:216178533513:web:975f20599c7e77b9d01258"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+
+/* =========================
+   WORKOUT LIST
+========================= */
+
+const workouts = [
+
+    "Stretching",
+    "Push Up",
+    "Squat",
+    "High Knees",
+    "Lunges",
+    "Mountain Climber",
+    "Jumping Jack",
+    "Burpees",
+    "Plank",
+    "Cool Down"
+
+];
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let selectedWorkout = null;
+
+let completedTasks = [];
+
+let currentUser = null;
+
+
+/* =========================
+   CREATE WORKOUT LIST
+========================= */
+
+function renderTasks(){
+
+    const list =
+        document.getElementById("taskList");
+
+    list.innerHTML = "";
+
+
+    workouts.forEach((workout,index) => {
+
+        const completed =
+            completedTasks.includes(index);
+
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "task" +
+            (selectedWorkout === index
+                ? " selected"
+                : "");
+
+
+        div.innerHTML = `
+
+            <div class="task-top">
+
+                <div class="task-left">
+
+                    <div class="task-number">
+                        ${index + 1}
+                    </div>
+
+                    <div class="task-name">
+                        ${workout}
+                    </div>
+
+                </div>
+
+                <div class="status">
+                    ${completed ? "✓" : "○"}
+                </div>
+
+            </div>
+
+            <div class="task-bottom">
+                ${completed
+                    ? "Completed"
+                    : "Do Your Max • 1 Set"}
+            </div>
+
+        `;
+
+
+        /* COMPLETED TASK */
+
+        if(completed){
+
+            div.style.opacity = "0.5";
+            div.style.cursor = "not-allowed";
+
+        }else{
+
+            div.style.cursor = "pointer";
+
+
+            div.addEventListener("click",() => {
+
+                selectedWorkout = index;
+
+                renderTasks();
+
+                updateStartButton();
+
+            });
+
+        }
+
+
+        list.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   START BUTTON
+========================= */
+
+function updateStartButton(){
+
+    const btn =
+        document.getElementById("startBtn");
+
+
+    if(selectedWorkout === null){
+
+        btn.disabled = true;
+
+        btn.innerText =
+            "SELECT WORKOUT";
+
+        return;
+
+    }
+
+
+    btn.disabled = false;
+
+    btn.innerText =
+        "START " +
+        workouts[selectedWorkout].toUpperCase();
+
+}
+
+
+/* =========================
+   FIREBASE USER
+========================= */
+
+firebase.auth().onAuthStateChanged(async(user) => {
+
+    if(!user){
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    currentUser = user;
+
+
+    try{
+
+        const doc =
+            await db
+                .collection("users")
+                .doc(user.uid)
+                .get();
+
+
+        if(doc.exists){
+
+            const data =
+                doc.data();
+
+
+            /* RC */
+
+            const totalPoints =
+                data.totalPoints || 0;
+
+
+            document.getElementById(
+                "rcDisplay"
+            ).innerText =
+                totalPoints + " RC";
+
+
+            /* STREAK */
+
+            document.getElementById(
+                "streak"
+            ).innerText =
+                data.streak || 0;
+
+
+            /* COMPLETED TASKS */
+
+            completedTasks =
+                data.completedTasks || [];
+
+
+            updateProgress();
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Daily task loading error:",
+            error
+        );
+
+    }
+
+
+    renderTasks();
+
+    updateStartButton();
 
 });
 
-</script>
-</body>
 
+/* =========================
+   PROGRESS
+========================= */
+
+function updateProgress(){
+
+    const count =
+        completedTasks.length;
+
+
+    document.getElementById(
+        "completedCount"
+    ).innerText =
+        count;
+
+
+    const percent =
+        (count / 10) * 100;
+
+
+    document.getElementById(
+        "progressBar"
+    ).style.width =
+        percent + "%";
+
+}
+
+
+/* =========================
+   START WORKOUT
+========================= */
+
+document
+.getElementById("startBtn")
+.addEventListener("click",() => {
+
+
+    if(selectedWorkout === null){
+
+        return;
+
+    }
+
+
+    window.location.href =
+        "camera.html?workout=" +
+        selectedWorkout;
+
+});
+
+
+/* =========================
+   BACK
+========================= */
+
+document
+.getElementById("backBtn")
+.addEventListener("click",() => {
+
+    window.location.href =
+        "home.html";
+
+});
+
+
+</script>
+
+</body>
 </html>
