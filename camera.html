@@ -45,7 +45,7 @@ body{
     inset:0;
     width:100%;
     height:100%;
-    object-fit:cover;
+    object-fit:contain;
     background:#111;
     transform:scaleX(-1);
 }
@@ -86,6 +86,27 @@ body{
     font-weight:800;
 
     border:1px solid #9DFF00;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.finish-top-btn{
+    background:#9DFF00;
+    color:#000;
+    border:none;
+    padding:10px 15px;
+    border-radius:25px;
+    font-weight:900;
+    box-shadow:0 0 12px rgba(157,255,0,.25);
+}
+
+.finish-top-btn:disabled{
+    opacity:.35;
+    box-shadow:none;
 }
 
 .quit-btn{
@@ -222,33 +243,6 @@ body{
     margin-top:3px;
 }
 
-/* COMPLETE */
-
-#completeBtn{
-    margin-top:9px;
-
-    width:100%;
-    height:50px;
-
-    border:none;
-    border-radius:14px;
-
-    background:#9DFF00;
-    color:#000;
-
-    font-size:15px;
-    font-weight:900;
-
-    box-shadow:
-        0 0 15px
-        rgba(157,255,0,.25);
-}
-
-#completeBtn:disabled{
-    opacity:.35;
-    box-shadow:none;
-}
-
 /* SMALL PHONES */
 
 @media(max-height:650px){
@@ -270,18 +264,15 @@ body{
         font-size:42px;
     }
 
-    #completeBtn{
-        height:45px;
-        margin-top:6px;
-    }
     .finish-top-btn{
-    background:#9DFF00;
-    color:#000;
-    border:none;
-    padding:10px 15px;
-    border-radius:25px;
-    font-weight:900;
-    margin-left:8px;
+        padding:9px 12px;
+        font-size:13px;
+    }
+
+    .quit-btn{
+        padding:9px 13px;
+        font-size:13px;
+    }
 
 }
 
@@ -310,20 +301,22 @@ body{
             ⏱ <span id="time">00:00</span>
         </div>
 
-        <button
-            class="quit-btn"
-            id="quitBtn">
+        <div class="top-actions">
 
-            QUIT
+            <button
+                class="finish-top-btn"
+                id="finishBtn"
+                disabled>
+                FINISH ✓
+            </button>
 
-        </button>
-       <button
-    class="finish-top-btn"
-    id="finishTopBtn">
+            <button
+                class="quit-btn"
+                id="quitBtn">
+                QUIT
+            </button>
 
-    FINISH ✓
-
-</button>
+        </div>
 
     </div>
 
@@ -381,14 +374,6 @@ body{
         <div class="max-limit">
             Maximum 50 Reps
         </div>
-
-        <button
-            id="completeBtn"
-            disabled>
-
-            COMPLETE WORKOUT ✓
-
-        </button>
 
     </div>
 
@@ -555,9 +540,9 @@ const repDisplay =
         "repCount"
     );
 
-const completeBtn =
+const finishBtn =
     document.getElementById(
-        "completeBtn"
+        "finishBtn"
     );
 
 const aiStatus =
@@ -761,6 +746,65 @@ function drawPose(
         "round";
 
 
+    /* contain camera mapping */
+
+    const videoWidth =
+        video.videoWidth || 720;
+
+    const videoHeight =
+        video.videoHeight || 1280;
+
+    const videoAspect =
+        videoWidth / videoHeight;
+
+    const screenAspect =
+        width / height;
+
+    let displayWidth =
+        width;
+
+    let displayHeight =
+        height;
+
+    let offsetX = 0;
+
+    let offsetY = 0;
+
+
+    if(videoAspect > screenAspect){
+
+        displayHeight =
+            width / videoAspect;
+
+        offsetY =
+            (height - displayHeight) / 2;
+
+    }else{
+
+        displayWidth =
+            height * videoAspect;
+
+        offsetX =
+            (width - displayWidth) / 2;
+
+    }
+
+
+    function mapPoint(point){
+
+        return {
+            x:
+                offsetX +
+                point.x * displayWidth,
+
+            y:
+                offsetY +
+                point.y * displayHeight
+        };
+
+    }
+
+
     POSE_CONNECTIONS.forEach(
         connection => {
 
@@ -780,16 +824,23 @@ function drawPose(
                 visible(b)
             ){
 
+                const pa =
+                    mapPoint(a);
+
+                const pb =
+                    mapPoint(b);
+
+
                 poseCtx.beginPath();
 
                 poseCtx.moveTo(
-                    a.x * width,
-                    a.y * height
+                    pa.x,
+                    pa.y
                 );
 
                 poseCtx.lineTo(
-                    b.x * width,
-                    b.y * height
+                    pb.x,
+                    pb.y
                 );
 
                 poseCtx.stroke();
@@ -807,11 +858,15 @@ function drawPose(
                 visible(point)
             ){
 
+                const p =
+                    mapPoint(point);
+
+
                 poseCtx.beginPath();
 
                 poseCtx.arc(
-                    point.x * width,
-                    point.y * height,
+                    p.x,
+                    p.y,
                     4,
                     0,
                     Math.PI * 2
@@ -830,282 +885,141 @@ function drawPose(
 /* =====================================================
    AUTH
 ===================================================== */
+/* =====================================================
+   AUTH
+===================================================== */
 
-firebase.auth()
-.onAuthStateChanged(
-async(user) => {
+auth.onAuthStateChanged(async (user) => {
 
     if(!user){
-
-        window.location.href =
-            "index.html";
-
+        window.location.href = "index.html";
         return;
-
     }
 
-
-    currentUser =
-        user;
-
+    currentUser = user;
 
     try{
-
-        const userDoc =
-            await db
-            .collection("users")
+        const snap = await db.collection("users")
             .doc(user.uid)
             .get();
 
+        if(snap.exists){
+            const data = snap.data();
 
-        if(
-            userDoc.exists
-        ){
-
-            const data =
-                userDoc.data();
-
-
-            completedTasks =
-                Array.isArray(
-                    data.completedTasks
-                )
-                ?
-                data.completedTasks
-                :
-                [];
-
-
-            if(
-                completedTasks.includes(
-                    workoutIndex
-                )
-            ){
-
-                alert(
-                    "This workout is already completed!"
-                );
-
-                window.location.href =
-                    "daily-task.html";
-
-                return;
-
-            }
-
+            completedTasks = Array.isArray(data.completedTasks)
+                ? data.completedTasks
+                : [];
         }
 
-
-        startAI();
-
-    }
-    catch(error){
-
-        console.error(
-            error
-        );
-
-        setAIStatus(
-            "User loading error",
-            "bad"
-        );
-
+    }catch(error){
+        console.error("User data error:", error);
     }
 
+    startAI();
 });
 
 
 /* =====================================================
-   MEDIAPIPE POSE
-===================================================== */
-
-const pose =
-    new Pose({
-
-        locateFile:
-        (file) => {
-
-            return (
-                "https://cdn.jsdelivr.net/npm/@mediapipe/pose/"
-                +
-                file
-            );
-
-        }
-
-    });
-
-
-pose.setOptions({
-
-    modelComplexity:1,
-
-    smoothLandmarks:true,
-
-    enableSegmentation:false,
-
-    smoothSegmentation:false,
-
-    minDetectionConfidence:.55,
-
-    minTrackingConfidence:.55
-
-});
-
-
-pose.onResults(
-    onPoseResults
-);
-
-
-/* =====================================================
-   CAMERA
-===================================================== */
-
-const camera =
-    new Camera(
-        video,
-        {
-
-            onFrame:
-            async() => {
-
-                if(
-                    !cameraStarted
-                ){
-
-                    return;
-
-                }
-
-
-                try{
-
-                    await pose.send({
-                        image:video
-                    });
-
-                }
-                catch(error){
-
-                    console.error(
-                        error
-                    );
-
-                }
-
-            },
-
-            width:720,
-
-            height:1280
-
-        }
-    );
-
-
-/* =====================================================
-   START CAMERA
+   START AI
 ===================================================== */
 
 async function startAI(){
 
-    if(cameraStarted){
+    if(cameraStarted) return;
 
-        return;
-
-    }
-
+    setAIStatus("Starting camera...");
 
     try{
 
-        setAIStatus(
-            "Starting Camera AI...",
-            "warn"
-        );
+        const pose = new Pose({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+            }
+        });
 
+        pose.setOptions({
+            modelComplexity: 1,
+            smoothLandmarks: true,
+            enableSegmentation: false,
+            smoothSegmentation: false,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
 
-        cameraStarted =
-            true;
+        pose.onResults(onPoseResults);
 
+        const camera = new Camera(video, {
+            onFrame: async () => {
+                await pose.send({
+                    image: video
+                });
+            },
+            width: 720,
+            height: 1280
+        });
 
         await camera.start();
 
+        cameraStarted = true;
 
-        setAIStatus(
-            "Show your full body",
-            "warn"
-        );
+        setAIStatus("AI Ready ✓");
 
+        startTimer();
+
+    }catch(error){
+
+        console.error("AI start error:", error);
+
+        setAIStatus("Camera / AI failed");
+
+        alert("Camera start aagala. Please allow camera permission.");
     }
-    catch(error){
-
-        cameraStarted =
-            false;
-
-
-        console.error(
-            error
-        );
-
-
-        setAIStatus(
-            "Camera permission required",
-            "bad"
-        );
-
-
-        alert(
-            "Please allow camera permission."
-        );
-
-    }
-
 }
 
 
 /* =====================================================
-   ANGLE
+   CAMERA STOP
 ===================================================== */
 
-function calculateAngle(
-    a,
-    b,
-    c
-){
+function stopCamera(){
 
-    const radians =
-        Math.atan2(
-            c.y - b.y,
-            c.x - b.x
-        )
-        -
-        Math.atan2(
-            a.y - b.y,
-            a.x - b.x
-        );
+    try{
 
+        if(video.srcObject){
 
-    let angle =
-        Math.abs(
-            radians *
-            180 /
-            Math.PI
-        );
+            video.srcObject
+                .getTracks()
+                .forEach(track => track.stop());
 
+            video.srcObject = null;
+        }
 
-    if(
-        angle > 180
-    ){
+    }catch(error){
 
-        angle =
-            360 - angle;
-
+        console.error("Camera stop error:", error);
     }
 
+    cameraStarted = false;
+}
+
+
+/* =====================================================
+   ANGLE CALCULATION
+===================================================== */
+
+function calculateAngle(a,b,c){
+
+    const radians =
+        Math.atan2(c.y - b.y, c.x - b.x) -
+        Math.atan2(a.y - b.y, a.x - b.x);
+
+    let angle = Math.abs(radians * 180 / Math.PI);
+
+    if(angle > 180){
+        angle = 360 - angle;
+    }
 
     return angle;
-
 }
 
 
@@ -1115,25 +1029,16 @@ function calculateAngle(
 
 function addRep(){
 
-    if(
-        repCount >= 50
-    ){
-
+    if(repCount >= 50){
+        setAIStatus("MAX 50 REPS");
         return;
-
     }
-
 
     repCount++;
 
+    repDisplay.textContent = repCount;
 
-    repDisplay.innerText =
-        repCount;
-
-
-    completeBtn.disabled =
-        false;
-
+    setAIStatus(`REP ${repCount} ✓`);
 }
 
 
@@ -1141,90 +1046,78 @@ function addRep(){
    POSE RESULTS
 ===================================================== */
 
-function onPoseResults(
-    results
-){
+function onPoseResults(results){
 
-    if(
-        !results ||
-        !results.poseLandmarks
-    ){
-
-        poseReady =
-            false;
-
-
-        poseCtx.clearRect(
-            0,
-            0,
-            poseCanvas.width,
-            poseCanvas.height
-        );
-
-
-        setAIStatus(
-            "Move into camera view",
-            "bad"
-        );
-
-
+    if(!results || !results.poseLandmarks){
+        setAIStatus("Move into camera view...");
         return;
-
     }
 
+    drawPose(results.poseLandmarks);
 
-    poseReady =
-        true;
+    switch(workoutIndex){
 
-
-    const lm =
-        results.poseLandmarks;
-
-
-    switch(exerciseName){
-
-        case "Stretching":
-            detectStretching(lm);
+        case 0:
+            detectStretching(results.poseLandmarks);
             break;
 
-        case "Push Up":
-            detectPushUp(lm);
+        case 1:
+            detectPushUp(results.poseLandmarks);
             break;
 
-        case "Squat":
-            detectSquat(lm);
+        case 2:
+            detectSquat(results.poseLandmarks);
             break;
 
-        case "High Knees":
-            detectHighKnees(lm);
+        case 3:
+            detectHighKnees(results.poseLandmarks);
             break;
 
-        case "Lunges":
-            detectLunges(lm);
+        case 4:
+            detectLunges(results.poseLandmarks);
             break;
 
-        case "Mountain Climber":
-            detectMountainClimber(lm);
+        case 5:
+            detectMountainClimber(results.poseLandmarks);
             break;
 
-        case "Jumping Jack":
-            detectJumpingJack(lm);
+        case 6:
+            detectJumpingJack(results.poseLandmarks);
             break;
 
-        case "Burpees":
-            detectBurpees(lm);
+        case 7:
+            detectBurpees(results.poseLandmarks);
             break;
 
-        case "Plank":
-            detectPlank(lm);
+        case 8:
+            detectPlank(results.poseLandmarks);
             break;
 
-        case "Cool Down":
-            detectCoolDown(lm);
+        case 9:
+            detectCoolDown(results.poseLandmarks);
             break;
 
+        default:
+            setAIStatus("Select workout");
     }
+}
 
+
+/* =====================================================
+   LANDMARK HELPER
+===================================================== */
+
+function point(landmarks,index){
+
+    return landmarks[index];
+}
+
+
+function isVisiblePoint(p){
+
+    return p &&
+           (p.visibility === undefined ||
+            p.visibility > 0.45);
 }
 
 
@@ -1234,100 +1127,40 @@ function onPoseResults(
 
 function detectStretching(lm){
 
-    const leftShoulder =
-        lm[11];
-
-    const rightShoulder =
-        lm[12];
-
-    const leftWrist =
-        lm[15];
-
-    const rightWrist =
-        lm[16];
-
+    const leftShoulder = point(lm,11);
+    const rightShoulder = point(lm,12);
+    const leftWrist = point(lm,15);
+    const rightWrist = point(lm,16);
 
     if(
-        !visible(leftShoulder) ||
-        !visible(rightShoulder) ||
-        !visible(leftWrist) ||
-        !visible(rightWrist)
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(leftWrist) ||
+        !isVisiblePoint(rightWrist)
     ){
-
-        setAIStatus(
-            "Show upper body",
-            "bad"
-        );
-
-        drawPose(
-            lm,
-            "bad"
-        );
-
+        setAIStatus("Show full upper body...");
         return;
-
     }
 
+    const handsAbove =
+        leftWrist.y < leftShoulder.y &&
+        rightWrist.y < rightShoulder.y;
 
-    const handsUp =
-        leftWrist.y <
-        leftShoulder.y
-        &&
-        rightWrist.y <
-        rightShoulder.y;
+    if(handsAbove){
 
+        if(stretchStage === 0){
 
-    if(
-        handsUp &&
-        stretchStage === "down"
-    ){
+            stretchStage = 1;
+            addRep();
+        }
 
-        stretchStage =
-            "up";
+        setAIStatus("Stretch ✓");
 
-        setAIStatus(
-            "HOLD STRETCH ✓",
-            "good"
-        );
+    }else{
 
+        stretchStage = 0;
+        setAIStatus("Raise both hands...");
     }
-
-
-    else if(
-        !handsUp &&
-        stretchStage === "up"
-    ){
-
-        stretchStage =
-            "down";
-
-        addRep();
-
-        setAIStatus(
-            "STRETCH COMPLETE ✓",
-            "good"
-        );
-
-    }
-
-
-    else{
-
-        setAIStatus(
-            "ARMS UP ↑",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        handsUp ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
@@ -1337,156 +1170,55 @@ function detectStretching(lm){
 
 function detectPushUp(lm){
 
-    const left = [
-        lm[11],
-        lm[13],
-        lm[15]
-    ];
+    const leftShoulder = point(lm,11);
+    const leftElbow = point(lm,13);
+    const leftWrist = point(lm,15);
 
-    const right = [
-        lm[12],
-        lm[14],
-        lm[16]
-    ];
-
-
-    const leftReady =
-        left.every(visible);
-
-    const rightReady =
-        right.every(visible);
-
+    const rightShoulder = point(lm,12);
+    const rightElbow = point(lm,14);
+    const rightWrist = point(lm,16);
 
     if(
-        !leftReady &&
-        !rightReady
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(leftElbow) ||
+        !isVisiblePoint(leftWrist) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(rightElbow) ||
+        !isVisiblePoint(rightWrist)
     ){
-
-        setAIStatus(
-            "Show your arms",
-            "bad"
-        );
-
-        drawPose(
-            lm,
-            "bad"
-        );
-
+        setAIStatus("Show arms clearly...");
         return;
-
     }
 
+    const leftAngle = calculateAngle(
+        leftShoulder,
+        leftElbow,
+        leftWrist
+    );
 
-    let elbowAngle;
+    const rightAngle = calculateAngle(
+        rightShoulder,
+        rightElbow,
+        rightWrist
+    );
 
+    const angle = (leftAngle + rightAngle) / 2;
 
-    if(
-        leftReady &&
-        rightReady
-    ){
+    if(angle < 100){
 
-        elbowAngle =
-            (
-                calculateAngle(
-                    ...left
-                )
-                +
-                calculateAngle(
-                    ...right
-                )
-            ) / 2;
+        pushStage = 1;
 
+        setAIStatus("Push Up — UP");
     }
 
-    else if(
-        leftReady
-    ){
+    if(angle > 155 && pushStage === 1){
 
-        elbowAngle =
-            calculateAngle(
-                ...left
-            );
-
-    }
-
-    else{
-
-        elbowAngle =
-            calculateAngle(
-                ...right
-            );
-
-    }
-
-
-    if(
-        elbowAngle < 110 &&
-        pushStage === "up"
-    ){
-
-        pushStage =
-            "down";
-
-
-        setAIStatus(
-            "GO LOWER ↓",
-            "bad"
-        );
-
-    }
-
-
-    else if(
-        elbowAngle > 150 &&
-        pushStage === "down"
-    ){
-
-        pushStage =
-            "up";
-
+        pushStage = 0;
 
         addRep();
 
-
-        setAIStatus(
-            "REP DETECTED ✓",
-            "good"
-        );
-
+        setAIStatus("Push Up ✓");
     }
-
-
-    else if(
-        elbowAngle < 135
-    ){
-
-        setAIStatus(
-            "GOOD POSITION ✓",
-            "good"
-        );
-
-    }
-
-
-    else{
-
-        setAIStatus(
-            "GET READY ↑",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        elbowAngle < 110 ?
-        "bad" :
-        elbowAngle > 150 ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
@@ -1496,94 +1228,55 @@ function detectPushUp(lm){
 
 function detectSquat(lm){
 
-    const leftAngle =
-        calculateAngle(
-            lm[23],
-            lm[25],
-            lm[27]
-        );
+    const leftHip = point(lm,23);
+    const leftKnee = point(lm,25);
+    const leftAnkle = point(lm,27);
 
-    const rightAngle =
-        calculateAngle(
-            lm[24],
-            lm[26],
-            lm[28]
-        );
-
-
-    const kneeAngle =
-        (
-            leftAngle +
-            rightAngle
-        ) / 2;
-
+    const rightHip = point(lm,24);
+    const rightKnee = point(lm,26);
+    const rightAnkle = point(lm,28);
 
     if(
-        kneeAngle < 105 &&
-        squatStage === "up"
+        !isVisiblePoint(leftHip) ||
+        !isVisiblePoint(leftKnee) ||
+        !isVisiblePoint(leftAnkle) ||
+        !isVisiblePoint(rightHip) ||
+        !isVisiblePoint(rightKnee) ||
+        !isVisiblePoint(rightAnkle)
     ){
-
-        squatStage =
-            "down";
-
-
-        setAIStatus(
-            "GOOD • NOW UP ↑",
-            "good"
-        );
-
+        setAIStatus("Show full legs...");
+        return;
     }
 
+    const leftAngle = calculateAngle(
+        leftHip,
+        leftKnee,
+        leftAnkle
+    );
 
-    else if(
-        kneeAngle > 155 &&
-        squatStage === "down"
-    ){
+    const rightAngle = calculateAngle(
+        rightHip,
+        rightKnee,
+        rightAnkle
+    );
 
-        squatStage =
-            "up";
+    const angle = (leftAngle + rightAngle) / 2;
 
+    if(angle < 105){
+
+        squatStage = 1;
+
+        setAIStatus("Squat — DOWN");
+    }
+
+    if(angle > 160 && squatStage === 1){
+
+        squatStage = 0;
 
         addRep();
 
-
-        setAIStatus(
-            "REP DETECTED ✓",
-            "good"
-        );
-
+        setAIStatus("Squat ✓");
     }
-
-
-    else if(
-        kneeAngle < 125
-    ){
-
-        setAIStatus(
-            "HOLD LOW • UP ↑",
-            "warn"
-        );
-
-    }
-
-
-    else{
-
-        setAIStatus(
-            "SQUAT DOWN ↓",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        kneeAngle < 105 ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
@@ -1593,197 +1286,109 @@ function detectSquat(lm){
 
 function detectHighKnees(lm){
 
-    const leftHip =
-        lm[23];
+    const leftHip = point(lm,23);
+    const rightHip = point(lm,24);
 
-    const rightHip =
-        lm[24];
-
-    const leftKnee =
-        lm[25];
-
-    const rightKnee =
-        lm[26];
-
+    const leftKnee = point(lm,25);
+    const rightKnee = point(lm,26);
 
     if(
-        !visible(leftHip) ||
-        !visible(rightHip) ||
-        !visible(leftKnee) ||
-        !visible(rightKnee)
+        !isVisiblePoint(leftHip) ||
+        !isVisiblePoint(rightHip) ||
+        !isVisiblePoint(leftKnee) ||
+        !isVisiblePoint(rightKnee)
     ){
-
-        setAIStatus(
-            "Show full body",
-            "bad"
-        );
-
-        drawPose(
-            lm,
-            "bad"
-        );
-
+        setAIStatus("Show full body...");
         return;
-
     }
 
+    const leftUp = leftKnee.y < leftHip.y + 0.08;
+    const rightUp = rightKnee.y < rightHip.y + 0.08;
 
-    const hipY =
-        (
-            leftHip.y +
-            rightHip.y
-        ) / 2;
+    if(leftUp && !kneeStage){
 
-
-    const kneeY =
-        Math.min(
-            leftKnee.y,
-            rightKnee.y
-        );
-
-
-    const kneeUp =
-        kneeY <
-        hipY - .08;
-
-
-    if(
-        kneeUp &&
-        kneeStage === "down"
-    ){
-
-        kneeStage =
-            "up";
-
+        kneeStage = 1;
 
         addRep();
 
-
-        setAIStatus(
-            "KNEE UP ✓",
-            "good"
-        );
-
+        setAIStatus("Left Knee ✓");
     }
 
+    if(rightUp && kneeStage === 1){
 
-    if(
-        !kneeUp &&
-        kneeStage === "up"
-    ){
+        kneeStage = 2;
 
-        kneeStage =
-            "down";
+        addRep();
 
+        setAIStatus("Right Knee ✓");
     }
 
+    if(!leftUp && !rightUp){
 
-    if(!kneeUp){
+        kneeStage = 0;
 
-        setAIStatus(
-            "LIFT KNEE HIGH ↑",
-            "warn"
-        );
-
+        setAIStatus("High Knees...");
     }
-
-
-    drawPose(
-        lm,
-        kneeUp ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
 /* =====================================================
+   END OF PART 2
+===================================================== *//* =====================================================
    5. LUNGES
 ===================================================== */
 
 function detectLunges(lm){
 
-    const leftAngle =
-        calculateAngle(
-            lm[23],
-            lm[25],
-            lm[27]
-        );
+    const leftHip = point(lm,23);
+    const leftKnee = point(lm,25);
+    const leftAnkle = point(lm,27);
 
-    const rightAngle =
-        calculateAngle(
-            lm[24],
-            lm[26],
-            lm[28]
-        );
-
-
-    const kneeAngle =
-        Math.min(
-            leftAngle,
-            rightAngle
-        );
-
+    const rightHip = point(lm,24);
+    const rightKnee = point(lm,26);
+    const rightAnkle = point(lm,28);
 
     if(
-        kneeAngle < 110 &&
-        lungeStage === "up"
+        !isVisiblePoint(leftHip) ||
+        !isVisiblePoint(leftKnee) ||
+        !isVisiblePoint(leftAnkle) ||
+        !isVisiblePoint(rightHip) ||
+        !isVisiblePoint(rightKnee) ||
+        !isVisiblePoint(rightAnkle)
     ){
-
-        lungeStage =
-            "down";
-
-
-        setAIStatus(
-            "LUNGE DOWN ↓",
-            "bad"
-        );
-
+        setAIStatus("Show full legs...");
+        return;
     }
 
+    const leftAngle = calculateAngle(
+        leftHip,
+        leftKnee,
+        leftAnkle
+    );
 
-    else if(
-        kneeAngle > 150 &&
-        lungeStage === "down"
-    ){
+    const rightAngle = calculateAngle(
+        rightHip,
+        rightKnee,
+        rightAnkle
+    );
 
-        lungeStage =
-            "up";
+    const angle = Math.min(leftAngle, rightAngle);
 
+    if(angle < 105){
+
+        lungeStage = 1;
+
+        setAIStatus("Lunge — DOWN");
+    }
+
+    if(angle > 155 && lungeStage === 1){
+
+        lungeStage = 0;
 
         addRep();
 
-
-        setAIStatus(
-            "REP DETECTED ✓",
-            "good"
-        );
-
+        setAIStatus("Lunge ✓");
     }
-
-
-    else{
-
-        setAIStatus(
-            kneeAngle < 130
-            ?
-            "PUSH BACK UP ↑"
-            :
-            "STEP & LUNGE ↓",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        kneeAngle < 110 ?
-        "bad" :
-        "warn"
-    );
-
 }
 
 
@@ -1793,114 +1398,57 @@ function detectLunges(lm){
 
 function detectMountainClimber(lm){
 
-    const leftKnee =
-        lm[25];
+    const leftShoulder = point(lm,11);
+    const rightShoulder = point(lm,12);
 
-    const rightKnee =
-        lm[26];
+    const leftHip = point(lm,23);
+    const rightHip = point(lm,24);
 
-    const leftHip =
-        lm[23];
-
-    const rightHip =
-        lm[24];
-
+    const leftKnee = point(lm,25);
+    const rightKnee = point(lm,26);
 
     if(
-        !visible(leftKnee) ||
-        !visible(rightKnee) ||
-        !visible(leftHip) ||
-        !visible(rightHip)
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(leftHip) ||
+        !isVisiblePoint(rightHip) ||
+        !isVisiblePoint(leftKnee) ||
+        !isVisiblePoint(rightKnee)
     ){
-
-        setAIStatus(
-            "Show your legs",
-            "bad"
-        );
-
-        drawPose(
-            lm,
-            "bad"
-        );
-
+        setAIStatus("Show full body...");
         return;
-
     }
 
+    const leftKneeNear =
+        leftKnee.y < leftHip.y + 0.10;
 
-    const leftNear =
-        Math.abs(
-            leftKnee.x -
-            leftHip.x
-        ) < .20;
+    const rightKneeNear =
+        rightKnee.y < rightHip.y + 0.10;
 
+    if(leftKneeNear && mountainStage === 0){
 
-    const rightNear =
-        Math.abs(
-            rightKnee.x -
-            rightHip.x
-        ) < .20;
-
-
-    const kneeIn =
-        leftNear ||
-        rightNear;
-
-
-    if(
-        kneeIn &&
-        mountainStage === "away"
-    ){
-
-        mountainStage =
-            "in";
-
+        mountainStage = 1;
 
         addRep();
 
-
-        setAIStatus(
-            "KNEE IN ✓",
-            "good"
-        );
-
+        setAIStatus("Mountain Climber ✓");
     }
 
+    if(rightKneeNear && mountainStage === 1){
 
-    else if(
-        !kneeIn &&
-        mountainStage === "in"
-    ){
+        mountainStage = 2;
 
-        mountainStage =
-            "away";
+        addRep();
 
-
-        setAIStatus(
-            "NEXT KNEE ↑",
-            "warn"
-        );
-
+        setAIStatus("Mountain Climber ✓");
     }
 
+    if(!leftKneeNear && !rightKneeNear){
 
-    else{
+        mountainStage = 0;
 
-        setAIStatus(
-            "BRING KNEE FORWARD ↑",
-            "warn"
-        );
-
+        setAIStatus("Mountain Climbers...");
     }
-
-
-    drawPose(
-        lm,
-        kneeIn ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
@@ -1910,84 +1458,49 @@ function detectMountainClimber(lm){
 
 function detectJumpingJack(lm){
 
-    const handsUp =
-        lm[15].y <
-        lm[11].y
-        &&
-        lm[16].y <
-        lm[12].y;
+    const leftShoulder = point(lm,11);
+    const rightShoulder = point(lm,12);
 
+    const leftWrist = point(lm,15);
+    const rightWrist = point(lm,16);
 
-    const feetApart =
-        Math.abs(
-            lm[27].x -
-            lm[28].x
-        ) > .28;
-
-
-    const open =
-        handsUp &&
-        feetApart;
-
+    const leftAnkle = point(lm,27);
+    const rightAnkle = point(lm,28);
 
     if(
-        open &&
-        jackStage === "closed"
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(leftWrist) ||
+        !isVisiblePoint(rightWrist) ||
+        !isVisiblePoint(leftAnkle) ||
+        !isVisiblePoint(rightAnkle)
     ){
-
-        jackStage =
-            "open";
-
-
-        setAIStatus(
-            "OPEN ✓ NOW CLOSE",
-            "good"
-        );
-
+        setAIStatus("Show full body...");
+        return;
     }
 
+    const handsUp =
+        leftWrist.y < leftShoulder.y &&
+        rightWrist.y < rightShoulder.y;
 
-    else if(
-        !open &&
-        jackStage === "open"
-    ){
+    const feetApart =
+        Math.abs(leftAnkle.x - rightAnkle.x) > 0.18;
 
-        jackStage =
-            "closed";
+    if(handsUp && feetApart){
 
+        jackStage = 1;
+
+        setAIStatus("Jack — OPEN");
+    }
+
+    if(!handsUp && !feetApart && jackStage === 1){
+
+        jackStage = 0;
 
         addRep();
 
-
-        setAIStatus(
-            "REP DETECTED ✓",
-            "good"
-        );
-
+        setAIStatus("Jumping Jack ✓");
     }
-
-
-    else{
-
-        setAIStatus(
-            open
-            ?
-            "CLOSE ↓"
-            :
-            "ARMS UP + FEET OUT ↑",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        open ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
@@ -1997,87 +1510,58 @@ function detectJumpingJack(lm){
 
 function detectBurpees(lm){
 
-    const kneeAngle =
-        (
-            calculateAngle(
-                lm[23],
-                lm[25],
-                lm[27]
-            )
-            +
-            calculateAngle(
-                lm[24],
-                lm[26],
-                lm[28]
-            )
-        ) / 2;
+    const leftShoulder = point(lm,11);
+    const rightShoulder = point(lm,12);
 
+    const leftHip = point(lm,23);
+    const rightHip = point(lm,24);
 
-    const handsUp =
-        lm[15].y <
-        lm[11].y
-        &&
-        lm[16].y <
-        lm[12].y;
-
+    const leftKnee = point(lm,25);
+    const rightKnee = point(lm,26);
 
     if(
-        kneeAngle < 115 &&
-        burpeeStage === "up"
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(leftHip) ||
+        !isVisiblePoint(rightHip) ||
+        !isVisiblePoint(leftKnee) ||
+        !isVisiblePoint(rightKnee)
     ){
-
-        burpeeStage =
-            "down";
-
-
-        setAIStatus(
-            "DOWN ✓",
-            "bad"
-        );
-
+        setAIStatus("Show full body...");
+        return;
     }
 
+    const hipY =
+        (leftHip.y + rightHip.y) / 2;
 
-    else if(
-        kneeAngle > 150 &&
-        handsUp &&
-        burpeeStage === "down"
-    ){
+    const shoulderY =
+        (leftShoulder.y + rightShoulder.y) / 2;
 
-        burpeeStage =
-            "up";
+    const kneeY =
+        (leftKnee.y + rightKnee.y) / 2;
 
+    const standing =
+        shoulderY < kneeY &&
+        hipY < kneeY;
+
+    const downPosition =
+        hipY > shoulderY + 0.12;
+
+    if(downPosition){
+
+        burpeeStage = 1;
+
+        setAIStatus("Burpee — DOWN");
+    }
+
+    if(standing && burpeeStage === 1){
+
+        burpeeStage = 0;
 
         addRep();
 
-
-        setAIStatus(
-            "BURPEE ✓",
-            "good"
-        );
-
+        setAIStatus("Burpee ✓");
     }
-
-
-    else{
-
-        setAIStatus(
-            "DOWN → STAND + JUMP",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        kneeAngle < 115 ?
-        "bad" :
-        handsUp ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
@@ -2087,131 +1571,76 @@ function detectBurpees(lm){
 
 function detectPlank(lm){
 
-    const shoulder =
-        lm[11];
+    const leftShoulder = point(lm,11);
+    const rightShoulder = point(lm,12);
 
-    const hip =
-        lm[23];
+    const leftHip = point(lm,23);
+    const rightHip = point(lm,24);
 
-    const ankle =
-        lm[27];
-
+    const leftAnkle = point(lm,27);
+    const rightAnkle = point(lm,28);
 
     if(
-        !visible(shoulder) ||
-        !visible(hip) ||
-        !visible(ankle)
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(leftHip) ||
+        !isVisiblePoint(rightHip) ||
+        !isVisiblePoint(leftAnkle) ||
+        !isVisiblePoint(rightAnkle)
     ){
-
-        setAIStatus(
-            "Show full body",
-            "bad"
-        );
-
-        drawPose(
-            lm,
-            "bad"
-        );
-
+        setAIStatus("Show full body...");
         return;
-
     }
 
+    const shoulderY =
+        (leftShoulder.y + rightShoulder.y) / 2;
 
-    const torso =
+    const hipY =
+        (leftHip.y + rightHip.y) / 2;
+
+    const ankleY =
+        (leftAnkle.y + rightAnkle.y) / 2;
+
+    const bodyLine =
         Math.abs(
-            shoulder.y -
-            hip.y
+            hipY -
+            ((shoulderY + ankleY) / 2)
         );
 
+    const plankPosition = bodyLine < 0.15;
 
-    const leg =
-        Math.abs(
-            hip.y -
-            ankle.y
-        );
+    if(plankPosition){
 
+        if(!plankStart){
 
-    const straight =
-        leg >
-        torso * .75;
+            plankStart = Date.now();
 
-
-    if(straight){
-
-        if(
-            plankStart === 0
-        ){
-
-            plankStart =
-                Date.now();
-
+            setAIStatus("Plank started...");
         }
-
 
         const seconds =
             Math.floor(
-                (
-                    Date.now() -
-                    plankStart
-                ) / 1000
+                (Date.now() - plankStart) / 1000
             );
 
+        repDisplay.textContent = seconds;
 
-        if(
-            seconds >= 5 &&
-            !plankCounted
-        ){
+        if(seconds >= 1 && !plankCounted){
 
-            plankCounted =
-                true;
+            plankCounted = true;
 
             addRep();
 
-
-            setAIStatus(
-                "5 SEC PLANK ✓",
-                "good"
-            );
-
+            setAIStatus("Plank ✓");
         }
 
+    }else{
 
-        else{
+        plankStart = null;
+        plankCounted = false;
 
-            setAIStatus(
-                "GOOD PLANK • HOLD ✓",
-                "good"
-            );
-
-        }
-
+        setAIStatus("Hold plank position...");
     }
-
-    else{
-
-        plankStart =
-            0;
-
-        plankCounted =
-            false;
-
-
-        setAIStatus(
-            "KEEP BODY STRAIGHT",
-            "bad"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        straight ?
-        "good" :
-        "bad"
-    );
-
 }
 
 
@@ -2221,387 +1650,317 @@ function detectPlank(lm){
 
 function detectCoolDown(lm){
 
-    const handsLow =
-        lm[15].y >
-        lm[11].y
-        &&
-        lm[16].y >
-        lm[12].y;
+    const leftShoulder = point(lm,11);
+    const rightShoulder = point(lm,12);
 
+    const leftWrist = point(lm,15);
+    const rightWrist = point(lm,16);
 
     if(
-        !handsLow &&
-        cooldownStage === "up"
+        !isVisiblePoint(leftShoulder) ||
+        !isVisiblePoint(rightShoulder) ||
+        !isVisiblePoint(leftWrist) ||
+        !isVisiblePoint(rightWrist)
     ){
-
-        cooldownStage =
-            "down";
-
-
-        setAIStatus(
-            "SLOW DOWN ↓",
-            "warn"
-        );
-
+        setAIStatus("Show upper body...");
+        return;
     }
 
+    const leftDistance =
+        Math.abs(leftWrist.x - leftShoulder.x);
 
-    else if(
-        handsLow &&
-        cooldownStage === "down"
-    ){
+    const rightDistance =
+        Math.abs(rightWrist.x - rightShoulder.x);
 
-        cooldownStage =
-            "up";
+    const armsOpen =
+        leftDistance > 0.18 &&
+        rightDistance > 0.18;
 
+    if(armsOpen){
 
-        addRep();
+        if(cooldownStage === 0){
 
+            cooldownStage = 1;
 
-        setAIStatus(
-            "COOL DOWN ✓",
-            "good"
-        );
+            addRep();
+        }
 
+        setAIStatus("Cool Down ✓");
+
+    }else{
+
+        cooldownStage = 0;
+
+        setAIStatus("Slowly open your arms...");
     }
-
-
-    else{
-
-        setAIStatus(
-            "SLOW MOVEMENT • BREATHE",
-            "warn"
-        );
-
-    }
-
-
-    drawPose(
-        lm,
-        handsLow ?
-        "good" :
-        "warn"
-    );
-
 }
 
 
 /* =====================================================
+   END OF PART 3
+===================================================== *//* =====================================================
    TIMER
 ===================================================== */
 
-let secondsPassed =
-    0;
+let elapsedSeconds = 0;
+let timerInterval = null;
 
+function startTimer(){
 
-const timer =
-    setInterval(
-        () => {
+    if(timerInterval) return;
 
-            secondsPassed++;
+    elapsedSeconds = 0;
 
+    timerInterval = setInterval(() => {
 
-            const minutes =
-                Math.floor(
-                    secondsPassed /
-                    60
-                );
+        elapsedSeconds++;
 
-
-            const seconds =
-                secondsPassed %
-                60;
-
-
-            document.getElementById(
-                "time"
-            ).innerText =
-
-                String(minutes)
-                .padStart(2,"0")
-
-                +
-
-                ":"
-
-                +
-
-                String(seconds)
-                .padStart(2,"0");
-
-        },
-
-        1000
-    );
-
-
-/* =====================================================
-   STOP CAMERA
-===================================================== */
-
-function stopCamera(){
-
-    cameraStarted =
-        false;
-
-
-    if(
-        video.srcObject
-    ){
-
-        video.srcObject
-        .getTracks()
-        .forEach(
-            track => {
-
-                track.stop();
-
-            }
-        );
-
-    }
-
+    }, 1000);
 }
 
 
 /* =====================================================
-   QUIT
+   FINISH WORKOUT
 ===================================================== */
 
-document.getElementById(
-    "quitBtn"
-).onclick =
-() => {
-
-    stopCamera();
-
-    clearInterval(
-        timer
-    );
-
-    /*
-       IMPORTANT:
-       QUIT DOES NOT SAVE
-    */
-
-    window.location.href =
-        "daily-task.html";
-
-};
-
-
-/* =====================================================
-   COMPLETE WORKOUT
-===================================================== */
-
-completeBtn.onclick =
-async() => {
-
-    if(saving){
-
-        return;
-
-    }
-
+finishBtn.onclick = async () => {
 
     if(!currentUser){
-
-        alert(
-            "Please login again."
-        );
-
+        alert("Please login again.");
         return;
-
     }
-
 
     if(repCount <= 0){
 
-        alert(
-            "No reps detected yet."
-        );
-
+        alert("No reps detected yet.");
         return;
-
     }
 
+    if(saving) return;
 
-    saving =
-        true;
-
-
-    completeBtn.disabled =
-        true;
-
-
-    completeBtn.innerText =
-        "SAVING...";
-
+    saving = true;
+    finishBtn.disabled = true;
 
     try{
 
-        const userRef =
-            db
+        const userRef = db
             .collection("users")
-            .doc(
-                currentUser.uid
-            );
+            .doc(currentUser.uid);
 
+        const snap = await userRef.get();
 
-        const userDoc =
-            await userRef.get();
+        const data = snap.exists
+            ? snap.data()
+            : {};
 
+        const tasks =
+            Array.isArray(data.completedTasks)
+                ? [...data.completedTasks]
+                : [];
 
-        const data =
-            userDoc.exists
-            ?
-            userDoc.data()
-            :
-            {};
+        /* ---------------------------------------------
+           PREVENT DUPLICATE COMPLETION
+        --------------------------------------------- */
 
+        if(tasks.includes(workoutIndex)){
 
-        let tasks =
-            Array.isArray(
-                data.completedTasks
-            )
-            ?
-            [
-                ...data.completedTasks
-            ]
-            :
-            [];
+            alert("This workout is already completed!");
 
-
-        /*
-           DUPLICATE PROTECTION
-        */
-
-        if(
-            tasks.includes(
-                workoutIndex
-            )
-        ){
-
-            alert(
-                "Workout already completed."
-            );
-
-
-            window.location.href =
-                "daily-task.html";
-
+            saving = false;
+            finishBtn.disabled = false;
 
             return;
-
         }
 
 
-        /*
-           SAVE COMPLETED TASK
-        */
+        /* ---------------------------------------------
+           ADD COMPLETED WORKOUT
+        --------------------------------------------- */
 
-        tasks.push(
-            workoutIndex
-        );
+        tasks.push(workoutIndex);
 
 
-        /*
-           1 REP = 1 RC
-        */
+        /* ---------------------------------------------
+           ADD RC
+        --------------------------------------------- */
 
         const oldRC =
-            Number(
-                data.totalPoints ||
-                0
-            );
-
+            Number(data.totalPoints || 0);
 
         const newRC =
-            oldRC +
-            repCount;
+            oldRC + repCount;
 
+
+        /* ---------------------------------------------
+           SAVE
+        --------------------------------------------- */
 
         await userRef.set({
 
-            completedTasks:
-                tasks,
+            completedTasks: tasks,
 
-            totalPoints:
-                newRC
+            totalPoints: newRC
 
         },{
-            merge:true
+
+            merge: true
+
         });
 
 
+        /* ---------------------------------------------
+           STOP CAMERA
+        --------------------------------------------- */
+
         stopCamera();
 
+        clearInterval(timerInterval);
 
-        clearInterval(
-            timer
-        );
+        timerInterval = null;
 
+
+        /* ---------------------------------------------
+           SUCCESS
+        --------------------------------------------- */
 
         alert(
-            "Workout Complete! 🎉\n\n"
-            +
-            "+"
-            +
-            repCount
-            +
-            " RC"
+            `Workout complete! +${repCount} RC`
         );
-
 
         window.location.href =
             "daily-task.html";
 
-    }
 
-    catch(error){
+    }catch(error){
 
         console.error(
             "Workout save error:",
             error
         );
 
-
         alert(
-            "Could not save workout."
+            "Save failed. Please try again."
         );
 
-
-        saving =
-            false;
-
-
-        completeBtn.disabled =
-            false;
-
-
-        completeBtn.innerText =
-            "COMPLETE WORKOUT ✓";
-
+        saving = false;
+        finishBtn.disabled = false;
     }
-
 };
 
 
 /* =====================================================
-   PAGE LEAVE
+   QUIT WITHOUT SAVING
 ===================================================== */
 
-window.addEventListener(
-    "pagehide",
-    () => {
+quitBtn.onclick = () => {
 
-        stopCamera();
+    stopCamera();
 
+    clearInterval(timerInterval);
+
+    timerInterval = null;
+
+    window.location.href =
+        "daily-task.html";
+};
+
+
+/* =====================================================
+   PAGE CLEANUP
+===================================================== *//* =====================================================
+   RESIZE / ORIENTATION
+===================================================== */
+
+function resizeCanvas(){
+
+    const rect = video.getBoundingClientRect();
+
+    if(rect.width <= 0 || rect.height <= 0){
+        return;
     }
-);
+
+    poseCanvas.width = Math.round(rect.width);
+    poseCanvas.height = Math.round(rect.height);
+}
+
+
+/* =====================================================
+   WINDOW RESIZE
+===================================================== */
+
+window.addEventListener("resize", () => {
+
+    resizeCanvas();
+
+});
+
+
+/* =====================================================
+   DEVICE ORIENTATION
+===================================================== */
+
+window.addEventListener("orientationchange", () => {
+
+    setTimeout(() => {
+
+        resizeCanvas();
+
+    }, 300);
+
+});
+
+
+/* =====================================================
+   INITIAL CANVAS SIZE
+===================================================== */
+
+setTimeout(() => {
+
+    resizeCanvas();
+
+}, 500);
+
+
+/* =====================================================
+   VIDEO READY
+===================================================== */
+
+video.addEventListener("loadedmetadata", () => {
+
+    resizeCanvas();
+
+});
+
+
+/* =====================================================
+   INITIAL STATUS
+===================================================== */
+
+setAIStatus("Preparing AI...");
+
+
+/* =====================================================
+   END OF CAMERA.JS
+===================================================== */
 
 </script>
 
 </body>
-
 </html>
+
+window.addEventListener("beforeunload", () => {
+
+    stopCamera();
+
+    if(timerInterval){
+
+        clearInterval(timerInterval);
+
+        timerInterval = null;
+    }
+});
+
+
+/* =====================================================
+   END OF PART 4
+===================================================== */
