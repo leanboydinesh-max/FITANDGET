@@ -1,147 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Camera</title>
+
+<title>FIT & GET - AI Workout</title>
+
 <style>
+
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Poppins,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Poppins,sans-serif;
 }
 
 body{
-background:#000;
-overflow:hidden;
+    background:#000;
+    overflow:hidden;
 }
 
 .camera-screen{
-position:relative;
-width:100%;
-height:100vh;
-background:#000;
+    position:relative;
+    width:100%;
+    height:100vh;
+    background:#000;
 }
 
 #camera{
-position:absolute;
-width:100%;
-height:100%;
-object-fit:cover;
-background:#111;
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    background:#111;
+    transform:scaleX(-1);
 }
 
 .top-bar{
-position:absolute;
-top:20px;
-left:15px;
-right:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-z-index:10;
+    position:absolute;
+    top:20px;
+    left:15px;
+    right:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:10;
 }
 
 .timer{
-background:rgba(0,0,0,.6);
-padding:10px 18px;
-border-radius:30px;
-color:#9DFF00;
-font-weight:700;
-border:1px solid #9DFF00;
+    background:rgba(0,0,0,.65);
+    padding:10px 18px;
+    border-radius:30px;
+    color:#9DFF00;
+    font-weight:700;
+    border:1px solid #9DFF00;
 }
 
 .quit-btn{
-background:#ff3b30;
-color:#fff;
-border:none;
-padding:10px 18px;
-border-radius:30px;
-font-weight:700;
+    background:#ff3b30;
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:30px;
+    font-weight:700;
 }
 
 .center-box{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-z-index:10;
+    position:absolute;
+    top:40%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:10;
 }
 
 .ai-box{
-display:flex;
-align-items:center;
-gap:10px;
-padding:12px 20px;
-border-radius:30px;
-background:rgba(0,0,0,.6);
-border:1px solid #9DFF00;
-color:#9DFF00;
-font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px 20px;
+    border-radius:30px;
+    background:rgba(0,0,0,.65);
+    border:1px solid #9DFF00;
+    color:#9DFF00;
+    font-weight:600;
+    white-space:nowrap;
 }
 
 .ai-dot{
-width:12px;
-height:12px;
-border-radius:50%;
-background:#9DFF00;
-box-shadow:0 0 15px #9DFF00;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#9DFF00;
+    box-shadow:0 0 15px #9DFF00;
 }
 
 .bottom-card{
-position:absolute;
-left:0;
-right:0;
-bottom:0;
-padding:25px;
-background:rgba(10,10,10,.95);
-border-top-left-radius:30px;
-border-top-right-radius:30px;
-border-top:2px solid #9DFF00;
-text-align:center;
-z-index:10;
-color:#fff;
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:22px;
+    background:rgba(10,10,10,.97);
+    border-top-left-radius:30px;
+    border-top-right-radius:30px;
+    border-top:2px solid #9DFF00;
+    text-align:center;
+    z-index:10;
+    color:#fff;
 }
 
 .bottom-card h2{
-font-size:28px;
-margin-bottom:10px;
+    font-size:27px;
+    margin-bottom:5px;
 }
 
 .set{
-color:#aaa;
-margin-bottom:20px;
+    color:#aaa;
+    margin-bottom:10px;
+}
+
+.max-text{
+    color:#9DFF00;
+    font-size:14px;
+    font-weight:700;
 }
 
 .rep-box h1{
-font-size:70px;
-color:#9DFF00;
+    font-size:68px;
+    color:#9DFF00;
+    line-height:1;
 }
 
 .rep-box span{
-font-size:18px;
-font-weight:700;
+    font-size:17px;
+    font-weight:700;
 }
 
-#nextBtn{
-margin-top:20px;
-width:100%;
-height:55px;
-border:none;
-border-radius:15px;
-background:#9DFF00;
-color:#000;
-font-size:18px;
-font-weight:700;
+.max-limit{
+    color:#777;
+    font-size:13px;
+    margin-top:5px;
 }
+
+#completeBtn{
+    margin-top:15px;
+    width:100%;
+    height:52px;
+    border:none;
+    border-radius:15px;
+    background:#9DFF00;
+    color:#000;
+    font-size:16px;
+    font-weight:800;
+}
+
+#completeBtn:disabled{
+    opacity:.35;
+}
+
 </style>
+
 </head>
+
+
 <body>
+
 
 <div class="camera-screen">
 
-    <video id="camera" autoplay playsinline></video>
+    <video
+        id="camera"
+        autoplay
+        playsinline>
+    </video>
+
 
     <div class="top-bar">
 
@@ -149,11 +183,16 @@ font-weight:700;
             ⏱ <span id="time">00:00</span>
         </div>
 
-        <button class="quit-btn">
+        <button
+            class="quit-btn"
+            id="quitBtn">
+
             QUIT
+
         </button>
 
     </div>
+
 
     <div class="center-box">
 
@@ -161,21 +200,28 @@ font-weight:700;
 
             <div class="ai-dot"></div>
 
-            <span>AI Detecting...</span>
+            <span id="aiStatus">
+                Loading AI...
+            </span>
 
         </div>
 
     </div>
 
+
     <div class="bottom-card">
 
         <h2 id="exerciseName">
-            Push Up
+            Workout
         </h2>
 
         <p class="set">
             Do Your Max • 1 Set
         </p>
+
+        <div class="max-text">
+            MAX COUNT
+        </div>
 
         <div class="rep-box">
 
@@ -183,80 +229,912 @@ font-weight:700;
                 0
             </h1>
 
-            <span>REPS</span>
+            <span>
+                REPS
+            </span>
 
         </div>
 
-        <button id="nextBtn">
-            NEXT WORKOUT →
+        <div class="max-limit">
+            Maximum 50 Reps
+        </div>
+
+        <button
+            id="completeBtn"
+            disabled>
+
+            COMPLETE WORKOUT ✓
+
         </button>
 
     </div>
 
 </div>
+
+
+<!-- MEDIAPIPE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+
+<!-- FIREBASE -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
 <script>
-// Camera Access
-const video = document.getElementById("camera");
 
-async function startCamera() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: "user"
-            },
-            audio: false
-        });
+/* =========================
+   FIREBASE
+========================= */
 
-        video.srcObject = stream;
+const firebaseConfig = {
 
-    } catch (err) {
-        console.error(err);
+    apiKey:
+    "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
 
-        alert(
-            "Camera Error: " +
-            err.name +
-            "\n" +
-            err.message
-        );
-    }
+    authDomain:
+    "fitandget-b3461.firebaseapp.com",
+
+    projectId:
+    "fitandget-b3461",
+
+    storageBucket:
+    "fitandget-b3461.firebasestorage.app",
+
+    messagingSenderId:
+    "216178533513",
+
+    appId:
+    "1:216178533513:web:975f20599c7e77b9d01258"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db =
+    firebase.firestore();
+
+
+/* =========================
+   WORKOUTS
+========================= */
+
+const workouts = [
+
+    "Stretching",
+    "Push Up",
+    "Squat",
+    "High Knees",
+    "Lunges",
+    "Mountain Climber",
+    "Jumping Jack",
+    "Burpees",
+    "Plank",
+    "Cool Down"
+
+];
+
+
+/* =========================
+   SELECTED WORKOUT
+========================= */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+let workoutIndex =
+    parseInt(params.get("workout"));
+
+if(
+    isNaN(workoutIndex) ||
+    workoutIndex < 0 ||
+    workoutIndex >= workouts.length
+){
+
+    workoutIndex = 0;
+
 }
 
-startCamera();
+const exerciseName =
+    workouts[workoutIndex];
+
+document.getElementById(
+    "exerciseName"
+).innerText =
+    exerciseName;
 
 
-// Timer
-let sec = 0;
+/* =========================
+   VARIABLES
+========================= */
 
-setInterval(() => {
-    sec++;
+let repCount = 0;
 
-    let min = Math.floor(sec / 60);
-    let s = sec % 60;
+let currentUser = null;
 
-    document.getElementById("time").innerText =
-        String(min).padStart(2, "0") + ":" +
-        String(s).padStart(2, "0");
+let completedTasks = [];
 
-}, 1000);
+let saving = false;
+
+let stage = "up";
+
+let poseReady = false;
 
 
-// Quit Button
-document.querySelector(".quit-btn").onclick = () => {
+/* =========================
+   ELEMENTS
+========================= */
 
-    if (video.srcObject) {
-        video.srcObject.getTracks().forEach(track => {
-            track.stop();
-        });
+const video =
+    document.getElementById("camera");
+
+const repDisplay =
+    document.getElementById("repCount");
+
+const completeBtn =
+    document.getElementById("completeBtn");
+
+const aiStatus =
+    document.getElementById("aiStatus");
+
+
+/* =========================
+   AUTH
+========================= */
+
+firebase.auth()
+.onAuthStateChanged(async(user) => {
+
+    if(!user){
+
+        window.location.href =
+            "index.html";
+
+        return;
+
     }
 
-    window.location.href = "daily-task.html";
+    currentUser = user;
+
+    try{
+
+        const userDoc =
+            await db
+            .collection("users")
+            .doc(user.uid)
+            .get();
+
+        if(userDoc.exists){
+
+            const data =
+                userDoc.data();
+
+            completedTasks =
+                Array.isArray(
+                    data.completedTasks
+                )
+                ? data.completedTasks
+                : [];
+
+            if(
+                completedTasks.includes(
+                    workoutIndex
+                )
+            ){
+
+                alert(
+                    "This workout is already completed!"
+                );
+
+                window.location.href =
+                    "daily-task.html";
+
+            }
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "User loading error:",
+            error
+        );
+
+    }
+
+});
+
+
+/* =========================
+   CAMERA
+========================= */
+
+const camera =
+    new Camera(
+        video,
+        {
+            onFrame: async () => {
+
+                await pose.send({
+                    image: video
+                });
+
+            },
+
+            width: 720,
+            height: 1280
+        }
+    );
+
+
+/* =========================
+   POSE AI
+========================= */
+
+const pose =
+    new Pose({
+
+        locateFile: (file) => {
+
+            return
+            `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+
+        }
+
+    });
+
+
+pose.setOptions({
+
+    modelComplexity:1,
+
+    smoothLandmarks:true,
+
+    enableSegmentation:false,
+
+    smoothSegmentation:false,
+
+    minDetectionConfidence:.6,
+
+    minTrackingConfidence:.6
+
+});
+
+
+pose.onResults(
+    onPoseResults
+);
+
+
+/* =========================
+   START AI
+========================= */
+
+async function startAI(){
+
+    try{
+
+        aiStatus.innerText =
+            "Starting Camera AI...";
+
+        await camera.start();
+
+    }catch(error){
+
+        console.error(
+            "AI camera error:",
+            error
+        );
+
+        aiStatus.innerText =
+            "Camera Error";
+
+        alert(
+            "Camera permission required."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   ANGLE
+========================= */
+
+function calculateAngle(
+    a,
+    b,
+    c
+){
+
+    const radians =
+        Math.atan2(
+            c.y - b.y,
+            c.x - b.x
+        )
+        -
+        Math.atan2(
+            a.y - b.y,
+            a.x - b.x
+        );
+
+    let angle =
+        Math.abs(
+            radians * 180 / Math.PI
+        );
+
+    if(angle > 180){
+
+        angle =
+            360 - angle;
+
+    }
+
+    return angle;
+
+}
+
+
+/* =========================
+   ADD REP
+========================= */
+
+function addRep(){
+
+    if(repCount >= 50){
+
+        return;
+
+    }
+
+    repCount++;
+
+    repDisplay.innerText =
+        repCount;
+
+    completeBtn.disabled =
+        false;
+
+}
+
+
+/* =========================
+   POSE RESULTS
+========================= */
+
+function onPoseResults(results){
+
+    if(
+        !results.poseLandmarks
+    ){
+
+        aiStatus.innerText =
+            "Move into camera view";
+
+        return;
+
+    }
+
+
+    poseReady = true;
+
+    aiStatus.innerText =
+        "AI Detecting • Ready";
+
+
+    const lm =
+        results.poseLandmarks;
+
+
+    /*
+       MEDIAPIPE LANDMARKS
+
+       11 = LEFT SHOULDER
+       12 = RIGHT SHOULDER
+       13 = LEFT ELBOW
+       14 = RIGHT ELBOW
+       15 = LEFT WRIST
+       16 = RIGHT WRIST
+       23 = LEFT HIP
+       24 = RIGHT HIP
+       25 = LEFT KNEE
+       26 = RIGHT KNEE
+       27 = LEFT ANKLE
+       28 = RIGHT ANKLE
+    */
+
+
+    if(
+        exerciseName === "Push Up"
+    ){
+
+        detectPushUp(lm);
+
+    }
+
+
+    else if(
+        exerciseName === "Squat"
+    ){
+
+        detectSquat(lm);
+
+    }
+
+
+    else{
+
+        /*
+           Other workouts are
+           temporarily kept safe.
+           They won't generate
+           fake reps.
+        */
+
+        aiStatus.innerText =
+            "AI Ready • Follow the movement";
+
+    }
+
+}
+
+
+/* =========================
+   PUSH UP
+========================= */
+
+function detectPushUp(lm){
+
+    const leftShoulder =
+        lm[11];
+
+    const leftElbow =
+        lm[13];
+
+    const leftWrist =
+        lm[15];
+
+
+    const rightShoulder =
+        lm[12];
+
+    const rightElbow =
+        lm[14];
+
+    const rightWrist =
+        lm[16];
+
+
+    const leftAngle =
+        calculateAngle(
+            leftShoulder,
+            leftElbow,
+            leftWrist
+        );
+
+
+    const rightAngle =
+        calculateAngle(
+            rightShoulder,
+            rightElbow,
+            rightWrist
+        );
+
+
+    const elbowAngle =
+        (
+            leftAngle +
+            rightAngle
+        ) / 2;
+
+
+    /*
+       DOWN
+    */
+
+    if(
+        elbowAngle < 95 &&
+        stage === "up"
+    ){
+
+        stage = "down";
+
+        aiStatus.innerText =
+            "Down detected";
+
+    }
+
+
+    /*
+       UP = 1 REP
+    */
+
+    if(
+        elbowAngle > 155 &&
+        stage === "down"
+    ){
+
+        stage = "up";
+
+        addRep();
+
+        aiStatus.innerText =
+            "Rep detected ✓";
+
+    }
+
+}
+
+
+/* =========================
+   SQUAT
+========================= */
+
+function detectSquat(lm){
+
+    const leftHip =
+        lm[23];
+
+    const leftKnee =
+        lm[25];
+
+    const leftAnkle =
+        lm[27];
+
+
+    const rightHip =
+        lm[24];
+
+    const rightKnee =
+        lm[26];
+
+    const rightAnkle =
+        lm[28];
+
+
+    const leftAngle =
+        calculateAngle(
+            leftHip,
+            leftKnee,
+            leftAnkle
+        );
+
+
+    const rightAngle =
+        calculateAngle(
+            rightHip,
+            rightKnee,
+            rightAnkle
+        );
+
+
+    const kneeAngle =
+        (
+            leftAngle +
+            rightAngle
+        ) / 2;
+
+
+    /*
+       DOWN
+    */
+
+    if(
+        kneeAngle < 100 &&
+        stage === "up"
+    ){
+
+        stage = "down";
+
+        aiStatus.innerText =
+            "Squat down detected";
+
+    }
+
+
+    /*
+       UP = 1 REP
+    */
+
+    if(
+        kneeAngle > 160 &&
+        stage === "down"
+    ){
+
+        stage = "up";
+
+        addRep();
+
+        aiStatus.innerText =
+            "Rep detected ✓";
+
+    }
+
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
+let sec = 0;
+
+const timer =
+    setInterval(() => {
+
+        sec++;
+
+        const min =
+            Math.floor(sec / 60);
+
+        const seconds =
+            sec % 60;
+
+        document.getElementById(
+            "time"
+        ).innerText =
+
+            String(min)
+            .padStart(2,"0")
+
+            + ":" +
+
+            String(seconds)
+            .padStart(2,"0");
+
+    },1000);
+
+
+/* =========================
+   STOP CAMERA
+========================= */
+
+function stopCamera(){
+
+    if(video.srcObject){
+
+        video.srcObject
+        .getTracks()
+        .forEach(
+            track =>
+                track.stop()
+        );
+
+    }
+
+}
+
+
+/* =========================
+   QUIT
+========================= */
+
+document.getElementById(
+    "quitBtn"
+).onclick = () => {
+
+    stopCamera();
+
+    clearInterval(timer);
+
+    /*
+       IMPORTANT:
+       QUIT DOES NOT SAVE
+    */
+
+    window.location.href =
+        "daily-task.html";
+
 };
 
 
-// Next Button
-document.getElementById("nextBtn").onclick = () => {
-    alert("Next Workout");
+/* =========================
+   COMPLETE
+========================= */
+
+completeBtn.onclick =
+async() => {
+
+    if(saving){
+
+        return;
+
+    }
+
+    if(!currentUser){
+
+        alert(
+            "Please login again."
+        );
+
+        return;
+
+    }
+
+    if(repCount <= 0){
+
+        alert(
+            "No reps detected yet."
+        );
+
+        return;
+
+    }
+
+
+    saving = true;
+
+    completeBtn.disabled =
+        true;
+
+    completeBtn.innerText =
+        "SAVING...";
+
+
+    try{
+
+        const userRef =
+            db
+            .collection("users")
+            .doc(
+                currentUser.uid
+            );
+
+
+        const userDoc =
+            await userRef.get();
+
+
+        const data =
+            userDoc.exists
+            ? userDoc.data()
+            : {};
+
+
+        let tasks =
+            Array.isArray(
+                data.completedTasks
+            )
+            ? [...data.completedTasks]
+            : [];
+
+
+        /*
+           DOUBLE REWARD PROTECTION
+        */
+
+        if(
+            tasks.includes(
+                workoutIndex
+            )
+        ){
+
+            alert(
+                "Workout already completed."
+            );
+
+            window.location.href =
+                "daily-task.html";
+
+            return;
+
+        }
+
+
+        /*
+           ADD COMPLETED TASK
+        */
+
+        tasks.push(
+            workoutIndex
+        );
+
+
+        /*
+           1 REP = 1 RC
+        */
+
+        const oldRC =
+            Number(
+                data.totalPoints || 0
+            );
+
+
+        const newRC =
+            oldRC + repCount;
+
+
+        /*
+           SAVE
+        */
+
+        await userRef.set({
+
+            completedTasks:
+                tasks,
+
+            totalPoints:
+                newRC
+
+        },{
+            merge:true
+        });
+
+
+        stopCamera();
+
+        clearInterval(timer);
+
+
+        alert(
+            "Workout Complete! 🎉\n\n" +
+            "+" +
+            repCount +
+            " RC"
+        );
+
+
+        window.location.href =
+            "daily-task.html";
+
+
+    }catch(error){
+
+        console.error(
+            "Workout save error:",
+            error
+        );
+
+
+        alert(
+            "Could not save workout."
+        );
+
+
+        saving = false;
+
+        completeBtn.disabled =
+            false;
+
+        completeBtn.innerText =
+            "COMPLETE WORKOUT ✓";
+
+    }
+
 };
+
+
+/* =========================
+   PAGE LEAVE
+========================= */
+
+window.addEventListener(
+    "pagehide",
+    () => {
+
+        stopCamera();
+
+    }
+);
+
+
+/* =========================
+   START
+========================= */
+
+startAI();
+
 </script>
+
 </body>
 </html>
