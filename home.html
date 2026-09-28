@@ -566,52 +566,63 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-async function loadTopLeaderboard(){
+function loadTopLeaderboard(){
 
-const box = document.getElementById("topLeaderboard");
+  const box = document.getElementById("topLeaderboard");
 
-const snapshot = await db.collection("users")
-.orderBy("totalPoints","desc")
-.limit(3)
-.get();
+  return db.collection("users")
+    .orderBy("totalPoints", "desc")
+    .limit(3)
+    .onSnapshot((snapshot) => {
 
+      let html = "";
+      let rank = 0;
 
-let html="";
+      snapshot.forEach((doc) => {
 
-let rank=0;
+        const data = doc.data();
+        const medals = ["🥇", "🥈", "🥉"];
 
+        html += `
+          <div style="text-align:center; min-width:90px;">
 
-snapshot.forEach((doc)=>{
+            <div style="font-size:30px;">
+              ${medals[rank] || "🏅"}
+            </div>
 
-let data=doc.data();
+            <img
+              src="${data.photoURL || "https://i.pravatar.cc/80"}"
+              style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid #7CFC00;"
+              onerror="this.src='https://i.pravatar.cc/80';"
+            >
 
-html += `
-<div style="text-align:center">
+            <p style="margin:6px 0 2px;color:white;font-weight:600;">
+              ${data.username || "User"}
+            </p>
 
-<div style="font-size:30px">
-${["🥇","🥈","🥉"][rank]}
-</div>
+            <p style="margin:0;color:#7CFC00;font-weight:600;">
+              ⭐ ${data.totalPoints || 0}
+            </p>
 
-<img src="${data.photoURL || 'https://i.pravatar.cc/80'}"
-style="width:60px;height:60px;border-radius:50%">
+          </div>
+        `;
 
-<p>${data.username || "User"}</p>
+        rank++;
+      });
 
-<p style="color:#7CFC00">
-⭐ ${data.totalPoints || 0}
-</p>
+      box.innerHTML =
+        html ||
+        "<p style='color:#aaa;width:100%;text-align:center;'>No users yet</p>";
 
-</div>
-`;
+    }, (error) => {
 
-rank++;
+      console.error("Top leaderboard error:", error);
 
-});
+      box.innerHTML =
+        "<p style='color:#ff4d4d;width:100%;text-align:center;'>Leaderboard unavailable</p>";
 
-
-box.innerHTML=html;
-
-  }
+    });
+}
 
 firebase.auth().onAuthStateChanged(async (user) => {
     if (user) {
