@@ -850,11 +850,27 @@ header{
 
         <div class="empty">
             Loading verification requests...
-        </div>
+<div style="margin-top:20px;">
 
+    <div class="section-title">
+        🔔 Verification History
+    </div>
+
+    <div class="section-subtitle">
+        Approved and rejected workouts
+    </div>
+
+    <div
+        id="verificationHistory"
+        class="payments"
+    >
+        <div class="empty">
+            No verification history.
+        </div>
     </div>
 
 </div>
+       
 
     <!-- LEADERBOARD -->
 
@@ -1227,6 +1243,7 @@ async function(){
 
 
         renderVerificationRequests();
+       renderVerificationHistory();
 
     }
     catch(err){
@@ -1252,6 +1269,126 @@ async function(){
 
 function renderVerificationRequests(){
 
+window.renderVerificationHistory = function(){
+
+    const container =
+        document.getElementById("verificationHistory");
+
+    if(!container) return;
+
+    const history =
+        verificationRequests.filter(request =>
+            ["approved","rejected"].includes(
+                String(request.status || "").toLowerCase()
+            )
+        );
+
+    if(history.length === 0){
+
+        container.innerHTML =
+        `<div class="empty">
+            No verification history.
+         </div>`;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    history.forEach(request => {
+
+        const approved =
+            String(request.status).toLowerCase()
+            === "approved";
+
+        const finalRC =
+            Number(request.adminApprovedRC || 0);
+
+        const div =
+            document.createElement("div");
+
+        div.className = "payment";
+
+        div.innerHTML = `
+
+            <div class="payment-top">
+
+                <div>
+
+                    <div class="payment-user">
+                        ${approved
+                            ? "🟢 Approved"
+                            : "🔴 Rejected"}
+                    </div>
+
+                    <div class="payment-email">
+                        ${escapeHTML(
+                            request.workout || "Workout"
+                        )}
+                    </div>
+
+                </div>
+
+                <div class="status ${
+                    approved
+                    ? "status-approved"
+                    : "status-rejected"
+                }">
+
+                    ${
+                        approved
+                        ? "Approved"
+                        : "Rejected"
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="order-box">
+
+                <div class="order-info">
+
+                    🆔 User ID:
+                    ${escapeHTML(request.uid || "")}
+
+                    <br>
+
+                    🎯 Claimed:
+                    <b>
+                        ${Number(
+                            request.claimedReps || 0
+                        )}
+                    </b>
+
+                    <br>
+
+                    🪙 Final RC:
+                    <b>${finalRC}</b>
+
+                </div>
+
+            </div>
+
+            <div class="payment-time">
+
+                🕐 ${
+                    escapeHTML(
+                        formatTime(
+                            request.reviewedAt
+                        )
+                    )
+                }
+
+            </div>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+};
     const container =
         document.getElementById(
             "verificationRequests"
@@ -1275,8 +1412,13 @@ function renderVerificationRequests(){
     container.innerHTML = "";
 
 
-    verificationRequests.forEach(
-    request => {
+    const pendingRequests = verificationRequests.filter(
+    request =>
+        String(request.status || "pending").toLowerCase() === "pending"
+);
+
+pendingRequests.forEach(
+request => {
 
         const div =
             document.createElement("div");
@@ -1449,6 +1591,192 @@ function renderVerificationRequests(){
     });
 
 }
+window.approveWorkout = async function(requestId){
+
+    const request =
+        verificationRequests.find(
+            r => r.id === requestId
+        );
+
+    if(
+        !request ||
+        String(request.status || "pending")
+        .toLowerCase() !== "pending"
+    ) return;
+
+    const input =
+        document.getElementById(
+            "finalRC_" + requestId
+        );
+
+    const finalRC =
+        Number(input?.value);
+
+    const claimed =
+        Number(request.claimedReps || 0);
+
+    if(
+        !Number.isFinite(finalRC) ||
+        finalRC < 0 ||
+        finalRC > claimed
+    ){
+
+        alert(
+            "Final RC 0 to " +
+            claimed +
+            " kulla irukkanum."
+        );
+
+        return;
+    }
+
+    if(
+        !confirm(
+            "ADD " +
+            finalRC +
+            " RC to this user?"
+        )
+    ) return;
+
+    try{
+
+        const userRef =
+            doc(
+                db,
+                "users",
+                request.uid
+            );
+
+        const userSnap =
+            await getDoc(userRef);
+
+        if(!userSnap.exists()){
+
+            alert("User not found ❌");
+
+            return;
+        }
+
+        const userData =
+            userSnap.data();
+
+        const currentPoints =
+            Number(
+                userData.totalPoints || 0
+            );
+
+        await updateDoc(
+            userRef,
+            {
+                totalPoints:
+                    currentPoints + finalRC
+            }
+        );
+
+        await updateDoc(
+            doc(
+                db,
+                "verificationRequests",
+                requestId
+            ),
+            {
+                status:"approved",
+
+                adminApprovedReps:
+                    finalRC,
+
+                adminApprovedRC:
+                    finalRC,
+
+                reviewedAt:
+                    serverTimestamp()
+            }
+        );
+
+        alert(
+            "Workout approved ✅\n" +
+            finalRC +
+            " RC added."
+        );
+
+        await refreshAll();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "ADD RC failed ❌\n" +
+            err.message
+        );
+
+    }
+
+};
+
+
+window.rejectWorkout = async function(requestId){
+
+    const request =
+        verificationRequests.find(
+            r => r.id === requestId
+        );
+
+    if(
+        !request ||
+        String(request.status || "pending")
+        .toLowerCase() !== "pending"
+    ) return;
+
+    if(
+        !confirm(
+            "இந்த workout verification-ஐ REJECT பண்ணவா?"
+        )
+    ) return;
+
+    try{
+
+        await updateDoc(
+
+            doc(
+                db,
+                "verificationRequests",
+                requestId
+            ),
+
+            {
+                status:"rejected",
+
+                adminApprovedReps:0,
+
+                adminApprovedRC:0,
+
+                reviewedAt:
+                    serverTimestamp()
+            }
+
+        );
+
+        alert(
+            "Workout rejected ❌"
+        );
+
+        await refreshAll();
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        alert(
+            "Reject failed ❌\n" +
+            err.message
+        );
+
+    }
+
+};
 
 /* =========================
    REFRESH EVERYTHING
