@@ -1134,20 +1134,24 @@ async(user)=>{
 
 
         document
-        .getElementById("loginScreen")
-        .style.display = "none";
+.getElementById("loginScreen")
+.style.display = "none";
 
-        document
-        .getElementById("dashboard")
-        .style.display = "block";
+document
+.getElementById("dashboard")
+.style.display = "block";
 
-        document
-        .getElementById("adminEmail")
-        .textContent =
-        user.email || "Admin";
+document
+.getElementById("adminEmail")
+.textContent =
+user.email || "Admin";
 
-
-        await refreshAll();
+try{
+    await refreshAll();
+}
+catch(err){
+    console.error("Dashboard load error:", err);
+}
 
     }
     catch(err){
