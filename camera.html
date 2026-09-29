@@ -44,14 +44,6 @@ html,body{
     transform:scaleX(-1);
 }
 
-#canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-}
-
 #top{
     position:absolute;
     top:calc(15px + env(safe-area-inset-top));
@@ -70,20 +62,26 @@ html,body{
     font-weight:bold;
 }
 
-#rep{
-    margin-top:8px;
-    font-size:50px;
+#status{
+    margin-top:10px;
+    font-size:15px;
     font-weight:bold;
     color:#fff;
-    text-shadow:0 0 12px #000;
+    text-shadow:0 0 8px #000;
 }
 
-#status{
-    margin-top:6px;
-    font-size:14px;
+#countdown{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:30;
+    font-size:90px;
     font-weight:bold;
-    color:#ff3030;
-    text-shadow:0 0 8px #000;
+    color:#9dff00;
+    text-shadow:0 0 25px #000;
+    pointer-events:none;
 }
 
 #buttons{
@@ -113,6 +111,10 @@ button{
 #finishBtn{
     background:#9dff00;
     color:#000;
+}
+
+#finishBtn:disabled{
+    opacity:.5;
 }
 
 #loading{
@@ -151,16 +153,10 @@ button{
 
 <video id="video" autoplay muted playsinline></video>
 
-<canvas id="canvas"></canvas>
-
 <div id="top">
 
     <div id="workoutName">
         Workout
-    </div>
-
-    <div id="rep">
-        0
     </div>
 
     <div id="status">
@@ -168,6 +164,8 @@ button{
     </div>
 
 </div>
+
+<div id="countdown"></div>
 
 <div id="buttons">
 
@@ -221,9 +219,7 @@ const firebaseConfig = {
 };
 
 if(!firebase.apps.length){
-
     firebase.initializeApp(firebaseConfig);
-
 }
 
 const auth = firebase.auth();
@@ -235,20 +231,14 @@ const db = firebase.firestore();
 const video =
 document.getElementById("video");
 
-const canvas =
-document.getElementById("canvas");
-
-const ctx =
-canvas.getContext("2d");
-
 const workoutNameEl =
 document.getElementById("workoutName");
 
-const repEl =
-document.getElementById("rep");
-
 const statusEl =
 document.getElementById("status");
+
+const countdownEl =
+document.getElementById("countdown");
 
 const loading =
 document.getElementById("loading");
@@ -271,33 +261,28 @@ localStorage.getItem("selectedWorkout") ||
 "Stretching";
 
 try{
-
-    workout =
-    decodeURIComponent(workout);
-
+    workout = decodeURIComponent(workout);
 }catch(e){}
 
-workout =
-workout.trim();
+workout = workout.trim();
 
-workoutNameEl.textContent =
-workout;
+workoutNameEl.textContent = workout;
 
 
 /* ================= CAMERA STATE ================= */
 
 let stream = null;
 let pose = null;
+
 let running = true;
 let processing = false;
 
-let reps = 0;
+let aiDetectedReps = 0;
 
 const MAX_REPS = 50;
 
 let tracked = false;
 let lostFrames = 0;
-
 let lastRepTime = 0;
 
 
@@ -313,26 +298,18 @@ let pushDownSeen = false;
 /* ================= WORKOUT STATES ================= */
 
 let squatDown = false;
-
 let lungeDown = false;
-
 let highKneeUp = false;
-
 let mountainKneeActive = false;
-
 let jumpingJackOpen = false;
-
 let burpeeDown = false;
-
 let burpeeStanding = false;
-
 let stretchUp = false;
 
 
 /* ================= PLANK ================= */
 
 let plankStart = 0;
-
 let lastPlankSecond = 0;
 
 
@@ -349,68 +326,47 @@ function good(p){
             p.visibility > .15
         )
     );
-
 }
 
 
 function req(a){
-
     return a.every(good);
-
 }
 
 
 function mid(a,b){
 
     return {
-
         x:(a.x+b.x)/2,
-
         y:(a.y+b.y)/2
-
     };
-
 }
 
 
 function dist(a,b){
 
-    if(
-        !good(a) ||
-        !good(b)
-    ){
-
+    if(!good(a) || !good(b)){
         return 999;
-
     }
 
     return Math.hypot(
         a.x-b.x,
         a.y-b.y
     );
-
 }
 
 
 function angle(a,b,c){
 
     if(!req([a,b,c])){
-
         return 180;
-
     }
 
-    const abx =
-    a.x-b.x;
+    const abx = a.x-b.x;
+    const aby = a.y-b.y;
 
-    const aby =
-    a.y-b.y;
-
-    const cbx =
-    c.x-b.x;
-
-    const cby =
-    c.y-b.y;
+    const cbx = c.x-b.x;
+    const cby = c.y-b.y;
 
     const m1 =
     Math.hypot(abx,aby);
@@ -419,9 +375,7 @@ function angle(a,b,c){
     Math.hypot(cbx,cby);
 
     if(!m1 || !m2){
-
         return 180;
-
     }
 
     return Math.acos(
@@ -436,47 +390,31 @@ function angle(a,b,c){
             )
         )
     ) * 180 / Math.PI;
-
 }
 
 
-/* ================= ADD REP ================= */
+/* ================= INTERNAL AI REP ================= */
 
-function addRep(){
+function addAIRep(){
 
     if(
         !tracked ||
-        reps >= MAX_REPS
+        aiDetectedReps >= MAX_REPS
     ){
-
         return;
-
     }
 
-    const now =
-    Date.now();
+    const now = Date.now();
 
     if(
         now-lastRepTime < 450
     ){
-
         return;
-
     }
 
-    lastRepTime =
-    now;
+    lastRepTime = now;
 
-    reps++;
-
-    repEl.textContent =
-    reps;
-
-    statusEl.textContent =
-    "REP " + reps;
-
-    statusEl.style.color =
-    "#00ff66";
+    aiDetectedReps++;
 
 }
 
@@ -487,30 +425,18 @@ function bodyVisible(l){
 
     const p = [
 
-        l[11],
-        l[12],
-
-        l[13],
-        l[14],
-
-        l[15],
-        l[16],
-
-        l[23],
-        l[24],
-
-        l[25],
-        l[26],
-
-        l[27],
-        l[28]
+        l[11],l[12],
+        l[13],l[14],
+        l[15],l[16],
+        l[23],l[24],
+        l[25],l[26],
+        l[27],l[28]
 
     ];
 
     return (
         p.filter(good).length >= 7
     );
-
 }
 
 
@@ -520,76 +446,56 @@ function pushupStartPosition(l){
 
     if(
         !req([
-            l[11],
-            l[12],
-            l[13],
-            l[14],
-            l[15],
-            l[16],
-            l[23],
-            l[24]
+            l[11],l[12],
+            l[13],l[14],
+            l[15],l[16],
+            l[23],l[24]
         ])
     ){
         return false;
     }
 
-    const shoulder = mid(
-        l[11],
-        l[12]
-    );
+    const shoulder =
+    mid(l[11],l[12]);
 
-    const hip = mid(
-        l[23],
-        l[24]
-    );
+    const hip =
+    mid(l[23],l[24]);
 
-    const leftArm = angle(
-        l[11],
-        l[13],
-        l[15]
-    );
+    const leftArm =
+    angle(l[11],l[13],l[15]);
 
-    const rightArm = angle(
-        l[12],
-        l[14],
-        l[16]
-    );
+    const rightArm =
+    angle(l[12],l[14],l[16]);
 
-    const armAngle = Math.min(
-        leftArm,
-        rightArm
-    );
+    const armAngle =
+    Math.min(leftArm,rightArm);
 
-    const bodyAngle = angle(
+    const bodyAngle =
+    angle(
         shoulder,
         hip,
         {
             x:hip.x,
-            y:hip.y + .35
+            y:hip.y+.35
         }
     );
 
     const shouldersLevel =
-        Math.abs(
-            l[11].y - l[12].y
-        ) < .12;
+    Math.abs(
+        l[11].y-l[12].y
+    ) < .12;
 
     const hipsLevel =
-        Math.abs(
-            l[23].y - l[24].y
-        ) < .15;
-
-    /*
-     * Must look like a real push-up setup.
-     * Standing / hand waving must NOT lock.
-     */
+    Math.abs(
+        l[23].y-l[24].y
+    ) < .15;
 
     return (
         armAngle > 135 &&
         bodyAngle > 115 &&
         shouldersLevel &&
         hipsLevel &&
-        shoulder.y < hip.y + .35
+        shoulder.y < hip.y+.35
     );
 }
 
@@ -600,17 +506,10 @@ function pushupBodyStillTrackable(l){
 
     return req([
 
-        l[11],
-        l[12],
-
-        l[13],
-        l[14],
-
-        l[15],
-        l[16],
-
-        l[23],
-        l[24]
+        l[11],l[12],
+        l[13],l[14],
+        l[15],l[16],
+        l[23],l[24]
 
     ]);
 }
@@ -620,16 +519,9 @@ function pushupBodyStillTrackable(l){
 
 function detectPushUp(l){
 
-    /*
-     * STEP 1
-     * Find the real push-up starting position.
-     */
-
     if(!pushLocked){
 
-        if(
-            pushupStartPosition(l)
-        ){
+        if(pushupStartPosition(l)){
 
             pushLocked = true;
 
@@ -637,66 +529,42 @@ function detectPushUp(l){
 
             tracked = true;
 
-            const shoulder = mid(
-                l[11],
-                l[12]
-            );
+            const shoulder =
+            mid(l[11],l[12]);
 
-            /*
-             * TOP position from your photo 1.
-             */
+            pushTopY =
+            shoulder.y;
 
-            pushTopY = shoulder.y;
+            pushBottomY =
+            shoulder.y;
 
-            pushBottomY = shoulder.y;
+            pushDownSeen =
+            false;
 
-            pushDownSeen = false;
-
-            statusEl.textContent =
-            "PUSH-UP READY";
-
-            statusEl.style.color =
-            "#00ff66";
         }
 
         return;
     }
 
 
-    /*
-     * STEP 2
-     * Once locked, do NOT require the
-     * original top pose every frame.
-     */
-
     if(
         pushupBodyStillTrackable(l)
     ){
 
         pushLostFrames = 0;
-
         tracked = true;
 
     }else{
 
         pushLostFrames++;
 
-        /*
-         * Small tracking loss is allowed.
-         */
-
-        if(
-            pushLostFrames > 25
-        ){
+        if(pushLostFrames > 25){
 
             pushLocked = false;
-
             pushLostFrames = 0;
 
             pushTopY = null;
-
             pushBottomY = null;
-
             pushDownSeen = false;
 
             tracked = false;
@@ -706,110 +574,48 @@ function detectPushUp(l){
     }
 
 
-    /*
-     * Current body position
-     */
+    const shoulder =
+    mid(l[11],l[12]);
 
-    const shoulder = mid(
-        l[11],
-        l[12]
+    const hip =
+    mid(l[23],l[24]);
+
+
+    const leftArm =
+    angle(l[11],l[13],l[15]);
+
+    const rightArm =
+    angle(l[12],l[14],l[16]);
+
+    const armAngle =
+    Math.min(leftArm,rightArm);
+
+
+    const bodyScale =
+    Math.max(
+        .20,
+        dist(shoulder,hip)
     );
 
-    const hip = mid(
-        l[23],
-        l[24]
-    );
-
-
-    /*
-     * Arm angle
-     *
-     * TOP  = roughly straight
-     * DOWN = clearly bent
-     */
-
-    const leftArm = angle(
-        l[11],
-        l[13],
-        l[15]
-    );
-
-    const rightArm = angle(
-        l[12],
-        l[14],
-        l[16]
-    );
-
-    const armAngle = Math.min(
-        leftArm,
-        rightArm
-    );
-
-
-    /*
-     * Body size normalization.
-     * This makes the detector work even
-     * when the camera distance changes.
-     */
-
-    const bodyScale = Math.max(
-        0.20,
-        dist(
-            shoulder,
-            hip
-        )
-    );
-
-
-    /*
-     * ==========================================
-     * TOP POSITION
-     * ==========================================
-     *
-     * This matches your first photo.
-     */
 
     if(!pushDownSeen){
 
-        /*
-         * Keep the highest shoulder position
-         * as the TOP reference.
-         */
-
         if(
-            shoulder.y <
-            pushTopY
+            shoulder.y < pushTopY
         ){
-
             pushTopY =
             shoulder.y;
         }
 
-
-        /*
-         * DOWN POSITION
-         *
-         * Your second/third photos:
-         *
-         * - chest goes down
-         * - elbows bend
-         * - body moves downward
-         *
-         * IMPORTANT:
-         * Down movement alone does NOT add a rep.
-         */
-
         const downDistance =
-        shoulder.y -
-        pushTopY;
+        shoulder.y-pushTopY;
 
         const realDown =
         downDistance >
-        bodyScale * .22;
+        bodyScale*.22;
 
         const armsBent =
         armAngle < 150;
-
 
         if(
             realDown &&
@@ -820,28 +626,11 @@ function detectPushUp(l){
 
             pushBottomY =
             shoulder.y;
-
-            statusEl.textContent =
-            "DOWN";
-
-            statusEl.style.color =
-            "#00ff66";
         }
 
         return;
     }
 
-
-    /*
-     * ==========================================
-     * DEEP DOWN
-     * ==========================================
-     *
-     * Photo 2 -> Photo 3 can happen here.
-     *
-     * It is STILL the same repetition.
-     * No coin / rep is added.
-     */
 
     if(
         shoulder.y >
@@ -853,46 +642,23 @@ function detectPushUp(l){
     }
 
 
-    /*
-     * ==========================================
-     * UP POSITION
-     * ==========================================
-     *
-     * Must actually return toward the TOP.
-     */
-
     const returnedDistance =
-    pushBottomY -
-    shoulder.y;
+    pushBottomY-shoulder.y;
 
     const returnedEnough =
     returnedDistance >
-    bodyScale * .22;
+    bodyScale*.22;
 
     const armsStraight =
     armAngle > 155;
 
-
-    /*
-     * TOP return must happen before
-     * counting the repetition.
-     */
 
     if(
         returnedEnough &&
         armsStraight
     ){
 
-        /*
-         * EXACTLY ONE REP
-         */
-
-        addRep();
-
-
-        /*
-         * Reset for NEXT repetition.
-         */
+        addAIRep();
 
         pushDownSeen = false;
 
@@ -901,193 +667,9 @@ function detectPushUp(l){
 
         pushBottomY =
         shoulder.y;
-
-        statusEl.textContent =
-        "PUSH-UP READY";
-
-        statusEl.style.color =
-        "#00ff66";
     }
 
 }
-/* ================= SKELETON ================= */
-
-const connections = [
-
-    [11,12],
-
-    [11,13],
-    [13,15],
-
-    [12,14],
-    [14,16],
-
-    [11,23],
-    [12,24],
-
-    [23,24],
-
-    [23,25],
-    [25,27],
-
-    [24,26],
-    [26,28]
-
-];
-
-
-function drawPoint(p,c){
-
-    if(!good(p)){
-
-        return;
-
-    }
-
-    ctx.beginPath();
-
-    ctx.arc(
-        p.x*canvas.width,
-        p.y*canvas.height,
-        4,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fillStyle =
-    c;
-
-    ctx.fill();
-
-}
-
-
-function drawLine(a,b,c){
-
-    if(
-        !good(a) ||
-        !good(b)
-    ){
-
-        return;
-
-    }
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        a.x*canvas.width,
-        a.y*canvas.height
-    );
-
-    ctx.lineTo(
-        b.x*canvas.width,
-        b.y*canvas.height
-    );
-
-    ctx.strokeStyle =
-    c;
-
-    ctx.lineWidth =
-    5;
-
-    ctx.lineCap =
-    "round";
-
-    ctx.stroke();
-
-}
-
-
-/* ================= DRAW BODY ================= */
-
-function drawBody(l){
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    const visible =
-    bodyVisible(l);
-
-    if(visible){
-
-        lostFrames =
-        0;
-
-        tracked =
-        true;
-
-    }else{
-
-        lostFrames++;
-
-    }
-
-    if(
-        lostFrames > 12 &&
-        !pushLocked
-    ){
-
-        tracked =
-        false;
-
-    }
-
-    const c =
-    tracked
-    ? "#00ff66"
-    : "#ff3030";
-
-    connections.forEach(x=>{
-
-        drawLine(
-            l[x[0]],
-            l[x[1]],
-            c
-        );
-
-        drawPoint(
-            l[x[0]],
-            c
-        );
-
-        drawPoint(
-            l[x[1]],
-            c
-        );
-
-    });
-
-    if(pushLocked){
-
-        statusEl.textContent =
-        pushDownSeen
-        ? "DOWN"
-        : "PUSH-UP READY";
-
-        statusEl.style.color =
-        "#00ff66";
-
-    }else{
-
-        statusEl.textContent =
-        tracked
-        ? "TRACKING"
-        : "MOVE INTO CAMERA";
-
-        statusEl.style.color =
-        tracked
-        ? "#00ff66"
-        : "#ff3030";
-
-    }
-
-}
-
 
 
 /* ==================================================
@@ -1097,9 +679,7 @@ function drawBody(l){
 function detect(l){
 
     if(!tracked){
-
         return;
-
     }
 
     const w =
@@ -1108,12 +688,9 @@ function detect(l){
 
     /* ================= PUSH UP ================= */
 
-    if(
-        w === "push up"
-    ){
+    if(w === "push up"){
 
         detectPushUp(l);
-
         return;
 
     }
@@ -1121,38 +698,21 @@ function detect(l){
 
     /* ================= SQUAT ================= */
 
-    if(
-        w === "squat"
-    ){
+    if(w === "squat"){
 
-        if(
-            !req([
-                l[23],
-                l[24],
-                l[25],
-                l[26],
-                l[27],
-                l[28]
-            ])
-        ){
-
+        if(!req([
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
             return;
-
         }
 
         const leftKnee =
-        angle(
-            l[23],
-            l[25],
-            l[27]
-        );
+        angle(l[23],l[25],l[27]);
 
         const rightKnee =
-        angle(
-            l[24],
-            l[26],
-            l[28]
-        );
+        angle(l[24],l[26],l[28]);
 
         const knee =
         Math.min(
@@ -1160,56 +720,36 @@ function detect(l){
             rightKnee
         );
 
-
-        /* DOWN */
-
         if(
             !squatDown &&
             knee < 158
         ){
-
-            squatDown =
-            true;
-
+            squatDown = true;
         }
-
-
-        /* STAND = REP */
 
         if(
             squatDown &&
             knee > 164
         ){
 
-            addRep();
+            addAIRep();
 
-            squatDown =
-            false;
-
+            squatDown = false;
         }
 
         return;
-
     }
 
 
     /* ================= HIGH KNEES ================= */
 
-    if(
-        w === "high knees"
-    ){
+    if(w === "high knees"){
 
-        if(
-            !req([
-                l[23],
-                l[24],
-                l[25],
-                l[26]
-            ])
-        ){
-
+        if(!req([
+            l[23],l[24],
+            l[25],l[26]
+        ])){
             return;
-
         }
 
         const leftUp =
@@ -1221,9 +761,7 @@ function detect(l){
         l[24].y-.055;
 
         const kneeUp =
-        leftUp ||
-        rightUp;
-
+        leftUp || rightUp;
 
         const leftBack =
         l[25].y >=
@@ -1233,21 +771,12 @@ function detect(l){
         l[26].y >=
         l[24].y-.015;
 
-
-        /* KNEE UP */
-
         if(
             !highKneeUp &&
             kneeUp
         ){
-
-            highKneeUp =
-            true;
-
+            highKneeUp = true;
         }
-
-
-        /* KNEE DOWN = REP */
 
         if(
             highKneeUp &&
@@ -1255,52 +784,32 @@ function detect(l){
             rightBack
         ){
 
-            addRep();
+            addAIRep();
 
-            highKneeUp =
-            false;
-
+            highKneeUp = false;
         }
 
         return;
-
     }
 
 
     /* ================= LUNGES ================= */
 
-    if(
-        w === "lunges"
-    ){
+    if(w === "lunges"){
 
-        if(
-            !req([
-                l[23],
-                l[24],
-                l[25],
-                l[26],
-                l[27],
-                l[28]
-            ])
-        ){
-
+        if(!req([
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
             return;
-
         }
 
         const leftKnee =
-        angle(
-            l[23],
-            l[25],
-            l[27]
-        );
+        angle(l[23],l[25],l[27]);
 
         const rightKnee =
-        angle(
-            l[24],
-            l[26],
-            l[28]
-        );
+        angle(l[24],l[26],l[28]);
 
         const knee =
         Math.min(
@@ -1308,72 +817,45 @@ function detect(l){
             rightKnee
         );
 
-
         if(
             !lungeDown &&
             knee < 150
         ){
-
-            lungeDown =
-            true;
-
+            lungeDown = true;
         }
-
 
         if(
             lungeDown &&
             knee > 165
         ){
 
-            addRep();
+            addAIRep();
 
-            lungeDown =
-            false;
-
+            lungeDown = false;
         }
 
         return;
-
     }
 
 
     /* ================= MOUNTAIN CLIMBER ================= */
 
-    if(
-        w === "mountain climber"
-    ){
+    if(w === "mountain climber"){
 
-        if(
-            !req([
-                l[11],
-                l[12],
-                l[15],
-                l[16],
-                l[23],
-                l[24],
-                l[25],
-                l[26]
-            ])
-        ){
-
+        if(!req([
+            l[11],l[12],
+            l[15],l[16],
+            l[23],l[24],
+            l[25],l[26]
+        ])){
             return;
-
         }
 
         const shoulder =
-        mid(
-            l[11],
-            l[12]
-        );
+        mid(l[11],l[12]);
 
         const hip =
-        mid(
-            l[23],
-            l[24]
-        );
-
-
-        /* MUST BE HORIZONTAL */
+        mid(l[23],l[24]);
 
         if(
             Math.abs(
@@ -1381,195 +863,110 @@ function detect(l){
             ) >= .52
         ){
 
-            mountainKneeActive =
-            false;
-
+            mountainKneeActive = false;
             return;
-
         }
 
-
-        /* KNEE DRIVE */
-
         const drive =
-        dist(
-            l[25],
-            l[16]
-        ) < .30 ||
-
-        dist(
-            l[26],
-            l[15]
-        ) < .30 ||
-
-        l[25].y <
-        l[23].y-.08 ||
-
-        l[26].y <
-        l[24].y-.08;
-
-
-        /* KNEES BACK */
+        dist(l[25],l[16]) < .30 ||
+        dist(l[26],l[15]) < .30 ||
+        l[25].y < l[23].y-.08 ||
+        l[26].y < l[24].y-.08;
 
         const back =
-        l[25].y >=
-        l[23].y-.025 &&
-
-        l[26].y >=
-        l[24].y-.025;
-
+        l[25].y >= l[23].y-.025 &&
+        l[26].y >= l[24].y-.025;
 
         if(
             !mountainKneeActive &&
             drive
         ){
-
-            mountainKneeActive =
-            true;
-
+            mountainKneeActive = true;
         }
-
 
         if(
             mountainKneeActive &&
             back
         ){
 
-            addRep();
+            addAIRep();
 
-            mountainKneeActive =
-            false;
-
+            mountainKneeActive = false;
         }
 
         return;
-
     }
 
 
     /* ================= JUMPING JACK ================= */
 
-    if(
-        w === "jumping jack"
-    ){
+    if(w === "jumping jack"){
 
-        if(
-            !req([
-                l[15],
-                l[16],
-                l[27],
-                l[28],
-                l[11],
-                l[12]
-            ])
-        ){
-
+        if(!req([
+            l[15],l[16],
+            l[27],l[28],
+            l[11],l[12]
+        ])){
             return;
-
         }
 
         const shoulder =
-        mid(
-            l[11],
-            l[12]
-        );
+        mid(l[11],l[12]);
 
         const feetDistance =
         Math.abs(
-            l[27].x -
-            l[28].x
+            l[27].x-l[28].x
         );
-
-
-        /* OPEN POSITION */
 
         const open =
         feetDistance > .16 &&
-
-        l[15].y <
-        shoulder.y+.02 &&
-
-        l[16].y <
-        shoulder.y+.02;
-
-
-        /* CLOSED POSITION */
+        l[15].y < shoulder.y+.02 &&
+        l[16].y < shoulder.y+.02;
 
         const closed =
         feetDistance < .13 &&
-
-        l[15].y >
-        shoulder.y+.10 &&
-
-        l[16].y >
-        shoulder.y+.10;
-
+        l[15].y > shoulder.y+.10 &&
+        l[16].y > shoulder.y+.10;
 
         if(
             !jumpingJackOpen &&
             open
         ){
-
-            jumpingJackOpen =
-            true;
-
+            jumpingJackOpen = true;
         }
-
 
         if(
             jumpingJackOpen &&
             closed
         ){
 
-            addRep();
+            addAIRep();
 
-            jumpingJackOpen =
-            false;
-
+            jumpingJackOpen = false;
         }
 
         return;
-
     }
 
 
     /* ================= BURPEES ================= */
 
-    if(
-        w === "burpees"
-    ){
+    if(w === "burpees"){
 
-        if(
-            !req([
-                l[11],
-                l[12],
-                l[23],
-                l[24],
-                l[25],
-                l[26],
-                l[27],
-                l[28]
-            ])
-        ){
-
+        if(!req([
+            l[11],l[12],
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
             return;
-
         }
 
-
         const leftKnee =
-        angle(
-            l[23],
-            l[25],
-            l[27]
-        );
+        angle(l[23],l[25],l[27]);
 
         const rightKnee =
-        angle(
-            l[24],
-            l[26],
-            l[28]
-        );
+        angle(l[24],l[26],l[28]);
 
         const knee =
         Math.min(
@@ -1577,65 +974,38 @@ function detect(l){
             rightKnee
         );
 
-
         const shoulder =
-        mid(
-            l[11],
-            l[12]
-        );
+        mid(l[11],l[12]);
 
         const hip =
-        mid(
-            l[23],
-            l[24]
-        );
-
-
-        /* LOW POSITION */
+        mid(l[23],l[24]);
 
         const low =
         knee < 145 ||
-
         Math.abs(
-            shoulder.y -
-            hip.y
+            shoulder.y-hip.y
         ) < .50;
-
-
-        /* STANDING */
 
         const standing =
         knee > 165 &&
-
         Math.abs(
-            l[27].y -
-            l[28].y
+            l[27].y-l[28].y
         ) < .15;
-
-
-        /* JUMP */
 
         const jump =
         l[27].y <
         l[25].y-.025 &&
-
         l[28].y <
         l[26].y-.025;
-
 
         if(
             !burpeeDown &&
             low
         ){
 
-            burpeeDown =
-            true;
-
-            burpeeStanding =
-            false;
-
+            burpeeDown = true;
+            burpeeStanding = false;
         }
-
 
         if(
             burpeeDown &&
@@ -1643,146 +1013,91 @@ function detect(l){
             standing
         ){
 
-            burpeeStanding =
-            true;
-
+            burpeeStanding = true;
         }
-
 
         if(
             burpeeStanding &&
             jump
         ){
 
-            addRep();
+            addAIRep();
 
-            burpeeDown =
-            false;
-
-            burpeeStanding =
-            false;
-
+            burpeeDown = false;
+            burpeeStanding = false;
         }
 
         return;
-
     }
 
 
     /* ================= PLANK ================= */
 
-    if(
-        w === "plank"
-    ){
+    if(w === "plank"){
 
-        if(
-            !req([
-                l[11],
-                l[12],
-                l[23],
-                l[24],
-                l[25],
-                l[26]
-            ])
-        ){
-
+        if(!req([
+            l[11],l[12],
+            l[23],l[24],
+            l[25],l[26]
+        ])){
             return;
-
         }
 
-
         const shoulder =
-        mid(
-            l[11],
-            l[12]
-        );
+        mid(l[11],l[12]);
 
         const hip =
-        mid(
-            l[23],
-            l[24]
-        );
-
+        mid(l[23],l[24]);
 
         const valid =
         Math.abs(
-            shoulder.y -
-            hip.y
+            shoulder.y-hip.y
         ) < .55;
 
-
         if(!valid){
-
-            /*
-             * Small temporary tracking movement
-             * should not instantly reset plank.
-             */
 
             if(
                 plankStart &&
                 Date.now()-plankStart > 1500
             ){
 
-                plankStart =
-                0;
-
-                lastPlankSecond =
-                0;
-
+                plankStart = 0;
+                lastPlankSecond = 0;
             }
 
             return;
-
         }
-
 
         if(!plankStart){
 
             plankStart =
             Date.now();
 
-            lastPlankSecond =
-            0;
-
+            lastPlankSecond = 0;
         }
-
 
         const sec =
         Math.min(
             MAX_REPS,
             Math.floor(
                 (
-                    Date.now() -
+                    Date.now()-
                     plankStart
-                ) / 1000
+                )/1000
             )
         );
-
 
         if(
             sec >
             lastPlankSecond
         ){
 
-            lastPlankSecond =
-            sec;
+            lastPlankSecond = sec;
 
-            reps =
-            sec;
-
-            repEl.textContent =
-            sec;
-
-            statusEl.textContent =
-            sec + " SEC";
-
-            statusEl.style.color =
-            "#00ff66";
-
+            aiDetectedReps = sec;
         }
 
         return;
-
     }
 
 
@@ -1793,72 +1108,46 @@ function detect(l){
         w === "cool down"
     ){
 
-        if(
-            !req([
-                l[11],
-                l[12],
-                l[15],
-                l[16]
-            ])
-        ){
-
+        if(!req([
+            l[11],l[12],
+            l[15],l[16]
+        ])){
             return;
-
         }
 
-
         const shoulder =
-        mid(
-            l[11],
-            l[12]
-        );
-
-
-        /* BOTH ARMS UP */
+        mid(l[11],l[12]);
 
         const up =
         l[15].y <
         shoulder.y-.10 &&
-
         l[16].y <
         shoulder.y-.10;
-
-
-        /* BOTH ARMS DOWN */
 
         const down =
         l[15].y >
         shoulder.y+.05 &&
-
         l[16].y >
         shoulder.y+.05;
-
 
         if(
             !stretchUp &&
             up
         ){
-
-            stretchUp =
-            true;
-
+            stretchUp = true;
         }
-
 
         if(
             stretchUp &&
             down
         ){
 
-            addRep();
+            addAIRep();
 
-            stretchUp =
-            false;
-
+            stretchUp = false;
         }
 
         return;
-
     }
 
 }
@@ -1869,11 +1158,8 @@ function detect(l){
 function onResults(results){
 
     if(!running){
-
         return;
-
     }
-
 
     if(
         !results ||
@@ -1882,37 +1168,38 @@ function onResults(results){
 
         lostFrames++;
 
+        if(lostFrames > 12){
 
-        if(
-            lostFrames > 12 &&
-            !pushLocked
-        ){
-
-            tracked =
-            false;
+            tracked = false;
 
             statusEl.textContent =
             "MOVE INTO CAMERA";
 
             statusEl.style.color =
             "#ff3030";
-
         }
 
         return;
-
     }
 
+    const landmarks =
+    results.poseLandmarks;
 
-    drawBody(
-        results.poseLandmarks
-    );
+    if(bodyVisible(landmarks)){
 
+        lostFrames = 0;
+        tracked = true;
 
-    detect(
-        results.poseLandmarks
-    );
+    }else{
 
+        lostFrames++;
+
+        if(lostFrames > 12){
+            tracked = false;
+        }
+    }
+
+    detect(landmarks);
 }
 
 
@@ -1929,7 +1216,6 @@ function setupPose(){
 
     });
 
-
     pose.setOptions({
 
         modelComplexity:1,
@@ -1944,11 +1230,9 @@ function setupPose(){
 
     });
 
-
     pose.onResults(
         onResults
     );
-
 }
 
 
@@ -1960,65 +1244,35 @@ async function startCamera(){
 
         setupPose();
 
-
         stream =
         await navigator.mediaDevices.getUserMedia({
 
             video:{
-
                 facingMode:"user",
-
-                width:{
-                    ideal:720
-                },
-
-                height:{
-                    ideal:1280
-                }
-
+                width:{ideal:720},
+                height:{ideal:1280}
             },
 
             audio:false
 
         });
 
-
         video.srcObject =
         stream;
 
-
         await video.play();
-
-
-        canvas.width =
-        video.videoWidth ||
-        720;
-
-        canvas.height =
-        video.videoHeight ||
-        1280;
-
 
         loading.style.display =
         "none";
 
-
         statusEl.textContent =
-        "MOVE INTO CAMERA";
+        "GET READY";
 
-        statusEl.style.color =
-        "#ff3030";
-
-
-        requestAnimationFrame(
-            processVideo
-        );
-
+        runCountdown();
 
     }catch(e){
 
         console.error(e);
-
 
         loading.innerHTML =
 
@@ -2029,9 +1283,48 @@ async function startCamera(){
         '<div style="color:#aaa;font-size:13px">'+
         'Allow camera permission and reload.'+
         '</div>';
-
     }
+}
 
+
+/* ================= COUNTDOWN ================= */
+
+function runCountdown(){
+
+    let count = 3;
+
+    countdownEl.textContent =
+    count;
+
+    const timer =
+    setInterval(()=>{
+
+        count--;
+
+        if(count > 0){
+
+            countdownEl.textContent =
+            count;
+
+        }else{
+
+            clearInterval(timer);
+
+            countdownEl.textContent =
+            "";
+
+            statusEl.textContent =
+            "WORKOUT STARTED";
+
+            statusEl.style.color =
+            "#00ff66";
+
+            requestAnimationFrame(
+                processVideo
+            );
+        }
+
+    },1000);
 }
 
 
@@ -2040,28 +1333,20 @@ async function startCamera(){
 async function processVideo(){
 
     if(!running){
-
         return;
-
     }
-
 
     if(
         video.readyState >= 2 &&
         !processing
     ){
 
-        processing =
-        true;
-
+        processing = true;
 
         try{
 
             await pose.send({
-
-                image:
-                video
-
+                image:video
             });
 
         }catch(e){
@@ -2073,17 +1358,12 @@ async function processVideo(){
 
         }
 
-
-        processing =
-        false;
-
+        processing = false;
     }
-
 
     requestAnimationFrame(
         processVideo
     );
-
 }
 
 
@@ -2091,9 +1371,7 @@ async function processVideo(){
 
 function stopCamera(){
 
-    running =
-    false;
-
+    running = false;
 
     if(stream){
 
@@ -2103,12 +1381,8 @@ function stopCamera(){
             t=>t.stop()
         );
 
-
-        stream =
-        null;
-
+        stream = null;
     }
-
 }
 
 
@@ -2120,15 +1394,15 @@ quitBtn.onclick = ()=>{
 
     location.href =
     "daily-task.html";
-
 };
 
 
 /* ================= FINISH ================= */
 
-finishBtn.onclick = async () => {
+finishBtn.onclick = async ()=>{
 
-    const user = auth.currentUser;
+    const user =
+    auth.currentUser;
 
     if(!user){
 
@@ -2137,32 +1411,25 @@ finishBtn.onclick = async () => {
         );
 
         return;
-
     }
 
 
-    /* ================= CLAIM REPS ================= */
+    /* ================= CLAIM ================= */
 
-    const answer = prompt(
-        "Did you do?\n\n" +
-        "Enter the correct number of reps you did:"
+    const answer =
+    prompt(
+        "How many reps did you complete?\n\n"+
+        "Enter your actual reps:"
     );
 
-
-    /* User cancelled */
-
     if(answer === null){
-
         return;
-
     }
 
 
     const claimedReps =
-        Number(answer.trim());
+    Number(answer.trim());
 
-
-    /* ================= VALIDATE ================= */
 
     if(
         !Number.isInteger(claimedReps) ||
@@ -2171,34 +1438,25 @@ finishBtn.onclick = async () => {
     ){
 
         alert(
-            "Please enter a valid number of reps between 1 and 50."
+            "Enter a number between 1 and 50."
         );
 
         return;
-
     }
 
 
-    /* ================= CONFIRM ================= */
+    const confirmed =
+    confirm(
 
-    const confirmed = confirm(
-
-        "Did you really complete " +
-        claimedReps +
-        " reps?\n\n" +
-
-        "Do not enter false reps.\n" +
-
-        "Incorrect claims may result in " +
-        "RC removal or account suspension."
+        "You are claiming "+
+        claimedReps+
+        " reps.\n\n"+
+        "False claims may be rejected by Admin."
 
     );
 
-
     if(!confirmed){
-
         return;
-
     }
 
 
@@ -2207,28 +1465,38 @@ finishBtn.onclick = async () => {
 
     try{
 
+        /* ================= AI RESULT ================= */
+
+        const aiClearReps =
+        Math.min(
+            claimedReps,
+            aiDetectedReps
+        );
+
+        const aiUnclearReps =
+        Math.max(
+            0,
+            claimedReps -
+            aiClearReps
+        );
+
+        const suggestedRC =
+        aiClearReps;
+
+
         /* ================= WORKOUT ORDER ================= */
 
         const order = [
 
             "Stretching",
-
             "Push Up",
-
             "Squat",
-
             "High Knees",
-
             "Lunges",
-
             "Mountain Climber",
-
             "Jumping Jack",
-
             "Burpees",
-
             "Plank",
-
             "Cool Down"
 
         ];
@@ -2240,10 +1508,8 @@ finishBtn.onclick = async () => {
         db.collection("users")
         .doc(user.uid);
 
-
         const snap =
         await userRef.get();
-
 
         const data =
         snap.exists
@@ -2257,9 +1523,7 @@ finishBtn.onclick = async () => {
         Array.isArray(
             data.completedTasks
         )
-
         ? [...data.completedTasks]
-
         : [];
 
 
@@ -2279,15 +1543,12 @@ finishBtn.onclick = async () => {
         ){
 
             completed.push(index);
-
         }
 
 
         completed =
         [...new Set(completed)]
-        .sort(
-            (a,b)=>a-b
-        );
+        .sort((a,b)=>a-b);
 
 
         /* ================= VERIFICATION REQUEST ================= */
@@ -2309,14 +1570,25 @@ finishBtn.onclick = async () => {
             claimedReps:
             claimedReps,
 
-            /* AI count is ONLY for reference */
             aiDetectedReps:
-            reps,
+            aiDetectedReps,
+
+            aiClearReps:
+            aiClearReps,
+
+            aiUnclearReps:
+            aiUnclearReps,
+
+            suggestedRC:
+            suggestedRC,
 
             status:
             "pending",
 
             adminApprovedReps:
+            null,
+
+            adminApprovedRC:
             null,
 
             adminNote:
@@ -2360,19 +1632,24 @@ finishBtn.onclick = async () => {
             .serverTimestamp()
 
         },{
-
             merge:true
-
         });
 
 
-        /* ================= IMPORTANT =================
-
-           totalPoints / RC is NOT changed here.
-
-           Admin will review the request
-           and manually add the final RC.
-        ============================================== */
+        /*
+         * IMPORTANT:
+         *
+         * NO RC IS GIVEN HERE.
+         *
+         * Admin must review:
+         *
+         * Claimed: 32
+         * Clear: 31
+         * Unclear: 1
+         * Suggested RC: 31
+         *
+         * Admin decides final RC.
+         */
 
 
         stopCamera();
@@ -2380,9 +1657,17 @@ finishBtn.onclick = async () => {
 
         alert(
 
-            "Workout submitted successfully.\n\n" +
-
-            "Your workout will be reviewed by Admin."
+            "Workout submitted!\n\n"+
+            "Claimed: "+
+            claimedReps+
+            "\nAI Clear: "+
+            aiClearReps+
+            "\nAI Unclear: "+
+            aiUnclearReps+
+            "\nSuggested RC: "+
+            suggestedRC+
+            "\n\n"+
+            "Waiting for Admin review."
 
         );
 
@@ -2395,39 +1680,15 @@ finishBtn.onclick = async () => {
 
         console.error(e);
 
-
         alert(
             "Could not submit workout. Please try again."
         );
 
-
         finishBtn.disabled =
         false;
-
     }
 
 };
-
-/* ================= RESIZE ================= */
-
-window.addEventListener(
-"resize",
-()=>{
-
-    if(
-        video.videoWidth &&
-        video.videoHeight
-    ){
-
-        canvas.width =
-        video.videoWidth;
-
-        canvas.height =
-        video.videoHeight;
-
-    }
-
-});
 
 
 /* ================= START ================= */
