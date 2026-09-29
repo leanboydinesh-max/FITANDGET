@@ -522,58 +522,75 @@ function pushupStartPosition(l){
         !req([
             l[11],
             l[12],
+            l[13],
+            l[14],
             l[15],
             l[16],
             l[23],
-            l[24],
-            l[27],
-            l[28]
+            l[24]
         ])
     ){
-
         return false;
-
     }
 
-    const s =
-    mid(l[11],l[12]);
-
-    const h =
-    mid(l[23],l[24]);
-
-    const a =
-    mid(l[27],l[28]);
-
-    const body =
-    angle(
-        s,
-        h,
-        a
+    const shoulder = mid(
+        l[11],
+        l[12]
     );
 
-    const handsNear =
-    Math.min(
-        dist(l[15],l[11]),
-        dist(l[16],l[12])
-    ) < .55;
+    const hip = mid(
+        l[23],
+        l[24]
+    );
 
-    const horizontal =
-    Math.abs(
-        s.y-h.y
-    ) < .55;
+    const leftArm = angle(
+        l[11],
+        l[13],
+        l[15]
+    );
 
-    const notStanding =
-    Math.abs(
-        s.y-a.y
-    ) < .85;
+    const rightArm = angle(
+        l[12],
+        l[14],
+        l[16]
+    );
+
+    const armAngle = Math.min(
+        leftArm,
+        rightArm
+    );
+
+    const bodyAngle = angle(
+        shoulder,
+        hip,
+        {
+            x:hip.x,
+            y:hip.y + .35
+        }
+    );
+
+    const shouldersLevel =
+        Math.abs(
+            l[11].y - l[12].y
+        ) < .12;
+
+    const hipsLevel =
+        Math.abs(
+            l[23].y - l[24].y
+        ) < .15;
+
+    /*
+     * Must look like a real push-up setup.
+     * Standing / hand waving must NOT lock.
+     */
 
     return (
-        body > 105 &&
-        handsNear &&
-        horizontal &&
-        notStanding
+        armAngle > 135 &&
+        bodyAngle > 115 &&
+        shouldersLevel &&
+        hipsLevel &&
+        shoulder.y < hip.y + .35
     );
-
 }
 
 
@@ -596,10 +613,303 @@ function pushupBodyStillTrackable(l){
         l[24]
 
     ]);
-
 }
 
 
+/* ================= PUSH-UP DETECTOR ================= */
+
+function detectPushUp(l){
+
+    /*
+     * STEP 1
+     * Find the real push-up starting position.
+     */
+
+    if(!pushLocked){
+
+        if(
+            pushupStartPosition(l)
+        ){
+
+            pushLocked = true;
+
+            pushLostFrames = 0;
+
+            tracked = true;
+
+            const shoulder = mid(
+                l[11],
+                l[12]
+            );
+
+            /*
+             * TOP position from your photo 1.
+             */
+
+            pushTopY = shoulder.y;
+
+            pushBottomY = shoulder.y;
+
+            pushDownSeen = false;
+
+            statusEl.textContent =
+            "PUSH-UP READY";
+
+            statusEl.style.color =
+            "#00ff66";
+        }
+
+        return;
+    }
+
+
+    /*
+     * STEP 2
+     * Once locked, do NOT require the
+     * original top pose every frame.
+     */
+
+    if(
+        pushupBodyStillTrackable(l)
+    ){
+
+        pushLostFrames = 0;
+
+        tracked = true;
+
+    }else{
+
+        pushLostFrames++;
+
+        /*
+         * Small tracking loss is allowed.
+         */
+
+        if(
+            pushLostFrames > 25
+        ){
+
+            pushLocked = false;
+
+            pushLostFrames = 0;
+
+            pushTopY = null;
+
+            pushBottomY = null;
+
+            pushDownSeen = false;
+
+            tracked = false;
+
+            return;
+        }
+    }
+
+
+    /*
+     * Current body position
+     */
+
+    const shoulder = mid(
+        l[11],
+        l[12]
+    );
+
+    const hip = mid(
+        l[23],
+        l[24]
+    );
+
+
+    /*
+     * Arm angle
+     *
+     * TOP  = roughly straight
+     * DOWN = clearly bent
+     */
+
+    const leftArm = angle(
+        l[11],
+        l[13],
+        l[15]
+    );
+
+    const rightArm = angle(
+        l[12],
+        l[14],
+        l[16]
+    );
+
+    const armAngle = Math.min(
+        leftArm,
+        rightArm
+    );
+
+
+    /*
+     * Body size normalization.
+     * This makes the detector work even
+     * when the camera distance changes.
+     */
+
+    const bodyScale = Math.max(
+        0.20,
+        dist(
+            shoulder,
+            hip
+        )
+    );
+
+
+    /*
+     * ==========================================
+     * TOP POSITION
+     * ==========================================
+     *
+     * This matches your first photo.
+     */
+
+    if(!pushDownSeen){
+
+        /*
+         * Keep the highest shoulder position
+         * as the TOP reference.
+         */
+
+        if(
+            shoulder.y <
+            pushTopY
+        ){
+
+            pushTopY =
+            shoulder.y;
+        }
+
+
+        /*
+         * DOWN POSITION
+         *
+         * Your second/third photos:
+         *
+         * - chest goes down
+         * - elbows bend
+         * - body moves downward
+         *
+         * IMPORTANT:
+         * Down movement alone does NOT add a rep.
+         */
+
+        const downDistance =
+        shoulder.y -
+        pushTopY;
+
+        const realDown =
+        downDistance >
+        bodyScale * .22;
+
+        const armsBent =
+        armAngle < 150;
+
+
+        if(
+            realDown &&
+            armsBent
+        ){
+
+            pushDownSeen = true;
+
+            pushBottomY =
+            shoulder.y;
+
+            statusEl.textContent =
+            "DOWN";
+
+            statusEl.style.color =
+            "#00ff66";
+        }
+
+        return;
+    }
+
+
+    /*
+     * ==========================================
+     * DEEP DOWN
+     * ==========================================
+     *
+     * Photo 2 -> Photo 3 can happen here.
+     *
+     * It is STILL the same repetition.
+     * No coin / rep is added.
+     */
+
+    if(
+        shoulder.y >
+        pushBottomY
+    ){
+
+        pushBottomY =
+        shoulder.y;
+    }
+
+
+    /*
+     * ==========================================
+     * UP POSITION
+     * ==========================================
+     *
+     * Must actually return toward the TOP.
+     */
+
+    const returnedDistance =
+    pushBottomY -
+    shoulder.y;
+
+    const returnedEnough =
+    returnedDistance >
+    bodyScale * .22;
+
+    const armsStraight =
+    armAngle > 155;
+
+
+    /*
+     * TOP return must happen before
+     * counting the repetition.
+     */
+
+    if(
+        returnedEnough &&
+        armsStraight
+    ){
+
+        /*
+         * EXACTLY ONE REP
+         */
+
+        addRep();
+
+
+        /*
+         * Reset for NEXT repetition.
+         */
+
+        pushDownSeen = false;
+
+        pushTopY =
+        shoulder.y;
+
+        pushBottomY =
+        shoulder.y;
+
+        statusEl.textContent =
+        "PUSH-UP READY";
+
+        statusEl.style.color =
+        "#00ff66";
+    }
+
+}
 /* ================= SKELETON ================= */
 
 const connections = [
