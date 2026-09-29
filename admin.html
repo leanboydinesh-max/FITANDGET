@@ -1180,85 +1180,57 @@ catch(err){
 
 });
 
-/* =========================
-   WORKOUT VERIFICATION
-========================= */
+<!-- WORKOUT VERIFICATION -->
 
-window.loadVerificationRequests =
-async function(){
+<div
+    class="section"
+    id="verificationSection"
+>
 
-    const container =
-        document.getElementById(
-            "verificationRequests"
-        );
-
-    container.innerHTML =
-    `<div class="empty">
-        Loading verification requests...
-     </div>`;
+    <div class="section-title">
+        🏋️ Workout Verification
     </div>
+
+    <div class="section-subtitle">
+        Review AI result and manually approve RC
+    </div>
+
+    <div
+        id="verificationRequests"
+        class="payments"
+    >
+
+        <div class="empty">
+            Loading verification requests...
+        </div>
+
+    </div>
+
+
+    <div style="margin-top:20px;">
+
+        <div class="section-title">
+            🔔 Verification History
+        </div>
+
+        <div class="section-subtitle">
+            Approved and rejected workouts
+        </div>
+
+        <div
+            id="verificationHistory"
+            class="payments"
+        >
+
+            <div class="empty">
+                No verification history.
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
-
-    try{
-
-        const snapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "verificationRequests"
-                )
-            );
-
-        verificationRequests = [];
-
-        snapshot.forEach(docSnap => {
-
-            verificationRequests.push({
-
-                id: docSnap.id,
-
-                ...docSnap.data()
-
-            });
-
-        });
-
-
-        /* Newest first */
-
-        verificationRequests.sort(
-        (a,b) => {
-
-            const ta =
-                a.createdAt?.toMillis
-                ? a.createdAt.toMillis()
-                : 0;
-
-            const tb =
-                b.createdAt?.toMillis
-                ? b.createdAt.toMillis()
-                : 0;
-
-            return tb - ta;
-
-        });
-
-
-        renderVerificationRequests();
-       renderVerificationHistory();
-
-    }
-    catch(err){
-
-        console.error(
-            "Verification load error:",
-            err
-        );
-
-        container.innerHTML =
-        `<div class="empty">
-            Failed to load verification requests.
-         </div>`;
 
     }
 
