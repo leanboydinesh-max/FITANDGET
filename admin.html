@@ -828,6 +828,33 @@ header{
 
     </div>
 
+   <!-- WORKOUT VERIFICATION -->
+
+<div
+    class="section"
+    id="verificationSection"
+>
+
+    <div class="section-title">
+        🏋️ Workout Verification
+    </div>
+
+    <div class="section-subtitle">
+        Review AI result and manually approve RC
+    </div>
+
+    <div
+        id="verificationRequests"
+        class="payments"
+    >
+
+        <div class="empty">
+            Loading verification requests...
+        </div>
+
+    </div>
+
+</div>
 
     <!-- LEADERBOARD -->
 
@@ -958,7 +985,9 @@ import {
     getDoc,
     updateDoc,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
+    query,
+    orderBy
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -1009,7 +1038,7 @@ let allUsers = [];
 let allPayments = [];
 
 let selectedUser = null;
-
+let verificationRequests = [];
 
 /* =========================
    LOGIN
@@ -1158,7 +1187,8 @@ async function(){
 
     await Promise.all([
         loadUsers(),
-        loadPayments()
+        loadPayments(),
+        loadVerificationRequests()
     ]);
 
     renderLeaderboard();
