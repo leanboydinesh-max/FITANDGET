@@ -2126,23 +2126,9 @@ quitBtn.onclick = ()=>{
 
 /* ================= FINISH ================= */
 
-finishBtn.onclick =
-async()=>{
+finishBtn.onclick = async () => {
 
-    if(reps<=0){
-
-        alert(
-            "Complete at least 1 rep."
-        );
-
-        return;
-
-    }
-
-
-    const user =
-    auth.currentUser;
-
+    const user = auth.currentUser;
 
     if(!user){
 
@@ -2155,32 +2141,73 @@ async()=>{
     }
 
 
-    finishBtn.disabled =
-    true;
+    /* ================= CLAIM REPS ================= */
+
+    const answer = prompt(
+        "Did you do?\n\n" +
+        "Enter the correct number of reps you did:"
+    );
+
+
+    /* User cancelled */
+
+    if(answer === null){
+
+        return;
+
+    }
+
+
+    const claimedReps =
+        Number(answer.trim());
+
+
+    /* ================= VALIDATE ================= */
+
+    if(
+        !Number.isInteger(claimedReps) ||
+        claimedReps < 1 ||
+        claimedReps > MAX_REPS
+    ){
+
+        alert(
+            "Please enter a valid number of reps between 1 and 50."
+        );
+
+        return;
+
+    }
+
+
+    /* ================= CONFIRM ================= */
+
+    const confirmed = confirm(
+
+        "Did you really complete " +
+        claimedReps +
+        " reps?\n\n" +
+
+        "Do not enter false reps.\n" +
+
+        "Incorrect claims may result in " +
+        "RC removal or account suspension."
+
+    );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    finishBtn.disabled = true;
 
 
     try{
 
-        const ref =
-        db.collection("users")
-        .doc(user.uid);
-
-
-        const snap =
-        await ref.get();
-
-
-        const data =
-        snap.exists
-        ? snap.data()
-        : {};
-
-
-        const oldPoints =
-        Number(
-            data.totalPoints || 0
-        );
-
+        /* ================= WORKOUT ORDER ================= */
 
         const order = [
 
@@ -2207,8 +2234,26 @@ async()=>{
         ];
 
 
-        let completed =
+        /* ================= USER ================= */
 
+        const userRef =
+        db.collection("users")
+        .doc(user.uid);
+
+
+        const snap =
+        await userRef.get();
+
+
+        const data =
+        snap.exists
+        ? snap.data()
+        : {};
+
+
+        /* ================= COMPLETED TASK ================= */
+
+        let completed =
         Array.isArray(
             data.completedTasks
         )
@@ -2220,9 +2265,11 @@ async()=>{
 
         const index =
         order.findIndex(
+
             x =>
             x.toLowerCase() ===
             workout.toLowerCase()
+
         );
 
 
@@ -2243,10 +2290,57 @@ async()=>{
         );
 
 
-        await ref.set({
+        /* ================= VERIFICATION REQUEST ================= */
 
-            totalPoints:
-            oldPoints + reps,
+        const requestRef =
+        db.collection(
+            "verificationRequests"
+        ).doc();
+
+
+        await requestRef.set({
+
+            uid:
+            user.uid,
+
+            workout:
+            workout,
+
+            claimedReps:
+            claimedReps,
+
+            /* AI count is ONLY for reference */
+            aiDetectedReps:
+            reps,
+
+            status:
+            "pending",
+
+            adminApprovedReps:
+            null,
+
+            adminNote:
+            "",
+
+            completedTaskIndex:
+            index,
+
+            submittedAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp(),
+
+            createdAt:
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
+
+        });
+
+
+        /* ================= USER UPDATE ================= */
+
+        await userRef.set({
 
             completedTasks:
             completed,
@@ -2255,7 +2349,10 @@ async()=>{
             workout,
 
             lastWorkoutReps:
-            reps,
+            claimedReps,
+
+            lastVerificationId:
+            requestRef.id,
 
             updatedAt:
             firebase.firestore
@@ -2263,11 +2360,31 @@ async()=>{
             .serverTimestamp()
 
         },{
+
             merge:true
+
         });
 
 
+        /* ================= IMPORTANT =================
+
+           totalPoints / RC is NOT changed here.
+
+           Admin will review the request
+           and manually add the final RC.
+        ============================================== */
+
+
         stopCamera();
+
+
+        alert(
+
+            "Workout submitted successfully.\n\n" +
+
+            "Your workout will be reviewed by Admin."
+
+        );
 
 
         location.href =
@@ -2280,7 +2397,7 @@ async()=>{
 
 
         alert(
-            "Could not save workout. Please try again."
+            "Could not submit workout. Please try again."
         );
 
 
@@ -2290,7 +2407,6 @@ async()=>{
     }
 
 };
-
 
 /* ================= RESIZE ================= */
 
