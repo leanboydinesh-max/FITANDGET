@@ -1164,6 +1164,291 @@ catch(err){
 
 });
 
+/* =========================
+   WORKOUT VERIFICATION
+========================= */
+
+window.loadVerificationRequests =
+async function(){
+
+    const container =
+        document.getElementById(
+            "verificationRequests"
+        );
+
+    container.innerHTML =
+    `<div class="empty">
+        Loading verification requests...
+     </div>`;
+
+    try{
+
+        const snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "verificationRequests"
+                )
+            );
+
+        verificationRequests = [];
+
+        snapshot.forEach(docSnap => {
+
+            verificationRequests.push({
+
+                id: docSnap.id,
+
+                ...docSnap.data()
+
+            });
+
+        });
+
+
+        /* Newest first */
+
+        verificationRequests.sort(
+        (a,b) => {
+
+            const ta =
+                a.createdAt?.toMillis
+                ? a.createdAt.toMillis()
+                : 0;
+
+            const tb =
+                b.createdAt?.toMillis
+                ? b.createdAt.toMillis()
+                : 0;
+
+            return tb - ta;
+
+        });
+
+
+        renderVerificationRequests();
+
+    }
+    catch(err){
+
+        console.error(
+            "Verification load error:",
+            err
+        );
+
+        container.innerHTML =
+        `<div class="empty">
+            Failed to load verification requests.
+         </div>`;
+
+    }
+
+};
+
+
+/* =========================
+   RENDER VERIFICATION
+========================= */
+
+function renderVerificationRequests(){
+
+    const container =
+        document.getElementById(
+            "verificationRequests"
+        );
+
+
+    if(
+        verificationRequests.length === 0
+    ){
+
+        container.innerHTML =
+        `<div class="empty">
+            No workout verification requests.
+         </div>`;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    verificationRequests.forEach(
+    request => {
+
+        const div =
+            document.createElement("div");
+
+        div.className = "payment";
+
+
+        const status =
+            request.status || "pending";
+
+
+        div.innerHTML = `
+
+            <div class="payment-top">
+
+                <div>
+
+                    <div class="payment-user">
+                        🏋️ ${escapeHTML(
+                            request.workout ||
+                            "Workout"
+                        )}
+                    </div>
+
+                    <div class="payment-email">
+                        UID:
+                        ${escapeHTML(
+                            request.uid || ""
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="status status-pending">
+                    ${escapeHTML(status)}
+                </div>
+
+            </div>
+
+
+            <div class="order-box">
+
+                <div class="order-info">
+
+                    🎯 Claimed:
+                    <b>
+                        ${Number(
+                            request.claimedReps || 0
+                        )}
+                    </b>
+
+                    <br>
+
+                    🤖 AI Clear:
+                    <b>
+                        ${Number(
+                            request.aiClearReps || 0
+                        )}
+                    </b>
+
+                    <br>
+
+                    ❓ AI Unclear:
+                    <b>
+                        ${Number(
+                            request.aiUnclearReps || 0
+                        )}
+                    </b>
+
+                    <br>
+
+                    💡 Suggested RC:
+                    <b>
+                        ${Number(
+                            request.suggestedRC || 0
+                        )}
+                    </b>
+
+                </div>
+
+            </div>
+
+
+            ${
+                status === "pending"
+                ?
+                `
+
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        margin-top:12px;
+                    "
+                >
+
+                    <input
+                        id="finalRC_${request.id}"
+                        type="number"
+                        min="0"
+                        max="${Number(
+                            request.claimedReps || 0
+                        )}"
+                        value="${Number(
+                            request.suggestedRC || 0
+                        )}"
+                        placeholder="Final RC"
+                        style="
+                            flex:1;
+                            padding:12px;
+                            border-radius:10px;
+                            border:1px solid #444;
+                            background:#111;
+                            color:#fff;
+                        "
+                    >
+
+                    <button
+                        class="approve"
+                        onclick="
+                            approveWorkout(
+                                '${request.id}'
+                            )
+                        "
+                    >
+                        ADD RC
+                    </button>
+
+                </div>
+
+
+                <button
+                    class="reject"
+                    style="
+                        width:100%;
+                        margin-top:10px;
+                    "
+                    onclick="
+                        rejectWorkout(
+                            '${request.id}'
+                        )
+                    "
+                >
+                    REJECT
+                </button>
+
+                `
+                :
+                `
+                <div
+                    style="
+                        margin-top:12px;
+                        font-weight:bold;
+                    "
+                >
+                    Final RC:
+                    ${Number(
+                        request.adminApprovedRC || 0
+                    )}
+                </div>
+                `
+            }
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
 
 /* =========================
    REFRESH EVERYTHING
