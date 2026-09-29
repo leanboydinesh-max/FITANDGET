@@ -834,644 +834,792 @@ function addRep(){
 
 function detectMovement(l){
 
-    if(!positionReady)
-        return;
-
-
-    const w =
-        workout.toLowerCase();
-
-
-    /* =================================================
-       PUSH UP
-    ================================================= */
-
-    if(w === "push up"){
-
-        if(
-            !good(l[11]) ||
-            !good(l[12]) ||
-            !good(l[13]) ||
-            !good(l[14]) ||
-            !good(l[15]) ||
-            !good(l[16])
-        ){
-
-            return;
-        }
-
-
-        const leftAngle =
-            angle(
-                l[11],
-                l[13],
-                l[15]
-            );
-
-        const rightAngle =
-            angle(
-                l[12],
-                l[14],
-                l[16]
-            );
-
-
-        const elbow =
-            Math.min(
-                leftAngle,
-                rightAngle
-            );
-
-
-        if(elbow < 145){
-
-            state =
-                "DOWN";
-
-        }
-
-        else if(
-            state === "DOWN" &&
-            elbow > 165
-        ){
-
-            addRep();
-
-            state =
-                "UP";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       SQUAT
-    ================================================= */
-
-    if(w === "squat"){
-
-        if(
-            !good(l[23]) ||
-            !good(l[24]) ||
-            !good(l[25]) ||
-            !good(l[26])
-        ){
-
-            return;
-        }
-
-
-        const hipY =
-            average(
-                l[23].y,
-                l[24].y
-            );
-
-
-        const kneeY =
-            average(
-                l[25].y,
-                l[26].y
-            );
-
-
-        const value =
-            kneeY-hipY;
-
-
-        if(baseline === null){
-
-            baseline =
-                value;
-
-            return;
-        }
-
-
-        baseline =
-            baseline*0.995 +
-            value*0.005;
-
-
-        const delta =
-            value-baseline;
-
-
-        if(delta > 0.055){
-
-            state =
-                "DOWN";
-
-        }
-
-        else if(
-            state === "DOWN" &&
-            delta < 0.015
-        ){
-
-            addRep();
-
-            state =
-                "UP";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       HIGH KNEES
-    ================================================= */
-
-    if(w === "high knees"){
-
-        if(
-            !good(l[23]) ||
-            !good(l[24]) ||
-            !good(l[25]) ||
-            !good(l[26])
-        ){
-
-            return;
-        }
-
-
-        const left =
-            l[23].y-l[25].y;
-
-        const right =
-            l[24].y-l[26].y;
-
-
-        const rise =
-            Math.max(
-                left,
-                right
-            );
-
-
-        if(rise > 0.10){
-
-            state =
-                "KNEE_UP";
-
-        }
-
-        else if(
-            state === "KNEE_UP" &&
-            rise < 0.035
-        ){
-
-            addRep();
-
-            state =
-                "READY";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       LUNGES
-    ================================================= */
-
-    if(w === "lunges"){
-
-        if(
-            !good(l[23]) ||
-            !good(l[24]) ||
-            !good(l[25]) ||
-            !good(l[26]) ||
-            !good(l[27]) ||
-            !good(l[28])
-        ){
-
-            return;
-        }
-
-
-        const left =
-            angle(
-                l[23],
-                l[25],
-                l[27]
-            );
-
-
-        const right =
-            angle(
-                l[24],
-                l[26],
-                l[28]
-            );
-
-
-        const knee =
-            Math.min(
-                left,
-                right
-            );
-
-
-        if(knee < 145){
-
-            state =
-                "DOWN";
-
-        }
-
-        else if(
-            state === "DOWN" &&
-            knee > 165
-        ){
-
-            addRep();
-
-            state =
-                "UP";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       MOUNTAIN CLIMBER
-    ================================================= */
-
-    if(w === "mountain climber"){
-
-        if(
-            !good(l[23]) ||
-            !good(l[24]) ||
-            !good(l[25]) ||
-            !good(l[26])
-        ){
-
-            return;
-        }
-
-
-        const left =
-            Math.abs(
-                l[25].y-l[23].y
-            );
-
-        const right =
-            Math.abs(
-                l[26].y-l[24].y
-            );
-
-
-        const value =
-            Math.min(
-                left,
-                right
-            );
-
-
-        if(baseline === null){
-
-            baseline =
-                value;
-
-            return;
-        }
-
-
-        if(
-            value <
-            baseline*0.70
-        ){
-
-            state =
-                "KNEE_UP";
-
-        }
-
-        else if(
-            state === "KNEE_UP" &&
-            value >
-            baseline*0.92
-        ){
-
-            addRep();
-
-            state =
-                "READY";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       JUMPING JACK
-    ================================================= */
-
-    if(w === "jumping jack"){
-
-        if(
-            !good(l[11]) ||
-            !good(l[12]) ||
-            !good(l[15]) ||
-            !good(l[16])
-        ){
-
-            return;
-        }
-
-
-        const armsUp =
-            l[15].y < l[11].y ||
-            l[16].y < l[12].y;
-
-
-        const feetApart =
-            good(l[27]) &&
-            good(l[28]) &&
-            Math.abs(
-                l[27].x-l[28].x
-            ) > 0.22;
-
-
-        const open =
-            armsUp &&
-            feetApart;
-
-
-        if(open){
-
-            state =
-                "OPEN";
-
-        }
-
-        else if(
-            state === "OPEN" &&
-            !open
-        ){
-
-            addRep();
-
-            state =
-                "CLOSED";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       BURPEES
-    ================================================= */
-
-    if(w === "burpees"){
-
-        if(
-            !good(l[11]) ||
-            !good(l[12]) ||
-            !good(l[23]) ||
-            !good(l[24])
-        ){
-
-            return;
-        }
-
-
-        const shoulderY =
-            average(
-                l[11].y,
-                l[12].y
-            );
-
-
-        const hipY =
-            average(
-                l[23].y,
-                l[24].y
-            );
-
-
-        const height =
-            Math.abs(
-                shoulderY-hipY
-            );
-
-
-        if(baseline === null){
-
-            baseline =
-                height;
-
-            return;
-        }
-
-
-        if(
-            height <
-            baseline*0.60
-        ){
-
-            state =
-                "DOWN";
-
-        }
-
-        else if(
-            state === "DOWN" &&
-            height >
-            baseline*0.90
-        ){
-
-            addRep();
-
-            state =
-                "UP";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       PLANK
-    ================================================= */
-
-    if(w === "plank"){
-
-        if(!movementStart){
-
-            movementStart =
-                Date.now();
-        }
-
-
-        if(
-            Date.now() -
-            movementStart >=
-            5000 &&
-            state !== "COUNTED"
-        ){
-
-            addRep();
-
-            state =
-                "COUNTED";
-        }
-
-        return;
-    }
-
-
-    /* =================================================
-       STRETCHING
-    ================================================= */
+    const w = workout.toLowerCase().trim();
+
+    /*
+    ============================================================
+    COMMON HELPERS
+    ============================================================
+    */
+
+    const valid = p =>
+        p &&
+        typeof p.x === "number" &&
+        typeof p.y === "number" &&
+        (p.visibility === undefined ||
+         p.visibility > 0.55);
+
+    const required = arr =>
+        arr.every(valid);
+
+    const dist = (a,b) =>
+        Math.hypot(
+            a.x-b.x,
+            a.y-b.y
+        );
+
+    const mid = (a,b) => ({
+        x:(a.x+b.x)/2,
+        y:(a.y+b.y)/2
+    });
+
+    const shoulder = mid(l[11],l[12]);
+    const hip = mid(l[23],l[24]);
+    const knee = mid(l[25],l[26]);
+    const ankle = mid(l[27],l[28]);
+
+    const leftElbow =
+        angle(l[11],l[13],l[15]);
+
+    const rightElbow =
+        angle(l[12],l[14],l[16]);
+
+    const elbow =
+        Math.min(
+            leftElbow,
+            rightElbow
+        );
+
+    const leftKnee =
+        angle(l[23],l[25],l[27]);
+
+    const rightKnee =
+        angle(l[24],l[26],l[28]);
+
+    const kneeAngle =
+        Math.min(
+            leftKnee,
+            rightKnee
+        );
+
+    const leftHip =
+        angle(l[11],l[23],l[25]);
+
+    const rightHip =
+        angle(l[12],l[24],l[26]);
+
+    /*
+    ============================================================
+    1. STRETCHING
+    Down → Hands Up → Down = 1 REP
+    ============================================================
+    */
 
     if(w === "stretching"){
 
+        if(!required([
+            l[11],l[12],
+            l[15],l[16],
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            movementStart = null;
+            return;
+        }
+
+        const standing =
+            hip.y - shoulder.y > 0.08 &&
+            ankle.y - knee.y > 0.08;
+
+        if(!standing){
+
+            state = "NOT_READY";
+            movementStart = null;
+            return;
+        }
+
+        const handsDown =
+            l[15].y > shoulder.y &&
+            l[16].y > shoulder.y;
+
+        const handsUp =
+            l[15].y < shoulder.y - 0.12 &&
+            l[16].y < shoulder.y - 0.12;
+
+        if(state === "NOT_READY"){
+
+            if(handsDown){
+                state = "READY";
+            }
+
+            return;
+        }
+
+        if(state === "READY" && handsUp){
+
+            state = "MOVE";
+            movementStart = Date.now();
+
+            return;
+        }
+
         if(
-            !good(l[15]) ||
-            !good(l[16])
-        ){
-
-            return;
-        }
-
-
-        const wristY =
-            average(
-                l[15].y,
-                l[16].y
-            );
-
-
-        if(baseline === null){
-
-            baseline =
-                wristY;
-
-            return;
-        }
-
-
-        const movement =
-            Math.abs(
-                wristY-baseline
-            );
-
-
-        /*
-           Small hand movement will not count.
-        */
-
-        if(movement > 0.14){
-
-            state =
-                "MOVE";
-
-            movementStart =
-                Date.now();
-
-        }
-
-        else if(
             state === "MOVE" &&
-            movement < 0.055 &&
+            handsDown &&
             movementStart &&
-            Date.now()-movementStart >= 900
+            Date.now()-movementStart >= 400
         ){
 
             addRep();
 
-            state =
-                "READY";
-
-            baseline =
-                wristY;
-
-            movementStart =
-                null;
+            state = "READY";
+            movementStart = null;
         }
 
         return;
     }
 
 
-    /* =================================================
-       COOL DOWN
-    ================================================= */
+    /*
+    ============================================================
+    2. PUSH UP
+    Up → Down → Up = 1 REP
+    ============================================================
+    */
+
+    if(w === "push up"){
+
+        if(!required([
+            l[11],l[12],
+            l[13],l[14],
+            l[15],l[16],
+            l[23],l[24],
+            l[25],l[26]
+        ])){
+
+            state = "NOT_READY";
+            movementStart = null;
+            return;
+        }
+
+        const bodyStraight =
+            Math.min(
+                angle(l[11],l[23],l[25]),
+                angle(l[12],l[24],l[26])
+            ) > 145;
+
+        if(!bodyStraight){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        if(state === "NOT_READY"){
+
+            if(elbow > 160){
+                state = "READY";
+            }
+
+            return;
+        }
+
+        if(
+            state === "READY" &&
+            elbow < 125
+        ){
+
+            state = "MOVE";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "MOVE" &&
+            elbow > 160 &&
+            movementStart &&
+            Date.now()-movementStart >= 300
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    3. SQUAT
+    Standing → Down → Standing = 1 REP
+    ============================================================
+    */
+
+    if(w === "squat"){
+
+        if(!required([
+            l[11],l[12],
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        if(state === "NOT_READY"){
+
+            if(
+                kneeAngle > 160 &&
+                hip.y < knee.y
+            ){
+
+                state = "READY";
+            }
+
+            return;
+        }
+
+        if(
+            state === "READY" &&
+            kneeAngle < 115
+        ){
+
+            state = "MOVE";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "MOVE" &&
+            kneeAngle > 155 &&
+            movementStart &&
+            Date.now()-movementStart >= 300
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    4. HIGH KNEES
+    Left knee + Right knee = 1 REP
+    ============================================================
+    */
+
+    if(w === "high knees"){
+
+        if(!required([
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const leftUp =
+            l[25].y <
+            l[23].y - 0.10;
+
+        const rightUp =
+            l[26].y <
+            l[24].y - 0.10;
+
+        if(state === "NOT_READY"){
+
+            state = "READY";
+            movementStart = null;
+            return;
+        }
+
+        if(state === "READY" && leftUp){
+
+            state = "MOVE_LEFT";
+            return;
+        }
+
+        if(
+            state === "MOVE_LEFT" &&
+            rightUp
+        ){
+
+            state = "MOVE_RIGHT";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "MOVE_RIGHT" &&
+            !leftUp &&
+            !rightUp &&
+            movementStart &&
+            Date.now()-movementStart >= 200
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    5. LUNGES
+    Left → Right = 1 REP
+    ============================================================
+    */
+
+    if(w === "lunges"){
+
+        if(!required([
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const leftBent =
+            leftKnee < 120;
+
+        const rightBent =
+            rightKnee < 120;
+
+        if(state === "NOT_READY"){
+
+            if(
+                leftKnee > 155 &&
+                rightKnee > 155
+            ){
+
+                state = "READY";
+            }
+
+            return;
+        }
+
+        if(
+            state === "READY" &&
+            leftBent
+        ){
+
+            state = "LEFT";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "LEFT" &&
+            rightBent
+        ){
+
+            state = "RIGHT";
+
+            return;
+        }
+
+        if(
+            state === "RIGHT" &&
+            leftKnee > 155 &&
+            rightKnee > 155
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    6. MOUNTAIN CLIMBER
+    Left knee in + Right knee in = 1 REP
+    ============================================================
+    */
+
+    if(w === "mountain climber"){
+
+        if(!required([
+            l[11],l[12],
+            l[23],l[24],
+            l[25],l[26]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const plank =
+            Math.min(
+                leftHip,
+                rightHip
+            ) > 145;
+
+        if(!plank){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const leftIn =
+            l[25].x >
+            l[23].x - 0.15;
+
+        const rightIn =
+            l[26].x <
+            l[24].x + 0.15;
+
+        if(state === "NOT_READY"){
+
+            state = "READY";
+            return;
+        }
+
+        if(
+            state === "READY" &&
+            leftIn
+        ){
+
+            state = "LEFT";
+            return;
+        }
+
+        if(
+            state === "LEFT" &&
+            rightIn
+        ){
+
+            state = "RIGHT";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "RIGHT" &&
+            !leftIn &&
+            !rightIn
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    7. JUMPING JACK
+    Closed → Open → Closed = 1 REP
+    ============================================================
+    */
+
+    if(w === "jumping jack"){
+
+        if(!required([
+            l[11],l[12],
+            l[15],l[16],
+            l[23],l[24],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const handsDown =
+            l[15].y > shoulder.y &&
+            l[16].y > shoulder.y;
+
+        const handsUp =
+            l[15].y < shoulder.y - 0.10 &&
+            l[16].y < shoulder.y - 0.10;
+
+        const feetClosed =
+            Math.abs(
+                l[27].x-l[28].x
+            ) < 0.12;
+
+        const feetOpen =
+            Math.abs(
+                l[27].x-l[28].x
+            ) > 0.25;
+
+        if(state === "NOT_READY"){
+
+            if(handsDown && feetClosed){
+                state = "READY";
+            }
+
+            return;
+        }
+
+        if(
+            state === "READY" &&
+            handsUp &&
+            feetOpen
+        ){
+
+            state = "MOVE";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "MOVE" &&
+            handsDown &&
+            feetClosed &&
+            movementStart &&
+            Date.now()-movementStart >= 250
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    8. BURPEES
+    Standing → Down → Up + Jump = 1 REP
+    ============================================================
+    */
+
+    if(w === "burpees"){
+
+        if(!required([
+            l[11],l[12],
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const standing =
+            kneeAngle > 155;
+
+        const down =
+            kneeAngle < 120;
+
+        const jump =
+            ankle.y <
+            knee.y - 0.12;
+
+        if(state === "NOT_READY"){
+
+            if(standing){
+                state = "READY";
+            }
+
+            return;
+        }
+
+        if(
+            state === "READY" &&
+            down
+        ){
+
+            state = "DOWN";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        if(
+            state === "DOWN" &&
+            standing
+        ){
+
+            state = "UP";
+            return;
+        }
+
+        if(
+            state === "UP" &&
+            jump &&
+            movementStart &&
+            Date.now()-movementStart >= 500
+        ){
+
+            addRep();
+
+            state = "READY";
+            movementStart = null;
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    9. PLANK
+    Correct position → TIMER
+    ============================================================
+    */
+
+    if(w === "plank"){
+
+        if(!required([
+            l[11],l[12],
+            l[23],l[24],
+            l[25],l[26],
+            l[27],l[28]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const bodyStraight =
+            Math.min(
+                angle(l[11],l[23],l[25]),
+                angle(l[12],l[24],l[26])
+            ) > 145;
+
+        if(!bodyStraight){
+
+            state = "NOT_READY";
+            movementStart = null;
+
+            return;
+        }
+
+        if(state === "NOT_READY"){
+
+            state = "READY";
+            movementStart = Date.now();
+
+            return;
+        }
+
+        /*
+        Existing rep system:
+        every 1 second = 1 point
+        */
+
+        if(
+            state === "READY" &&
+            movementStart
+        ){
+
+            const seconds =
+                Math.floor(
+                    (Date.now()-movementStart)/1000
+                );
+
+            if(
+                seconds > 0 &&
+                seconds !== lastPlankSecond
+            ){
+
+                lastPlankSecond = seconds;
+
+                addRep();
+            }
+        }
+
+        return;
+    }
+
+
+    /*
+    ============================================================
+    10. COOL DOWN
+    Hands down → arms up → down = 1 REP
+    ============================================================
+    */
 
     if(w === "cool down"){
 
+        if(!required([
+            l[11],l[12],
+            l[15],l[16],
+            l[23],l[24]
+        ])){
+
+            state = "NOT_READY";
+            return;
+        }
+
+        const armsDown =
+            l[15].y > shoulder.y &&
+            l[16].y > shoulder.y;
+
+        const armsUp =
+            l[15].y <
+                shoulder.y - 0.08 &&
+            l[16].y <
+                shoulder.y - 0.08;
+
+        if(state === "NOT_READY"){
+
+            if(armsDown){
+                state = "READY";
+            }
+
+            return;
+        }
+
         if(
-            !good(l[15]) ||
-            !good(l[16])
+            state === "READY" &&
+            armsUp
         ){
 
-            return;
-        }
-
-
-        const wristY =
-            average(
-                l[15].y,
-                l[16].y
-            );
-
-
-        if(baseline === null){
-
-            baseline =
-                wristY;
+            state = "MOVE";
+            movementStart = Date.now();
 
             return;
         }
 
-
-        const movement =
-            Math.abs(
-                wristY-baseline
-            );
-
-
-        if(movement > 0.14){
-
-            state =
-                "MOVE";
-
-            movementStart =
-                Date.now();
-
-        }
-
-        else if(
+        if(
             state === "MOVE" &&
-            movement < 0.055 &&
+            armsDown &&
             movementStart &&
-            Date.now()-movementStart >= 900
+            Date.now()-movementStart >= 700
         ){
 
             addRep();
 
-            state =
-                "READY";
-
-            baseline =
-                wristY;
-
-            movementStart =
-                null;
+            state = "READY";
+            movementStart = null;
         }
 
         return;
     }
-
 }
-
-
 /* =====================================================
    MEDIAPIPE RESULTS
 ===================================================== */
