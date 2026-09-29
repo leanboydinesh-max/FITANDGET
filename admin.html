@@ -582,16 +582,16 @@ header{
         >
 
         <button
-            class="login-btn"
-            onclick="adminLogin()"
-        >
-            LOGIN
-        </button>
+    class="login-btn"
+    onclick="adminLogin()"
+>
+    🔐 CONTINUE WITH GOOGLE
+</button>
 
-        <div
-            class="error"
-            id="loginError"
-        ></div>
+<div
+    class="error"
+    id="loginError"
+></div>
 
     </div>
 
@@ -970,7 +970,8 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
     getAuth,
-    signInWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
     onAuthStateChanged,
     signOut
 }
@@ -1044,43 +1045,26 @@ let verificationRequests = [];
    LOGIN
 ========================= */
 
+const googleProvider =
+    new GoogleAuthProvider();
+
 window.adminLogin =
 async function(){
 
-    const email =
-        document
-        .getElementById("email")
-        .value
-        .trim();
-
-    const password =
-        document
-        .getElementById("password")
-        .value;
-
     const error =
-        document
-        .getElementById("loginError");
+        document.getElementById("loginError");
 
     error.textContent = "";
 
-    if(!email || !password){
-
-        error.textContent =
-        "Email and password enter pannunga.";
-
-        return;
-    }
-
     try{
 
-        await signInWithEmailAndPassword(
+        await signInWithPopup(
             auth,
-            email,
-            password
+            googleProvider
         );
 
-    }catch(err){
+    }
+    catch(err){
 
         console.error(err);
 
@@ -1092,7 +1076,6 @@ async function(){
     }
 
 };
-
 
 /* =========================
    AUTH CHECK
