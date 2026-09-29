@@ -43,15 +43,16 @@ body{
 #video{
     width:100%;
     height:100%;
-    object-fit:contain;
+    object-fit:cover;
     transform:scaleX(-1);
 }
 
 #canvas{
     position:absolute;
+    inset:0;
     width:100%;
     height:100%;
-    object-fit:contain;
+    object-fit:cover;
     pointer-events:none;
 }
 
@@ -86,19 +87,23 @@ body{
 
 #buttons{
     position:absolute;
-    bottom:25px;
+    bottom:calc(24px + env(safe-area-inset-bottom));
     left:50%;
     transform:translateX(-50%);
     z-index:10;
+
     display:flex;
-    gap:12px;
+    gap:14px;
+
+    width:calc(100% - 28px);
+    justify-content:center;
 }
 
 button{
     border:none;
     border-radius:30px;
-    padding:13px 25px;
-    font-size:15px;
+    padding:15px 28px;
+    font-size:16px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -112,6 +117,10 @@ button{
 #finishBtn{
     background:#9dff00;
     color:#000;
+}
+
+#finishBtn:disabled{
+    opacity:.5;
 }
 
 #loading{
@@ -176,11 +185,11 @@ button{
     <div id="buttons">
 
         <button id="quitBtn">
-            QUIT
+            QUIT WORKOUT
         </button>
 
         <button id="finishBtn">
-            FINISH
+            FINISH WORKOUT
         </button>
 
     </div>
@@ -230,9 +239,11 @@ if(!firebase.apps.length){
 
 }
 
-const auth = firebase.auth();
+const auth =
+    firebase.auth();
 
-const db = firebase.firestore();
+const db =
+    firebase.firestore();
 
 
 /* =====================================================
@@ -277,7 +288,7 @@ const params =
 let workout =
     params.get("workout") ||
     localStorage.getItem("selectedWorkout") ||
-    "Push Up";
+    "Stretching";
 
 workout =
     decodeURIComponent(workout);
@@ -588,7 +599,6 @@ function drawPoint(point,color){
         5,
 
         0,
-
         Math.PI*2
 
     );
@@ -654,7 +664,8 @@ function bodyIsVisible(landmarks){
 
     let visible = 0;
 
-    let total = parts.length;
+    const total =
+        parts.length;
 
     parts.forEach(pair=>{
 
@@ -707,11 +718,6 @@ function drawBody(landmarks){
 
         lostFrames++;
 
-        /*
-           Don't immediately turn red.
-           Allow small tracking drops.
-        */
-
         if(lostFrames >= 15){
 
             positionReady =
@@ -728,9 +734,9 @@ function drawBody(landmarks){
         "#ff3030";
 
     const color =
-        positionReady ?
-        green :
-        red;
+        positionReady
+            ? green
+            : red;
 
 
     const parts =
@@ -792,19 +798,19 @@ function addRep(){
     const now =
         Date.now();
 
+
     /*
-       Small protection against
-       duplicate detection in
-       consecutive frames.
+       Stronger duplicate protection.
     */
 
     if(
         now-lastMovementTime <
-        450
+        800
     ){
 
         return;
     }
+
 
     lastMovementTime =
         now;
@@ -877,15 +883,7 @@ function detectMovement(l){
             );
 
 
-        /*
-           DOWN = arms bending.
-           UP = arms becoming straight.
-
-           This does not require
-           an exact push-up pose.
-        */
-
-        if(elbow < 155){
+        if(elbow < 145){
 
             state =
                 "DOWN";
@@ -894,7 +892,7 @@ function detectMovement(l){
 
         else if(
             state === "DOWN" &&
-            elbow > 160
+            elbow > 165
         ){
 
             addRep();
@@ -951,12 +949,6 @@ function detectMovement(l){
         }
 
 
-        /*
-           Re-calibrate slowly so
-           different body heights
-           work better.
-        */
-
         baseline =
             baseline*0.995 +
             value*0.005;
@@ -966,7 +958,7 @@ function detectMovement(l){
             value-baseline;
 
 
-        if(delta > 0.035){
+        if(delta > 0.055){
 
             state =
                 "DOWN";
@@ -1019,7 +1011,7 @@ function detectMovement(l){
             );
 
 
-        if(rise > 0.06){
+        if(rise > 0.10){
 
             state =
                 "KNEE_UP";
@@ -1028,7 +1020,7 @@ function detectMovement(l){
 
         else if(
             state === "KNEE_UP" &&
-            rise < 0.025
+            rise < 0.035
         ){
 
             addRep();
@@ -1083,7 +1075,7 @@ function detectMovement(l){
             );
 
 
-        if(knee < 155){
+        if(knee < 145){
 
             state =
                 "DOWN";
@@ -1124,15 +1116,12 @@ function detectMovement(l){
 
         const left =
             Math.abs(
-                l[25].y -
-                l[23].y
+                l[25].y-l[23].y
             );
-
 
         const right =
             Math.abs(
-                l[26].y -
-                l[24].y
+                l[26].y-l[24].y
             );
 
 
@@ -1154,7 +1143,7 @@ function detectMovement(l){
 
         if(
             value <
-            baseline*0.75
+            baseline*0.70
         ){
 
             state =
@@ -1165,7 +1154,7 @@ function detectMovement(l){
         else if(
             state === "KNEE_UP" &&
             value >
-            baseline*0.90
+            baseline*0.92
         ){
 
             addRep();
@@ -1283,7 +1272,7 @@ function detectMovement(l){
 
         if(
             height <
-            baseline*0.65
+            baseline*0.60
         ){
 
             state =
@@ -1294,7 +1283,7 @@ function detectMovement(l){
         else if(
             state === "DOWN" &&
             height >
-            baseline*0.85
+            baseline*0.90
         ){
 
             addRep();
@@ -1319,14 +1308,6 @@ function detectMovement(l){
                 Date.now();
         }
 
-
-        /*
-           One completed hold =
-           one rep.
-
-           Holding for 5 seconds
-           counts once.
-        */
 
         if(
             Date.now() -
@@ -1382,16 +1363,25 @@ function detectMovement(l){
             );
 
 
-        if(movement > 0.07){
+        /*
+           Small hand movement will not count.
+        */
+
+        if(movement > 0.14){
 
             state =
                 "MOVE";
+
+            movementStart =
+                Date.now();
 
         }
 
         else if(
             state === "MOVE" &&
-            movement < 0.035
+            movement < 0.055 &&
+            movementStart &&
+            Date.now()-movementStart >= 900
         ){
 
             addRep();
@@ -1401,6 +1391,9 @@ function detectMovement(l){
 
             baseline =
                 wristY;
+
+            movementStart =
+                null;
         }
 
         return;
@@ -1444,16 +1437,21 @@ function detectMovement(l){
             );
 
 
-        if(movement > 0.07){
+        if(movement > 0.14){
 
             state =
                 "MOVE";
+
+            movementStart =
+                Date.now();
 
         }
 
         else if(
             state === "MOVE" &&
-            movement < 0.035
+            movement < 0.055 &&
+            movementStart &&
+            Date.now()-movementStart >= 900
         ){
 
             addRep();
@@ -1463,6 +1461,9 @@ function detectMovement(l){
 
             baseline =
                 wristY;
+
+            movementStart =
+                null;
         }
 
         return;
@@ -1558,9 +1559,9 @@ function setupPose(){
 
         enableSegmentation:false,
 
-        minDetectionConfidence:0.40,
+        minDetectionConfidence:0.50,
 
-        minTrackingConfidence:0.40
+        minTrackingConfidence:0.50
 
     });
 
@@ -1641,11 +1642,11 @@ async function startCamera(){
                     facingMode:"user",
 
                     width:{
-                        ideal:720
+                        ideal:1080
                     },
 
                     height:{
-                        ideal:1280
+                        ideal:1920
                     }
 
                 },
@@ -1664,11 +1665,11 @@ async function startCamera(){
 
         canvas.width =
             video.videoWidth ||
-            720;
+            1080;
 
         canvas.height =
             video.videoHeight ||
-            1280;
+            1920;
 
 
         loading.style.display =
@@ -1781,11 +1782,6 @@ async ()=>{
 
     if(!user){
 
-        /*
-           IMPORTANT:
-           Do NOT redirect to login.
-        */
-
         alert(
             "Please login before saving."
         );
@@ -1811,9 +1807,9 @@ async ()=>{
 
 
         const data =
-            snap.exists ?
-            snap.data() :
-            {};
+            snap.exists
+            ? snap.data()
+            : {};
 
 
         const oldPoints =
@@ -1823,30 +1819,126 @@ async ()=>{
 
 
         /*
-           completedTasks can be
-           number or array in old data.
-           Keep it safe.
+           EXACT WORKOUT ORDER
         */
 
-        let oldTasks =
-            data.completedTasks;
+        const workoutOrder = [
+
+            "Stretching",
+
+            "Push Up",
+
+            "Squat",
+
+            "High Knees",
+
+            "Lunges",
+
+            "Mountain Climber",
+
+            "Jumping Jack",
+
+            "Burpees",
+
+            "Plank",
+
+            "Cool Down"
+
+        ];
 
 
-        if(Array.isArray(oldTasks)){
+        /*
+           Read existing completed workouts.
+        */
 
-            oldTasks =
-                oldTasks.length;
+        let completedTasks =
+            Array.isArray(
+                data.completedTasks
+            )
+            ? [...data.completedTasks]
+            : [];
 
-        }
 
-        else{
+        /*
+           Old version may have saved
+           a number instead of an array.
+           Convert old progress safely.
+        */
 
-            oldTasks =
-                Number(
-                    oldTasks || 0
+        if(
+            !Array.isArray(
+                data.completedTasks
+            ) &&
+            Number(
+                data.completedTasks || 0
+            ) > 0
+        ){
+
+            const oldCount =
+                Math.min(
+                    workoutOrder.length,
+                    Number(
+                        data.completedTasks
+                    )
+                );
+
+
+            completedTasks =
+                Array.from(
+                    {
+                        length:oldCount
+                    },
+                    (_,i)=>i
                 );
         }
 
+
+        /*
+           Find current workout index.
+        */
+
+        const workoutIndex =
+            workoutOrder.findIndex(
+                name =>
+                    name.toLowerCase() ===
+                    workout.toLowerCase()
+            );
+
+
+        /*
+           Add current workout
+           only once.
+        */
+
+        if(
+            workoutIndex >= 0 &&
+            !completedTasks.includes(
+                workoutIndex
+            )
+        ){
+
+            completedTasks.push(
+                workoutIndex
+            );
+
+        }
+
+
+        /*
+           Keep array sorted.
+        */
+
+        completedTasks =
+            [...new Set(
+                completedTasks
+            )].sort(
+                (a,b)=>a-b
+            );
+
+
+        /*
+           SAVE
+        */
 
         await userRef.set({
 
@@ -1854,7 +1946,7 @@ async ()=>{
                 oldPoints + reps,
 
             completedTasks:
-                oldTasks + 1,
+                completedTasks,
 
             lastWorkout:
                 workout,
@@ -1876,6 +1968,12 @@ async ()=>{
 
         stopCamera();
 
+
+        /*
+           Return to Daily Task.
+           Daily Task will automatically
+           select the next incomplete workout.
+        */
 
         location.href =
             "daily-task.html";
@@ -1903,22 +2001,8 @@ async ()=>{
 
 
 /* =====================================================
-   IMPORTANT:
-   NO AUTH REDIRECT
+   NO LOGIN REDIRECT
 ===================================================== */
-
-/*
-   Camera opens directly.
-
-   We intentionally DO NOT do:
-
-   auth.onAuthStateChanged(...)
-   location.href = index.html
-
-   This prevents the camera from
-   throwing the user back to login.
-*/
-
 
 startCamera();
 
@@ -1938,6 +2022,7 @@ window.addEventListener(
 
             canvas.height =
                 video.videoHeight;
+
         }
 
     }
