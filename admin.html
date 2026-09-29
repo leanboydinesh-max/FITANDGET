@@ -1196,6 +1196,8 @@ async function(){
     `<div class="empty">
         Loading verification requests...
      </div>`;
+    </div>
+</div>
 
     try{
 
@@ -1269,6 +1271,25 @@ async function(){
 
 function renderVerificationRequests(){
 
+
+    const container =
+        document.getElementById(
+            "verificationRequests"
+        );
+
+
+    if(
+        verificationRequests.length === 0
+    ){
+
+        container.innerHTML =
+        `<div class="empty">
+            No workout verification requests.
+         </div>`;
+
+        return;
+
+    }
 window.renderVerificationHistory = function(){
 
     const container =
@@ -1389,25 +1410,6 @@ window.renderVerificationHistory = function(){
     });
 
 };
-    const container =
-        document.getElementById(
-            "verificationRequests"
-        );
-
-
-    if(
-        verificationRequests.length === 0
-    ){
-
-        container.innerHTML =
-        `<div class="empty">
-            No workout verification requests.
-         </div>`;
-
-        return;
-
-    }
-
 
     container.innerHTML = "";
 
