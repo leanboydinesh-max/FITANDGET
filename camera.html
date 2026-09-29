@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 
 <style>
@@ -138,7 +139,9 @@ button{
 }
 
 @keyframes spin{
-    to{transform:rotate(360deg)}
+    to{
+        transform:rotate(360deg);
+    }
 }
 </style>
 </head>
@@ -147,379 +150,506 @@ button{
 
 <div id="cameraBox">
 
-    <video id="video" autoplay muted playsinline></video>
-    <canvas id="canvas"></canvas>
+<video id="video" autoplay muted playsinline></video>
 
-    <div id="top">
-        <div id="workoutName">Workout</div>
-        <div id="rep">0</div>
-        <div id="status">STARTING CAMERA...</div>
+<canvas id="canvas"></canvas>
+
+<div id="top">
+
+    <div id="workoutName">
+        Workout
     </div>
 
-    <div id="buttons">
-        <button id="quitBtn">QUIT WORKOUT</button>
-        <button id="finishBtn">FINISH WORKOUT</button>
+    <div id="rep">
+        0
     </div>
 
-    <div id="loading">
-        <div class="loader"></div>
-        <div>Starting camera...</div>
+    <div id="status">
+        STARTING CAMERA...
     </div>
 
 </div>
 
+<div id="buttons">
+
+    <button id="quitBtn">
+        QUIT WORKOUT
+    </button>
+
+    <button id="finishBtn">
+        FINISH WORKOUT
+    </button>
+
+</div>
+
+<div id="loading">
+
+    <div class="loader"></div>
+
+    <div>
+        Starting camera...
+    </div>
+
+</div>
+
+</div>
+
+
 <script>
 
-/* =========================
-   FIREBASE
-========================= */
+/* ================= FIREBASE ================= */
 
 const firebaseConfig = {
-    apiKey:"AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
-    authDomain:"fitandget-b3461.firebaseapp.com",
-    projectId:"fitandget-b3461",
-    storageBucket:"fitandget-b3461.firebasestorage.app",
-    messagingSenderId:"216178533513",
-    appId:"1:216178533513:web:975f20599c7e77b9d01258"
+
+    apiKey:
+    "AIzaSyBOuzSm82d-lDXsmrwX1yWQVre0YD60cWM",
+
+    authDomain:
+    "fitandget-b3461.firebaseapp.com",
+
+    projectId:
+    "fitandget-b3461",
+
+    storageBucket:
+    "fitandget-b3461.firebasestorage.app",
+
+    messagingSenderId:
+    "216178533513",
+
+    appId:
+    "1:216178533513:web:975f20599c7e77b9d01258"
+
 };
 
 if(!firebase.apps.length){
+
     firebase.initializeApp(firebaseConfig);
+
 }
 
-const auth=firebase.auth();
-const db=firebase.firestore();
+const auth =
+firebase.auth();
+
+const db =
+firebase.firestore();
 
 
-/* =========================
-   ELEMENTS
-========================= */
+/* ================= ELEMENTS ================= */
 
-const video=document.getElementById("video");
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
+const video =
+document.getElementById("video");
 
-const workoutNameEl=document.getElementById("workoutName");
-const repEl=document.getElementById("rep");
-const statusEl=document.getElementById("status");
-const loading=document.getElementById("loading");
+const canvas =
+document.getElementById("canvas");
 
-const quitBtn=document.getElementById("quitBtn");
-const finishBtn=document.getElementById("finishBtn");
+const ctx =
+canvas.getContext("2d");
+
+const workoutNameEl =
+document.getElementById("workoutName");
+
+const repEl =
+document.getElementById("rep");
+
+const statusEl =
+document.getElementById("status");
+
+const loading =
+document.getElementById("loading");
+
+const quitBtn =
+document.getElementById("quitBtn");
+
+const finishBtn =
+document.getElementById("finishBtn");
 
 
-/* =========================
-   WORKOUT
-========================= */
+/* ================= WORKOUT ================= */
 
-const params=new URLSearchParams(location.search);
+const params =
+new URLSearchParams(location.search);
 
-let workout=
-    params.get("workout") ||
-    localStorage.getItem("selectedWorkout") ||
-    "Stretching";
+let workout =
+params.get("workout") ||
+localStorage.getItem("selectedWorkout") ||
+"Stretching";
 
 try{
-    workout=decodeURIComponent(workout);
+
+    workout =
+    decodeURIComponent(workout);
+
 }catch(e){}
 
-workout=workout.trim();
+workout =
+workout.trim();
 
-workoutNameEl.textContent=workout;
-
-
-/* =========================
-   GLOBAL
-========================= */
-
-let stream=null;
-let pose=null;
-let running=true;
-let processing=false;
-
-let reps=0;
-const MAX_REPS=50;
-
-let tracked=false;
-let lostFrames=0;
-
-let phase="start";
-
-let lastRepTime=0;
-
-let plankStart=0;
-let lastPlankSecond=0;
+workoutNameEl.textContent =
+workout;
 
 
-/* =========================
-   MEMORY
-========================= */
+/* ================= CAMERA STATE ================= */
 
-let memory={
-    pushTop:null,
-    pushBottom:null,
+let stream = null;
 
-    squatDown:false,
+let pose = null;
 
-    lungeDown:false,
+let running = true;
 
-    kneeUp:false,
+let processing = false;
 
-    mountainForward:false,
+let reps = 0;
 
-    jackOpen:false,
+const MAX_REPS = 50;
 
-    burpeeDown:false,
-    burpeeStand:false,
+let tracked = false;
 
-    stretchUp:false,
+let lostFrames = 0;
 
-    cooldownUp:false
-};
+let phase = "start";
+
+let lastRepTime = 0;
 
 
-function resetMovement(){
+/* ================= PLANK ================= */
 
-    phase="start";
+let plankStart = 0;
 
-    memory={
-        pushTop:null,
-        pushBottom:null,
-
-        squatDown:false,
-        lungeDown:false,
-
-        kneeUp:false,
-
-        mountainForward:false,
-
-        jackOpen:false,
-
-        burpeeDown:false,
-        burpeeStand:false,
-
-        stretchUp:false,
-
-        cooldownUp:false
-    };
-}
+let lastPlankSecond = 0;
 
 
-/* =========================
-   HELPERS
-========================= */
+/* ==================================================
+   PUSH-UP TRACKING
+   ================================================== */
+
+let pushLocked = false;
+
+let pushLostFrames = 0;
+
+let pushTopY = null;
+
+let pushBottomY = null;
+
+let pushDownSeen = false;
+
+
+/* ================= BASIC FUNCTIONS ================= */
 
 function good(p){
 
     return !!(
         p &&
-        typeof p.x==="number" &&
-        typeof p.y==="number" &&
+        typeof p.x === "number" &&
+        typeof p.y === "number" &&
         (
-            p.visibility===undefined ||
-            p.visibility>0.20
+            p.visibility === undefined ||
+            p.visibility > .15
         )
     );
+
 }
 
 
-function req(arr){
-    return arr.every(good);
+function req(a){
+
+    return a.every(good);
+
 }
 
 
 function mid(a,b){
+
     return {
+
         x:(a.x+b.x)/2,
+
         y:(a.y+b.y)/2
+
     };
+
 }
 
 
 function dist(a,b){
 
-    if(!good(a)||!good(b)) return 999;
+    if(
+        !good(a) ||
+        !good(b)
+    ){
+
+        return 999;
+
+    }
 
     return Math.hypot(
         a.x-b.x,
         a.y-b.y
     );
+
 }
 
 
 function angle(a,b,c){
 
-    if(!req([a,b,c])) return 180;
+    if(!req([a,b,c])){
 
-    const abx=a.x-b.x;
-    const aby=a.y-b.y;
+        return 180;
 
-    const cbx=c.x-b.x;
-    const cby=c.y-b.y;
+    }
 
-    const dot=abx*cbx+aby*cby;
+    const abx =
+    a.x-b.x;
 
-    const m1=Math.hypot(abx,aby);
-    const m2=Math.hypot(cbx,cby);
+    const aby =
+    a.y-b.y;
 
-    if(!m1||!m2) return 180;
+    const cbx =
+    c.x-b.x;
+
+    const cby =
+    c.y-b.y;
+
+    const m1 =
+    Math.hypot(abx,aby);
+
+    const m2 =
+    Math.hypot(cbx,cby);
+
+    if(!m1 || !m2){
+
+        return 180;
+
+    }
 
     return Math.acos(
         Math.max(
             -1,
             Math.min(
                 1,
-                dot/(m1*m2)
+                (
+                    abx*cbx +
+                    aby*cby
+                )/(m1*m2)
             )
         )
-    )*180/Math.PI;
+    ) * 180 / Math.PI;
+
 }
 
+
+/* ================= ADD REP ================= */
 
 function addRep(){
 
-    if(!tracked) return;
+    if(
+        !tracked ||
+        reps >= MAX_REPS
+    ){
 
-    if(reps>=MAX_REPS) return;
+        return;
 
-    const now=Date.now();
+    }
 
-    if(now-lastRepTime<450) return;
+    const now =
+    Date.now();
 
-    lastRepTime=now;
+    if(
+        now-lastRepTime < 450
+    ){
+
+        return;
+
+    }
+
+    lastRepTime =
+    now;
 
     reps++;
 
-    repEl.textContent=reps;
+    repEl.textContent =
+    reps;
 
-    statusEl.textContent="REP "+reps;
-    statusEl.style.color="#00ff66";
+    statusEl.textContent =
+    "REP " + reps;
+
+    statusEl.style.color =
+    "#00ff66";
+
 }
 
 
-/* =========================
-   BODY TRACK
-========================= */
+/* ================= NORMAL RESET ================= */
+
+function resetNormal(){
+
+    phase =
+    "start";
+
+}
+
+
+/* ================= PUSH RESET ================= */
+
+function resetPush(){
+
+    pushLocked =
+    false;
+
+    pushLostFrames =
+    0;
+
+    pushTopY =
+    null;
+
+    pushBottomY =
+    null;
+
+    pushDownSeen =
+    false;
+
+    phase =
+    "start";
+
+}
+
+
+/* ================= BODY VISIBILITY ================= */
 
 function bodyVisible(l){
 
-    const points=[
-        l[11],l[12],
-        l[13],l[14],
-        l[15],l[16],
-        l[23],l[24],
-        l[25],l[26],
-        l[27],l[28]
+    const p = [
+
+        l[11],
+        l[12],
+
+        l[13],
+        l[14],
+
+        l[15],
+        l[16],
+
+        l[23],
+        l[24],
+
+        l[25],
+        l[26],
+
+        l[27],
+        l[28]
+
     ];
 
-    let count=0;
+    return (
+        p.filter(good).length >= 7
+    );
 
-    points.forEach(p=>{
-        if(good(p)) count++;
-    });
-
-    return count>=8;
 }
 
 
-/* =========================
-   PUSH-UP POSITION
-========================= */
+/* ==================================================
+   PUSH-UP INITIAL POSITION
 
-function pushupPosition(l){
+   IMPORTANT:
+   இந்த function ஆரம்பத்தில் மட்டும்.
+   Down / Up movement-ல் இதை மீண்டும் check செய்யக்கூடாது.
+   ================================================== */
 
-    if(!req([
-        l[11],l[12],
-        l[13],l[14],
-        l[15],l[16],
-        l[23],l[24],
-        l[27],l[28]
-    ])){
+function pushupStartPosition(l){
+
+    if(
+        !req([
+            l[11],
+            l[12],
+            l[15],
+            l[16],
+            l[23],
+            l[24],
+            l[27],
+            l[28]
+        ])
+    ){
+
         return false;
+
     }
 
-    const shoulder=mid(l[11],l[12]);
-    const hip=mid(l[23],l[24]);
-    const ankle=mid(l[27],l[28]);
 
-    const bodyAngle=angle(
-        shoulder,
-        hip,
-        ankle
+    const s =
+    mid(l[11],l[12]);
+
+    const h =
+    mid(l[23],l[24]);
+
+    const a =
+    mid(l[27],l[28]);
+
+
+    const body =
+    angle(
+        s,
+        h,
+        a
     );
 
-    const handsNearShoulder=
-        Math.min(
-            dist(l[15],l[11]),
-            dist(l[16],l[12])
-        )<0.42;
 
-    /*
-       Push-up body should be
-       roughly horizontal.
-    */
+    const handsNear =
+    Math.min(
+        dist(l[15],l[11]),
+        dist(l[16],l[12])
+    ) < .55;
 
-    const horizontalBody=
-        Math.abs(
-            shoulder.y-hip.y
-        )<0.42;
 
-    /*
-       Prevent standing position.
-    */
+    const horizontal =
+    Math.abs(
+        s.y-h.y
+    ) < .55;
 
-    const notStanding=
-        Math.abs(
-            shoulder.y-ankle.y
-        )<0.65;
 
-    return(
-        bodyAngle>125 &&
-        handsNearShoulder &&
-        horizontalBody &&
+    const notStanding =
+    Math.abs(
+        s.y-a.y
+    ) < .85;
+
+
+    return (
+        body > 105 &&
+        handsNear &&
+        horizontal &&
         notStanding
     );
+
 }
 
 
-/* =========================
-   PLANK
-========================= */
+/* ==================================================
+   PUSH-UP TRACKING AFTER LOCK
+   ================================================== */
 
-function plankPosition(l){
+function pushupBodyStillTrackable(l){
 
-    if(!req([
-        l[11],l[12],
-        l[23],l[24],
-        l[27],l[28]
-    ])){
-        return false;
-    }
+    return req([
 
-    const shoulder=mid(l[11],l[12]);
-    const hip=mid(l[23],l[24]);
-    const ankle=mid(l[27],l[28]);
+        l[11],
+        l[12],
 
-    const a=angle(
-        shoulder,
-        hip,
-        ankle
-    );
+        l[13],
+        l[14],
 
-    return(
-        a>120 &&
-        Math.abs(
-            shoulder.y-hip.y
-        )<0.45
-    );
+        l[15],
+        l[16],
+
+        l[23],
+        l[24]
+
+    ]);
+
 }
 
 
-/* =========================
-   DRAW
-========================= */
+/* ================= SKELETON ================= */
 
-const connections=[
+const connections = [
+
     [11,12],
 
     [11,13],
@@ -538,12 +668,17 @@ const connections=[
 
     [24,26],
     [26,28]
+
 ];
 
 
-function drawPoint(p,color){
+function drawPoint(p,c){
 
-    if(!good(p)) return;
+    if(!good(p)){
+
+        return;
+
+    }
 
     ctx.beginPath();
 
@@ -555,14 +690,24 @@ function drawPoint(p,color){
         Math.PI*2
     );
 
-    ctx.fillStyle=color;
+    ctx.fillStyle =
+    c;
+
     ctx.fill();
+
 }
 
 
-function drawLine(a,b,color){
+function drawLine(a,b,c){
 
-    if(!good(a)||!good(b)) return;
+    if(
+        !good(a) ||
+        !good(b)
+    ){
+
+        return;
+
+    }
 
     ctx.beginPath();
 
@@ -576,12 +721,21 @@ function drawLine(a,b,color){
         b.y*canvas.height
     );
 
-    ctx.strokeStyle=color;
-    ctx.lineWidth=5;
-    ctx.lineCap="round";
+    ctx.strokeStyle =
+    c;
+
+    ctx.lineWidth =
+    5;
+
+    ctx.lineCap =
+    "round";
+
     ctx.stroke();
+
 }
 
+
+/* ================= DRAW BODY ================= */
 
 function drawBody(l){
 
@@ -592,596 +746,998 @@ function drawBody(l){
         canvas.height
     );
 
-    const visible=bodyVisible(l);
+
+    const visible =
+    bodyVisible(l);
+
 
     if(visible){
 
-        lostFrames=0;
-        tracked=true;
+        lostFrames =
+        0;
+
+        tracked =
+        true;
 
     }else{
 
         lostFrames++;
 
-        if(lostFrames>8){
-            tracked=false;
-            resetMovement();
-        }
     }
 
-    const color=
+
+    /*
+       IMPORTANT:
+       Push-up lock active என்றால்
+       normal bodyVisible temporary failure
+       காரணமாக உடனே red/reset செய்யக்கூடாது.
+    */
+
+    if(
+        lostFrames > 12 &&
+        !pushLocked
+    ){
+
+        tracked =
+        false;
+
+        resetNormal();
+
+    }
+
+
+    const c =
+    tracked
+    ? "#00ff66"
+    : "#ff3030";
+
+
+    connections.forEach(x=>{
+
+        drawLine(
+            l[x[0]],
+            l[x[1]],
+            c
+        );
+
+        drawPoint(
+            l[x[0]],
+            c
+        );
+
+        drawPoint(
+            l[x[1]],
+            c
+        );
+
+    });
+
+
+    if(pushLocked){
+
+        statusEl.textContent =
+        pushDownSeen
+        ? "DOWN"
+        : "PUSH-UP READY";
+
+        statusEl.style.color =
+        "#00ff66";
+
+    }else{
+
+        statusEl.textContent =
+        tracked
+        ? "TRACKING"
+        : "MOVE INTO CAMERA";
+
+        statusEl.style.color =
         tracked
         ? "#00ff66"
         : "#ff3030";
 
-    connections.forEach(pair=>{
-
-        drawLine(
-            l[pair[0]],
-            l[pair[1]],
-            color
-        );
-
-        drawPoint(
-            l[pair[0]],
-            color
-        );
-
-        drawPoint(
-            l[pair[1]],
-            color
-        );
-    });
-
-    if(tracked){
-
-        statusEl.textContent="TRACKING";
-        statusEl.style.color="#00ff66";
-
-    }else{
-
-        statusEl.textContent="MOVE INTO CAMERA";
-        statusEl.style.color="#ff3030";
     }
+
 }
 
 
-/* =========================
-   MAIN TRACKER
-========================= */
+/* ==================================================
+   PUSH-UP DETECTOR
+   ================================================== */
+
+function detectPushUp(l){
+
+    /* ----------------------------------------------
+       STEP 1
+       PUSH-UP POSITION கண்டுபிடிக்கிறது.
+       ---------------------------------------------- */
+
+    if(!pushLocked){
+
+        if(
+            pushupStartPosition(l)
+        ){
+
+            pushLocked =
+            true;
+
+            pushLostFrames =
+            0;
+
+            tracked =
+            true;
+
+
+            const s =
+            mid(l[11],l[12]);
+
+
+            pushTopY =
+            s.y;
+
+            pushBottomY =
+            s.y;
+
+            pushDownSeen =
+            false;
+
+            phase =
+            "ready";
+
+
+            statusEl.textContent =
+            "PUSH-UP READY";
+
+            statusEl.style.color =
+            "#00ff66";
+
+        }
+
+        return;
+
+    }
+
+
+    /* ----------------------------------------------
+       STEP 2
+
+       IMPORTANT FIX:
+
+       இங்கே pushupStartPosition()
+       check செய்யவில்லை.
+
+       அதனால் கீழே போகும்போது body angle
+       மாறினாலும் RED ஆகாது.
+       ---------------------------------------------- */
+
+    if(
+        pushupBodyStillTrackable(l)
+    ){
+
+        pushLostFrames =
+        0;
+
+        tracked =
+        true;
+
+    }else{
+
+        pushLostFrames++;
+
+
+        /*
+           Camera-வில் உண்மையாக body மறைந்தால்
+           மட்டும் lock release.
+        */
+
+        if(
+            pushLostFrames > 25
+        ){
+
+            pushLocked =
+            false;
+
+            pushLostFrames =
+            0;
+
+            pushTopY =
+            null;
+
+            pushBottomY =
+            null;
+
+            pushDownSeen =
+            false;
+
+            phase =
+            "start";
+
+            tracked =
+            false;
+
+            return;
+
+        }
+
+    }
+
+
+    /* ----------------------------------------------
+       CHEST / SHOULDER MOVEMENT
+       ---------------------------------------------- */
+
+    const s =
+    mid(l[11],l[12]);
+
+
+    const e1 =
+    angle(
+        l[11],
+        l[13],
+        l[15]
+    );
+
+
+    const e2 =
+    angle(
+        l[12],
+        l[14],
+        l[16]
+    );
+
+
+    const elbow =
+    Math.min(
+        e1,
+        e2
+    );
+
+
+    /* ----------------------------------------------
+       TOP POSITION
+       ---------------------------------------------- */
+
+    if(!pushDownSeen){
+
+        if(
+            pushTopY === null
+        ){
+
+            pushTopY =
+            s.y;
+
+        }
+
+
+        /*
+           மேலே இருக்கும்போது top position
+           மெதுவாக update ஆகும்.
+        */
+
+        if(
+            s.y <
+            pushTopY + .035
+        ){
+
+            pushTopY =
+            s.y;
+
+        }
+
+    }
+
+
+    /* ----------------------------------------------
+       DOWN PHASE
+       ---------------------------------------------- */
+
+    if(!pushDownSeen){
+
+        const downAmount =
+        s.y -
+        pushTopY;
+
+
+        /*
+           Chest கீழே போகிறது
+           + elbow bend ஆகிறது.
+        */
+
+        if(
+            downAmount > .018 &&
+            elbow < 172
+        ){
+
+            pushDownSeen =
+            true;
+
+            pushBottomY =
+            s.y;
+
+
+            statusEl.textContent =
+            "DOWN";
+
+            statusEl.style.color =
+            "#00ff66";
+
+        }
+
+        return;
+
+    }
+
+
+    /* ----------------------------------------------
+       LOWEST POSITION
+       ---------------------------------------------- */
+
+    if(
+        s.y >
+        pushBottomY
+    ){
+
+        pushBottomY =
+        s.y;
+
+    }
+
+
+    /* ----------------------------------------------
+       UP PHASE
+       ---------------------------------------------- */
+
+    const upAmount =
+    pushBottomY -
+    s.y;
+
+
+    if(
+        upAmount > .018 &&
+        elbow > 135
+    ){
+
+        addRep();
+
+
+        pushDownSeen =
+        false;
+
+
+        pushTopY =
+        s.y;
+
+        pushBottomY =
+        s.y;
+
+
+        statusEl.textContent =
+        "PUSH-UP READY";
+
+        statusEl.style.color =
+        "#00ff66";
+
+    }
+
+}
+
+
+/* ================= PLANK ================= */
+
+function plankPosition(l){
+
+    if(
+        !req([
+            l[11],
+            l[12],
+            l[23],
+            l[24],
+            l[27],
+            l[28]
+        ])
+    ){
+
+        return false;
+
+    }
+
+
+    const s =
+    mid(l[11],l[12]);
+
+    const h =
+    mid(l[23],l[24]);
+
+    const a =
+    mid(l[27],l[28]);
+
+
+    return (
+        angle(s,h,a) > 105 &&
+        Math.abs(s.y-h.y) < .50
+    );
+
+}
+
+
+/* ==================================================
+   OTHER WORKOUT DETECTION
+   ================================================== */
 
 function detect(l){
 
-    if(!tracked) return;
-
-    const w=workout.toLowerCase();
-
-    const shoulder=mid(l[11],l[12]);
-    const hip=mid(l[23],l[24]);
-
-    const leftKnee=angle(
-        l[23],l[25],l[27]
-    );
-
-    const rightKnee=angle(
-        l[24],l[26],l[28]
-    );
-
-    const knee=Math.min(
-        leftKnee,
-        rightKnee
-    );
-
-    const leftElbow=angle(
-        l[11],l[13],l[15]
-    );
-
-    const rightElbow=angle(
-        l[12],l[14],l[16]
-    );
-
-    const elbow=Math.min(
-        leftElbow,
-        rightElbow
-    );
-
-
-    /* =====================
-       STRETCHING
-    ===================== */
-
-    if(w==="stretching"){
-
-        if(!req([
-            l[11],l[12],
-            l[15],l[16]
-        ])) return;
-
-        const up=
-            l[15].y<shoulder.y-0.04 ||
-            l[16].y<shoulder.y-0.04;
-
-        const down=
-            l[15].y>shoulder.y+0.02 &&
-            l[16].y>shoulder.y+0.02;
-
-        if(phase==="start" && down){
-            phase="ready";
-        }
-
-        if(phase==="ready" && up){
-            phase="move";
-        }
-
-        if(phase==="move" && down){
-            addRep();
-            phase="ready";
-        }
+    if(!tracked){
 
         return;
+
     }
 
 
-    /* =====================
-       PUSH UP
-    ===================== */
+    const w =
+    workout.toLowerCase();
 
-    if(w==="push up"){
 
-        if(!pushupPosition(l)){
+    /* PUSH UP */
 
-            phase="start";
-            memory.pushTop=null;
-            memory.pushBottom=null;
+    if(
+        w === "push up"
+    ){
+
+        detectPushUp(l);
+
+        return;
+
+    }
+
+
+    /* STRETCHING / COOL DOWN */
+
+    if(
+        w === "stretching" ||
+        w === "cool down"
+    ){
+
+        const s =
+        mid(l[11],l[12]);
+
+
+        const up =
+        l[15].y < s.y-.04 ||
+        l[16].y < s.y-.04;
+
+
+        const down =
+        l[15].y > s.y+.02 &&
+        l[16].y > s.y+.02;
+
+
+        if(
+            phase === "start" &&
+            down
+        ){
+
+            phase =
+            "ready";
+
+        }
+
+
+        if(
+            phase === "ready" &&
+            up
+        ){
+
+            phase =
+            "move";
+
+        }
+
+
+        if(
+            phase === "move" &&
+            down
+        ){
+
+            addRep();
+
+            phase =
+            "ready";
+
+        }
+
+        return;
+
+    }
+
+
+    /* SQUAT */
+
+    if(
+        w === "squat"
+    ){
+
+        const k =
+        Math.min(
+            angle(
+                l[23],
+                l[25],
+                l[27]
+            ),
+            angle(
+                l[24],
+                l[26],
+                l[28]
+            )
+        );
+
+
+        if(
+            phase === "start"
+        ){
+
+            phase =
+            "ready";
+
+        }
+
+
+        if(
+            phase === "ready" &&
+            k < 160
+        ){
+
+            phase =
+            "move";
+
+        }
+
+
+        if(
+            phase === "move" &&
+            k > 160
+        ){
+
+            addRep();
+
+            phase =
+            "ready";
+
+        }
+
+        return;
+
+    }
+
+
+    /* LUNGES */
+
+    if(
+        w === "lunges"
+    ){
+
+        const k =
+        Math.min(
+            angle(
+                l[23],
+                l[25],
+                l[27]
+            ),
+            angle(
+                l[24],
+                l[26],
+                l[28]
+            )
+        );
+
+
+        if(
+            phase === "start"
+        ){
+
+            phase =
+            "ready";
+
+        }
+
+
+        if(
+            phase === "ready" &&
+            k < 155
+        ){
+
+            phase =
+            "move";
+
+        }
+
+
+        if(
+            phase === "move" &&
+            k > 160
+        ){
+
+            addRep();
+
+            phase =
+            "ready";
+
+        }
+
+        return;
+
+    }
+
+
+    /* HIGH KNEES */
+
+    if(
+        w === "high knees"
+    ){
+
+        if(
+            !req([
+                l[23],
+                l[24],
+                l[25],
+                l[26]
+            ])
+        ){
+
             return;
+
         }
 
-        const chest=shoulder.y;
 
-        /*
-           First establish top position.
-        */
+        const up =
+        l[25].y <
+        l[23].y-.035 ||
+        l[26].y <
+        l[24].y-.035;
 
-        if(phase==="start"){
 
-            memory.pushTop=chest;
-            phase="ready";
+        const down =
+        l[25].y >=
+        l[23].y-.01 &&
+        l[26].y >=
+        l[24].y-.01;
+
+
+        if(
+            phase === "start"
+        ){
+
+            phase =
+            "ready";
+
+        }
+
+
+        if(
+            phase === "ready" &&
+            up
+        ){
+
+            phase =
+            "move";
+
+        }
+
+
+        if(
+            phase === "move" &&
+            down
+        ){
+
+            addRep();
+
+            phase =
+            "ready";
+
+        }
+
+        return;
+
+    }
+
+
+    /* MOUNTAIN CLIMBER */
+
+    if(
+        w === "mountain climber"
+    ){
+
+        if(
+            !plankPosition(l)
+        ){
+
             return;
+
         }
 
-        /*
-           Keep updating top slightly.
-        */
+
+        const f =
+        Math.abs(
+            l[25].x-l[23].x
+        )>.035 ||
+        Math.abs(
+            l[26].x-l[24].x
+        )>.035;
+
 
         if(
-            phase==="ready" &&
-            memory.pushTop!==null &&
-            chest<memory.pushTop+0.02
+            phase === "start"
         ){
-            memory.pushTop=chest;
-        }
 
-        /*
-           Going down.
-        */
-
-        if(phase==="ready"){
-
-            const movedDown=
-                chest>
-                memory.pushTop+0.035;
-
-            const bent=
-                elbow<165;
-
-            if(movedDown && bent){
-
-                memory.pushBottom=chest;
-                phase="move";
-            }
-
-            return;
-        }
-
-        /*
-           Going back up.
-        */
-
-        if(phase==="move"){
-
-            if(
-                memory.pushBottom===null ||
-                chest>memory.pushBottom
-            ){
-                memory.pushBottom=chest;
-            }
-
-            const movedUp=
-                chest<
-                memory.pushBottom-0.025;
-
-            const extended=
-                elbow>150;
-
-            if(movedUp && extended){
-
-                addRep();
-
-                memory.pushTop=chest;
-                memory.pushBottom=null;
-
-                phase="ready";
-            }
+            phase =
+            "ready";
 
         }
 
-        return;
-    }
-
-
-    /* =====================
-       SQUAT
-    ===================== */
-
-    if(w==="squat"){
-
-        if(!req([
-            l[23],l[24],
-            l[25],l[26],
-            l[27],l[28]
-        ])) return;
-
-        if(phase==="start"){
-            phase="ready";
-        }
 
         if(
-            phase==="ready" &&
-            knee<160
+            phase === "ready" &&
+            f
         ){
-            phase="move";
+
+            phase =
+            "move";
+
         }
 
+
         if(
-            phase==="move" &&
-            knee>160
+            phase === "move" &&
+            !f
         ){
+
             addRep();
-            phase="ready";
+
+            phase =
+            "ready";
+
         }
 
         return;
+
     }
 
 
-    /* =====================
-       HIGH KNEES
-    ===================== */
+    /* JUMPING JACK */
 
-    if(w==="high knees"){
+    if(
+        w === "jumping jack"
+    ){
 
-        if(!req([
-            l[23],l[24],
-            l[25],l[26]
-        ])) return;
+        const feet =
+        Math.abs(
+            l[27].x-l[28].x
+        );
 
-        const leftUp=
-            l[25].y<
-            l[23].y-0.04;
 
-        const rightUp=
-            l[26].y<
-            l[24].y-0.04;
+        const open =
+        feet > .15;
 
-        const anyUp=
-            leftUp||rightUp;
 
-        const bothDown=
-            !leftUp&&!rightUp;
+        const close =
+        feet < .14;
 
-        if(phase==="start"){
-            phase="ready";
-        }
+
+        const s =
+        mid(l[11],l[12]);
+
+
+        const handsUp =
+        l[15].y <
+        s.y+.06 ||
+        l[16].y <
+        s.y+.06;
+
 
         if(
-            phase==="ready" &&
-            anyUp
+            phase === "start"
         ){
-            phase="move";
+
+            phase =
+            "ready";
+
         }
+
 
         if(
-            phase==="move" &&
-            bothDown
-        ){
-            addRep();
-            phase="ready";
-        }
-
-        return;
-    }
-
-
-    /* =====================
-       LUNGES
-    ===================== */
-
-    if(w==="lunges"){
-
-        if(phase==="start"){
-            phase="ready";
-        }
-
-        if(
-            phase==="ready" &&
-            knee<155
-        ){
-            phase="move";
-        }
-
-        if(
-            phase==="move" &&
-            knee>160
-        ){
-            addRep();
-            phase="ready";
-        }
-
-        return;
-    }
-
-
-    /* =====================
-       MOUNTAIN CLIMBER
-    ===================== */
-
-    if(w==="mountain climber"){
-
-        if(!plankPosition(l)){
-
-            phase="start";
-            return;
-        }
-
-        const leftForward=
-            Math.abs(
-                l[25].x-l[23].x
-            )>0.04;
-
-        const rightForward=
-            Math.abs(
-                l[26].x-l[24].x
-            )>0.04;
-
-        const forward=
-            leftForward||
-            rightForward;
-
-        if(phase==="start"){
-            phase="ready";
-        }
-
-        if(
-            phase==="ready" &&
-            forward
-        ){
-            phase="move";
-        }
-
-        if(
-            phase==="move" &&
-            !forward
-        ){
-            addRep();
-            phase="ready";
-        }
-
-        return;
-    }
-
-
-    /* =====================
-       JUMPING JACK
-    ===================== */
-
-    if(w==="jumping jack"){
-
-        const feet=
-            Math.abs(
-                l[27].x-l[28].x
-            );
-
-        const open=
-            feet>0.16;
-
-        const closed=
-            feet<0.14;
-
-        const handsUp=
-            l[15].y<shoulder.y+0.05 ||
-            l[16].y<shoulder.y+0.05;
-
-        if(phase==="start"){
-            phase="ready";
-        }
-
-        if(
-            phase==="ready" &&
+            phase === "ready" &&
             open &&
             handsUp
         ){
-            phase="move";
+
+            phase =
+            "move";
+
         }
 
+
         if(
-            phase==="move" &&
-            closed
+            phase === "move" &&
+            close
         ){
+
             addRep();
-            phase="ready";
+
+            phase =
+            "ready";
+
         }
 
         return;
+
     }
 
 
-    /* =====================
-       BURPEE
-    ===================== */
+    /* BURPEES */
 
-    if(w==="burpees"){
+    if(
+        w === "burpees"
+    ){
 
-        if(phase==="start"){
-            phase="ready";
-        }
+        const k =
+        Math.min(
+            angle(
+                l[23],
+                l[25],
+                l[27]
+            ),
+            angle(
+                l[24],
+                l[26],
+                l[28]
+            )
+        );
 
-        const down=
-            knee<155;
 
-        const stand=
-            knee>165;
+        const down =
+        k < 155;
 
-        const jump=
-            l[27].y<
-            l[25].y-0.02 &&
-            l[28].y<
-            l[26].y-0.02;
+
+        const stand =
+        k > 165;
+
+
+        const jump =
+        l[27].y <
+        l[25].y-.02 &&
+        l[28].y <
+        l[26].y-.02;
+
 
         if(
-            phase==="ready" &&
+            phase === "start"
+        ){
+
+            phase =
+            "ready";
+
+        }
+
+
+        if(
+            phase === "ready" &&
             down
         ){
-            phase="move";
+
+            phase =
+            "move";
+
         }
 
+
         if(
-            phase==="move" &&
+            phase === "move" &&
             stand
         ){
-            phase="up";
+
+            phase =
+            "up";
+
         }
 
+
         if(
-            phase==="up" &&
+            phase === "up" &&
             jump
         ){
+
             addRep();
-            phase="ready";
+
+            phase =
+            "ready";
+
         }
 
         return;
+
     }
 
 
-    /* =====================
-       PLANK
-    ===================== */
+    /* PLANK */
 
-    if(w==="plank"){
+    if(
+        w === "plank"
+    ){
 
-        if(!plankPosition(l)){
+        if(
+            !plankPosition(l)
+        ){
 
-            if(
-                phase!=="start" &&
-                plankStart
-            ){
+            if(plankStart){
 
-                /*
-                   Keep completed seconds.
-                   Do NOT erase the user's count.
-                */
+                plankStart =
+                0;
 
-                plankStart=0;
             }
 
-            phase="start";
             return;
+
         }
 
-        if(phase==="start"){
 
-            phase="ready";
+        if(!plankStart){
 
-            plankStart=Date.now();
+            plankStart =
+            Date.now();
 
-            lastPlankSecond=0;
+            lastPlankSecond =
+            0;
 
-            reps=0;
-            repEl.textContent="0";
+            phase =
+            "ready";
 
-            return;
         }
 
-        const seconds=Math.min(
+
+        const sec =
+        Math.min(
             MAX_REPS,
             Math.floor(
                 (Date.now()-plankStart)/1000
             )
         );
 
-        if(seconds>lastPlankSecond){
-
-            lastPlankSecond=seconds;
-            reps=seconds;
-
-            repEl.textContent=seconds;
-
-            statusEl.textContent=
-                seconds+" SEC";
-
-            statusEl.style.color=
-                "#00ff66";
-        }
-
-        return;
-    }
-
-
-    /* =====================
-       COOL DOWN
-    ===================== */
-
-    if(w==="cool down"){
-
-        const up=
-            l[15].y<shoulder.y-0.04 ||
-            l[16].y<shoulder.y-0.04;
-
-        const down=
-            l[15].y>shoulder.y+0.02 &&
-            l[16].y>shoulder.y+0.02;
-
-        if(phase==="start" && down){
-            phase="ready";
-        }
 
         if(
-            phase==="ready" &&
-            up
+            sec >
+            lastPlankSecond
         ){
-            phase="move";
+
+            lastPlankSecond =
+            sec;
+
+            reps =
+            sec;
+
+            repEl.textContent =
+            sec;
+
+            statusEl.textContent =
+            sec+" SEC";
+
+            statusEl.style.color =
+            "#00ff66";
+
         }
 
-        if(
-            phase==="move" &&
-            down
-        ){
-            addRep();
-            phase="ready";
-        }
-
-        return;
     }
+
 }
 
 
-/* =========================
-   MEDIAPIPE
-========================= */
+/* ================= MEDIAPIPE ================= */
 
 function onResults(results){
 
-    if(!running) return;
+    if(!running){
+
+        return;
+
+    }
+
 
     if(
         !results ||
@@ -1190,30 +1746,47 @@ function onResults(results){
 
         lostFrames++;
 
-        if(lostFrames>8){
-            tracked=false;
-            resetMovement();
+
+        if(
+            lostFrames > 12 &&
+            !pushLocked
+        ){
+
+            tracked =
+            false;
+
         }
 
         return;
+
     }
+
 
     drawBody(
         results.poseLandmarks
     );
 
+
     detect(
         results.poseLandmarks
     );
+
 }
 
 
+/* ================= POSE SETUP ================= */
+
 function setupPose(){
 
-    pose=new Pose({
-        locateFile:file=>
-            "https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+file
+    pose =
+    new Pose({
+
+        locateFile:
+        file =>
+        "https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+file
+
     });
+
 
     pose.setOptions({
 
@@ -1223,18 +1796,21 @@ function setupPose(){
 
         enableSegmentation:false,
 
-        minDetectionConfidence:0.35,
+        minDetectionConfidence:.35,
 
-        minTrackingConfidence:0.35
+        minTrackingConfidence:.35
+
     });
 
-    pose.onResults(onResults);
+
+    pose.onResults(
+        onResults
+    );
+
 }
 
 
-/* =========================
-   CAMERA
-========================= */
+/* ================= CAMERA ================= */
 
 async function startCamera(){
 
@@ -1242,71 +1818,100 @@ async function startCamera(){
 
         setupPose();
 
-        stream=
-            await navigator.mediaDevices.getUserMedia({
 
-                video:{
-                    facingMode:"user",
+        stream =
+        await navigator.mediaDevices.getUserMedia({
 
-                    width:{
-                        ideal:720
-                    },
+            video:{
 
-                    height:{
-                        ideal:1280
-                    }
+                facingMode:"user",
+
+                width:{
+                    ideal:720
                 },
 
-                audio:false
-            });
+                height:{
+                    ideal:1280
+                }
 
-        video.srcObject=stream;
+            },
+
+            audio:false
+
+        });
+
+
+        video.srcObject =
+        stream;
+
 
         await video.play();
 
-        canvas.width=
-            video.videoWidth||720;
 
-        canvas.height=
-            video.videoHeight||1280;
+        canvas.width =
+        video.videoWidth ||
+        720;
 
-        loading.style.display="none";
 
-        statusEl.textContent=
-            "MOVE INTO CAMERA";
+        canvas.height =
+        video.videoHeight ||
+        1280;
 
-        statusEl.style.color=
-            "#ff3030";
 
-        requestAnimationFrame(processVideo);
+        loading.style.display =
+        "none";
+
+
+        statusEl.textContent =
+        "MOVE INTO CAMERA";
+
+        statusEl.style.color =
+        "#ff3030";
+
+
+        requestAnimationFrame(
+            processVideo
+        );
+
+
+    }catch(e){
+
+        console.error(e);
+
+
+        loading.innerHTML =
+
+        '<div style="color:#ff3030;font-weight:bold">'+
+        'Camera could not start'+
+        '</div>'+
+        '<div style="color:#aaa;font-size:13px">'+
+        'Allow camera permission and reload.'+
+        '</div>';
 
     }
-    catch(error){
 
-        console.error(error);
-
-        loading.innerHTML=`
-            <div style="color:#ff3030;font-weight:bold">
-                Camera could not start
-            </div>
-            <div style="color:#aaa;font-size:13px">
-                Allow camera permission and reload.
-            </div>
-        `;
-    }
 }
 
 
+/* ================= PROCESS VIDEO ================= */
+
 async function processVideo(){
 
-    if(!running) return;
+    if(!running){
+
+        return;
+
+    }
+
 
     if(
-        video.readyState>=2 &&
+        video.readyState >= 2 &&
         !processing
     ){
 
-        processing=true;
+        processing =
+        true;
+
 
         try{
 
@@ -1314,60 +1919,70 @@ async function processVideo(){
                 image:video
             });
 
-        }
-        catch(error){
+        }catch(e){
 
             console.error(
                 "Pose error:",
-                error
+                e
             );
+
         }
 
-        processing=false;
+
+        processing =
+        false;
+
     }
+
 
     requestAnimationFrame(
         processVideo
     );
+
 }
 
 
-/* =========================
-   STOP
-========================= */
+/* ================= STOP CAMERA ================= */
 
 function stopCamera(){
 
-    running=false;
+    running =
+    false;
+
 
     if(stream){
 
-        stream.getTracks().forEach(
-            track=>track.stop()
+        stream
+        .getTracks()
+        .forEach(
+            t=>t.stop()
         );
 
-        stream=null;
+
+        stream =
+        null;
+
     }
+
 }
 
 
-/* =========================
-   QUIT
-========================= */
+/* ================= QUIT ================= */
 
-quitBtn.onclick=()=>{
+quitBtn.onclick = ()=>{
 
     stopCamera();
 
-    location.href="daily-task.html";
+    location.href =
+    "daily-task.html";
+
 };
 
 
-/* =========================
-   FINISH
-========================= */
+/* ================= FINISH ================= */
 
-finishBtn.onclick=async()=>{
+finishBtn.onclick =
+async()=>{
 
     if(reps<=0){
 
@@ -1376,9 +1991,13 @@ finishBtn.onclick=async()=>{
         );
 
         return;
+
     }
 
-    const user=auth.currentUser;
+
+    const user =
+    auth.currentUser;
+
 
     if(!user){
 
@@ -1387,139 +2006,172 @@ finishBtn.onclick=async()=>{
         );
 
         return;
+
     }
 
-    finishBtn.disabled=true;
+
+    finishBtn.disabled =
+    true;
+
 
     try{
 
-        const userRef=
-            db.collection("users")
-              .doc(user.uid);
+        const ref =
+        db.collection("users")
+        .doc(user.uid);
 
-        const snap=
-            await userRef.get();
 
-        const data=
-            snap.exists
-            ? snap.data()
-            : {};
+        const snap =
+        await ref.get();
 
-        const oldPoints=
-            Number(
-                data.totalPoints||0
-            );
 
-        const workoutOrder=[
+        const data =
+        snap.exists
+        ? snap.data()
+        : {};
+
+
+        const oldPoints =
+        Number(
+            data.totalPoints || 0
+        );
+
+
+        const order = [
 
             "Stretching",
+
             "Push Up",
+
             "Squat",
+
             "High Knees",
+
             "Lunges",
+
             "Mountain Climber",
+
             "Jumping Jack",
+
             "Burpees",
+
             "Plank",
+
             "Cool Down"
+
         ];
 
-        let completedTasks=
-            Array.isArray(
-                data.completedTasks
-            )
-            ? [...data.completedTasks]
-            : [];
 
-        const index=
-            workoutOrder.findIndex(
-                x=>
-                    x.toLowerCase()===
-                    workout.toLowerCase()
-            );
+        let completed =
+
+        Array.isArray(
+            data.completedTasks
+        )
+
+        ? [...data.completedTasks]
+
+        : [];
+
+
+        const index =
+        order.findIndex(
+            x =>
+            x.toLowerCase() ===
+            workout.toLowerCase()
+        );
+
 
         if(
-            index>=0 &&
-            !completedTasks.includes(index)
+            index >= 0 &&
+            !completed.includes(index)
         ){
 
-            completedTasks.push(index);
+            completed.push(index);
+
         }
 
-        completedTasks=[
-            ...new Set(
-                completedTasks
-            )
-        ].sort((a,b)=>a-b);
 
-        await userRef.set({
+        completed =
+        [...new Set(completed)]
+        .sort(
+            (a,b)=>a-b
+        );
+
+
+        await ref.set({
 
             totalPoints:
-                oldPoints+reps,
+            oldPoints + reps,
 
             completedTasks:
-
-                completedTasks,
+            completed,
 
             lastWorkout:
-                workout,
+            workout,
 
             lastWorkoutReps:
-                reps,
+            reps,
 
             updatedAt:
-                firebase.firestore
-                .FieldValue
-                .serverTimestamp()
+            firebase.firestore
+            .FieldValue
+            .serverTimestamp()
 
         },{
+
             merge:true
+
         });
+
 
         stopCamera();
 
-        location.href=
-            "daily-task.html";
 
-    }
-    catch(error){
+        location.href =
+        "daily-task.html";
 
-        console.error(error);
+
+    }catch(e){
+
+        console.error(e);
+
 
         alert(
             "Could not save workout. Please try again."
         );
 
-        finishBtn.disabled=false;
+
+        finishBtn.disabled =
+        false;
+
     }
+
 };
 
 
-/* =========================
-   RESIZE
-========================= */
+/* ================= RESIZE ================= */
 
 window.addEventListener(
-    "resize",
-    ()=>{
-        if(
-            video.videoWidth &&
-            video.videoHeight
-        ){
+"resize",
+()=>{
 
-            canvas.width=
-                video.videoWidth;
+    if(
+        video.videoWidth &&
+        video.videoHeight
+    ){
 
-            canvas.height=
-                video.videoHeight;
-        }
+        canvas.width =
+        video.videoWidth;
+
+        canvas.height =
+        video.videoHeight;
+
     }
-);
+
+});
 
 
-/* =========================
-   START
-========================= */
+/* ================= START ================= */
 
 startCamera();
 
