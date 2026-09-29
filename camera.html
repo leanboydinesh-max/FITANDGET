@@ -2,225 +2,173 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,
-      maximum-scale=1.0,user-scalable=no">
+<title>FIT & GET - Camera</title>
 
-<title>FIT & GET</title>
-
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<!-- MediaPipe -->
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
     margin:0;
     padding:0;
 }
 
-html,
 body{
+    background:#050505;
+    color:white;
+    font-family:Arial,sans-serif;
     width:100%;
-    height:100%;
+    min-height:100vh;
     overflow:hidden;
 }
 
-body{
-    background:#000;
-    color:#fff;
-    font-family:Arial,sans-serif;
-}
-
-.app{
-    width:100%;
-    max-width:520px;
-    height:100dvh;
-    margin:auto;
+#cameraBox{
+    position:relative;
+    width:100vw;
+    height:100vh;
     background:#000;
     display:flex;
-    flex-direction:column;
-}
-
-.cameraArea{
-    position:relative;
-    flex:1;
-    min-height:0;
+    align-items:center;
+    justify-content:center;
     overflow:hidden;
-    background:#000;
 }
 
 #video{
-    position:absolute;
-    inset:0;
     width:100%;
     height:100%;
     object-fit:contain;
     transform:scaleX(-1);
-    background:#000;
 }
 
 #canvas{
     position:absolute;
-    inset:0;
     width:100%;
     height:100%;
+    object-fit:contain;
     pointer-events:none;
 }
 
-.repBox{
+#top{
     position:absolute;
-    z-index:20;
-    top:12px;
+    top:18px;
     left:50%;
     transform:translateX(-50%);
-    min-width:105px;
-    padding:5px 18px 8px;
-    border-radius:18px;
-    background:rgba(0,0,0,.78);
+    z-index:5;
     text-align:center;
 }
 
-.repTitle{
-    font-size:10px;
-    letter-spacing:2px;
-    opacity:.7;
+#workoutName{
+    font-size:22px;
+    font-weight:bold;
+    color:#9dff00;
+    text-shadow:0 0 10px #00ff66;
 }
 
-#repCount{
+#rep{
+    margin-top:8px;
     font-size:42px;
-    line-height:43px;
-    font-weight:900;
+    font-weight:bold;
 }
 
-.workoutName{
-    position:absolute;
-    z-index:20;
-    top:74px;
-    left:50%;
-    transform:translateX(-50%);
-    padding:6px 14px;
-    border-radius:15px;
-    background:rgba(0,0,0,.78);
-    font-size:13px;
-    font-weight:900;
-    white-space:nowrap;
-}
-
-.status{
-    position:absolute;
-    z-index:20;
-    left:50%;
-    bottom:15px;
-    transform:translateX(-50%);
-    width:88%;
-    padding:10px 14px;
-    border-radius:22px;
-    background:rgba(0,0,0,.80);
-    text-align:center;
-    font-size:13px;
-    font-weight:900;
-}
-
-.red{
-    color:#ff3030;
-}
-
-.green{
-    color:#00ff66;
-}
-
-.yellow{
-    color:#ffd43b;
-}
-
-.controls{
-    height:68px;
-    padding:9px;
-    display:flex;
-    gap:9px;
-    background:#050805;
-}
-
-.controls button{
-    flex:1;
-    border:0;
-    border-radius:13px;
+#status{
+    margin-top:5px;
     font-size:15px;
-    font-weight:900;
+    font-weight:bold;
 }
 
-.quit{
-    background:#242424;
-    color:#fff;
+#buttons{
+    position:absolute;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:10;
+    display:flex;
+    gap:12px;
 }
 
-.finish{
-    background:#00ff66;
-    color:#001006;
+button{
+    border:none;
+    border-radius:30px;
+    padding:13px 25px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
+#quitBtn{
+    background:#222;
+    color:white;
+    border:1px solid #777;
+}
+
+#finishBtn{
+    background:#9dff00;
+    color:#000;
+}
+
+#loading{
+    position:absolute;
+    inset:0;
+    z-index:20;
+    background:#050505;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:12px;
+}
+
+.loader{
+    width:42px;
+    height:42px;
+    border:4px solid #333;
+    border-top-color:#9dff00;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<div id="cameraBox">
 
-    <div class="cameraArea">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="canvas"></canvas>
 
-        <video id="video"
-               autoplay
-               muted
-               playsinline></video>
-
-        <canvas id="canvas"></canvas>
-
-        <div class="repBox">
-            <div class="repTitle">REP</div>
-            <div id="repCount">0</div>
-        </div>
-
-        <div id="workoutName"
-             class="workoutName">
-            WORKOUT
-        </div>
-
-        <div id="status"
-             class="status red">
-            STARTING CAMERA...
-        </div>
-
+    <div id="top">
+        <div id="workoutName">Workout</div>
+        <div id="rep">0</div>
+        <div id="status">CHECKING POSITION...</div>
     </div>
 
-    <div class="controls">
+    <div id="buttons">
+        <button id="quitBtn">QUIT</button>
+        <button id="finishBtn">FINISH</button>
+    </div>
 
-        <button id="quitBtn"
-                class="quit">
-            QUIT
-        </button>
-
-        <button id="finishBtn"
-                class="finish">
-            FINISH
-        </button>
-
+    <div id="loading">
+        <div class="loader"></div>
+        <div>Starting camera...</div>
     </div>
 
 </div>
 
-
 <script>
 
-/* =========================================================
+/* =========================
    FIREBASE
-========================================================= */
+========================= */
 
 const firebaseConfig = {
     apiKey:"AIzaSyBOuzSm82-dlDXsmrwX1yWQVre0YD60cWM",
@@ -235,186 +183,84 @@ if(!firebase.apps.length){
     firebase.initializeApp(firebaseConfig);
 }
 
-const db = firebase.firestore();
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 
-/* =========================================================
+/* =========================
    ELEMENTS
-========================================================= */
+========================= */
 
-const video =
-    document.getElementById("video");
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-const canvas =
-    document.getElementById("canvas");
+const workoutNameEl = document.getElementById("workoutName");
+const repEl = document.getElementById("rep");
+const statusEl = document.getElementById("status");
 
-const ctx =
-    canvas.getContext("2d");
-
-const repCount =
-    document.getElementById("repCount");
-
-const statusBox =
-    document.getElementById("status");
-
-const workoutName =
-    document.getElementById("workoutName");
-
-const quitBtn =
-    document.getElementById("quitBtn");
-
-const finishBtn =
-    document.getElementById("finishBtn");
+const loading = document.getElementById("loading");
+const quitBtn = document.getElementById("quitBtn");
+const finishBtn = document.getElementById("finishBtn");
 
 
-/* =========================================================
+/* =========================
    WORKOUT
-========================================================= */
+========================= */
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+const params = new URLSearchParams(location.search);
 
 let workout =
     params.get("workout") ||
+    params.get("exercise") ||
     localStorage.getItem("selectedWorkout") ||
-    "Stretching";
+    "Push Up";
 
-try{
-    workout = decodeURIComponent(workout);
-}catch(e){}
+workout = decodeURIComponent(workout);
 
-workout = workout.trim();
-
-workoutName.textContent = workout;
+workoutNameEl.textContent = workout;
 
 
-/* =========================================================
-   GLOBAL STATE
-========================================================= */
+/* =========================
+   VARIABLES
+========================= */
+
+let stream = null;
+let pose = null;
+let processing = false;
+let running = true;
 
 let reps = 0;
 
-let stream = null;
-
-let cameraRunning = false;
-
-let processingFrame = false;
-
-let lastRepTime = 0;
-
+let positionReady = false;
 let lostFrames = 0;
 
-let personLocked = false;
+let state = "READY";
+
+let baseline = null;
+let movementStart = null;
+
+let previousValues = [];
+
+const MAX_REPS = 50;
 
 
-/* =========================================================
-   MOVEMENT STATES
-========================================================= */
+/* =========================
+   HELPERS
+========================= */
 
-let squatState = "READY";
-
-let pushState = "UP";
-
-let mountainState = "AWAY";
-
-let highKneeState = "DOWN";
-
-let lungeState = "UP";
-
-let jackState = "CLOSED";
-
-let burpeeState = "UP";
-
-let plankStart = null;
-
-let armMovementBase = null;
-
-
-/* =========================================================
-   PERSONAL BASELINES
-========================================================= */
-
-let squatBase = null;
-
-let pushBase = null;
-
-let mountainBase = null;
-
-let baselineFrames = 0;
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function setStatus(message,type){
-
-    statusBox.textContent = message;
-
-    statusBox.className =
-        "status " + type;
+function clamp(v,min,max){
+    return Math.max(min,Math.min(max,v));
 }
 
-
-/* =========================================================
-   REP
-========================================================= */
-
-function addRep(){
-
-    const now = Date.now();
-
-    if(
-        now-lastRepTime <
-        550
-    ){
-        return;
-    }
-
-    if(reps >= 50){
-        return;
-    }
-
-    lastRepTime = now;
-
-    reps++;
-
-    repCount.textContent = reps;
+function dist(a,b){
+    return Math.sqrt(
+        Math.pow(a.x-b.x,2) +
+        Math.pow(a.y-b.y,2)
+    );
 }
-
-
-/* =========================================================
-   VISIBILITY
-========================================================= */
-
-function visible(lm,id){
-
-    if(!lm || !lm[id]){
-        return false;
-    }
-
-    if(
-        lm[id].visibility === undefined
-    ){
-        return true;
-    }
-
-    return lm[id].visibility > 0.20;
-}
-
-
-/* =========================================================
-   ANGLE
-========================================================= */
 
 function angle(a,b,c){
-
-    if(!a || !b || !c){
-        return 180;
-    }
 
     const abx = a.x-b.x;
     const aby = a.y-b.y;
@@ -422,1719 +268,788 @@ function angle(a,b,c){
     const cbx = c.x-b.x;
     const cby = c.y-b.y;
 
-    const dot =
-        abx*cbx +
-        aby*cby;
+    const dot = abx*cbx + aby*cby;
 
-    const m1 =
-        Math.sqrt(
-            abx*abx+
-            aby*aby
-        );
+    const mag1 = Math.sqrt(abx*abx+aby*aby);
+    const mag2 = Math.sqrt(cbx*cbx+cby*cby);
 
-    const m2 =
-        Math.sqrt(
-            cbx*cbx+
-            cby*cby
-        );
+    if(!mag1 || !mag2) return 180;
 
-    if(m1===0 || m2===0){
-        return 180;
-    }
+    let value = dot/(mag1*mag2);
 
-    let value =
-        dot/(m1*m2);
+    value = clamp(value,-1,1);
 
-    value =
-        Math.max(
-            -1,
-            Math.min(1,value)
-        );
+    return Math.acos(value)*180/Math.PI;
+}
 
-    return (
-        Math.acos(value)*
-        180/Math.PI
-    );
+function good(p){
+    return p && p.visibility > 0.35;
 }
 
 
-/* =========================================================
-   CANVAS
-========================================================= */
+/* =========================
+   DRAW
+========================= */
 
-function resizeCanvas(){
+function drawPoint(p,color="#00ff66"){
 
-    canvas.width =
-        canvas.clientWidth;
-
-    canvas.height =
-        canvas.clientHeight;
-}
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
-);
-
-resizeCanvas();
-
-
-/* =========================================================
-   VIDEO RECT
-========================================================= */
-
-function getVideoRect(){
-
-    const vw =
-        video.videoWidth || 720;
-
-    const vh =
-        video.videoHeight || 1280;
-
-    const cw =
-        canvas.width;
-
-    const ch =
-        canvas.height;
-
-    const scale =
-        Math.min(
-            cw/vw,
-            ch/vh
-        );
-
-    const width =
-        vw*scale;
-
-    const height =
-        vh*scale;
-
-    return {
-        x:(cw-width)/2,
-        y:(ch-height)/2,
-        width,
-        height
-    };
-}
-
-
-/* =========================================================
-   LANDMARK → SCREEN
-========================================================= */
-
-function screenPoint(lm){
-
-    if(!lm){
-        return null;
-    }
-
-    const r =
-        getVideoRect();
-
-    let x =
-        r.x +
-        lm.x*r.width;
-
-    let y =
-        r.y +
-        lm.y*r.height;
-
-    /*
-       Mirror because video is mirrored.
-    */
-
-    x =
-        r.x +
-        r.width -
-        (x-r.x);
-
-    /*
-       Never draw outside camera.
-    */
-
-    x =
-        Math.max(
-            0,
-            Math.min(
-                canvas.width,
-                x
-            )
-        );
-
-    y =
-        Math.max(
-            0,
-            Math.min(
-                canvas.height,
-                y
-            )
-        );
-
-    return {
-        x,
-        y
-    };
-}
-
-
-/* =========================================================
-   DRAW LINE
-========================================================= */
-
-function drawLine(a,b,color){
-
-    const p1 =
-        screenPoint(a);
-
-    const p2 =
-        screenPoint(b);
-
-    if(!p1 || !p2){
-        return;
-    }
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        p1.x,
-        p1.y
-    );
-
-    ctx.lineTo(
-        p2.x,
-        p2.y
-    );
-
-    ctx.strokeStyle =
-        color;
-
-    ctx.lineWidth = 5;
-
-    ctx.lineCap =
-        "round";
-
-    ctx.stroke();
-}
-
-
-/* =========================================================
-   DRAW JOINT
-========================================================= */
-
-function drawJoint(lm,color){
-
-    const p =
-        screenPoint(lm);
-
-    if(!p){
-        return;
-    }
+    if(!p) return;
 
     ctx.beginPath();
 
     ctx.arc(
-        p.x,
-        p.y,
-        6,
+        p.x*canvas.width,
+        p.y*canvas.height,
+        5,
         0,
         Math.PI*2
     );
 
-    ctx.fillStyle =
-        color;
-
+    ctx.fillStyle=color;
     ctx.fill();
 }
 
 
-/* =========================================================
-   DRAW CHAIN
-========================================================= */
+function drawLine(a,b,color="#00ff66"){
 
-function drawChain(lm,ids,color){
+    if(!a || !b) return;
 
-    for(
-        let i=0;
-        i<ids.length-1;
-        i++
-    ){
+    ctx.beginPath();
 
-        if(
-            visible(lm,ids[i]) &&
-            visible(lm,ids[i+1])
-        ){
+    ctx.moveTo(
+        a.x*canvas.width,
+        a.y*canvas.height
+    );
 
-            drawLine(
-                lm[ids[i]],
-                lm[ids[i+1]],
-                color
-            );
-        }
+    ctx.lineTo(
+        b.x*canvas.width,
+        b.y*canvas.height
+    );
+
+    ctx.strokeStyle=color;
+    ctx.lineWidth=6;
+    ctx.lineCap="round";
+    ctx.stroke();
+}
+
+
+/* =========================
+   WORKOUT BODY PARTS
+========================= */
+
+function getParts(l){
+
+    switch(workout.toLowerCase()){
+
+        case "push up":
+            return [
+                [l[11],l[13]],
+                [l[13],l[15]],
+                [l[12],l[14]],
+                [l[14],l[16]],
+                [l[11],l[12]]
+            ];
+
+        case "squat":
+            return [
+                [l[23],l[25]],
+                [l[25],l[27]],
+                [l[24],l[26]],
+                [l[26],l[28]],
+                [l[23],l[24]]
+            ];
+
+        case "high knees":
+            return [
+                [l[23],l[25]],
+                [l[24],l[26]]
+            ];
+
+        case "lunges":
+            return [
+                [l[23],l[25]],
+                [l[25],l[27]],
+                [l[24],l[26]],
+                [l[26],l[28]]
+            ];
+
+        case "mountain climber":
+            return [
+                [l[11],l[23]],
+                [l[12],l[24]],
+                [l[23],l[25]],
+                [l[24],l[26]]
+            ];
+
+        case "jumping jack":
+            return [
+                [l[11],l[13]],
+                [l[13],l[15]],
+                [l[12],l[14]],
+                [l[14],l[16]],
+                [l[23],l[25]],
+                [l[25],l[27]],
+                [l[24],l[26]],
+                [l[26],l[28]]
+            ];
+
+        case "burpees":
+            return [
+                [l[11],l[12]],
+                [l[11],l[23]],
+                [l[12],l[24]],
+                [l[23],l[25]],
+                [l[24],l[26]]
+            ];
+
+        case "plank":
+            return [
+                [l[11],l[23]],
+                [l[12],l[24]],
+                [l[23],l[25]],
+                [l[24],l[26]]
+            ];
+
+        case "stretching":
+        case "cool down":
+            return [
+                [l[11],l[13]],
+                [l[13],l[15]],
+                [l[12],l[14]],
+                [l[14],l[16]]
+            ];
+
+        default:
+            return [
+                [l[11],l[12]],
+                [l[11],l[13]],
+                [l[13],l[15]],
+                [l[12],l[14]],
+                [l[14],l[16]],
+                [l[23],l[25]],
+                [l[25],l[27]],
+                [l[24],l[26]],
+                [l[26],l[28]]
+            ];
     }
+}
 
-    ids.forEach(id=>{
 
-        if(
-            visible(lm,id)
-        ){
+/* =========================
+   POSITION CHECK
+========================= */
 
-            drawJoint(
-                lm[id],
-                color
-            );
+function checkPosition(l){
+
+    const relevant = getParts(l);
+
+    let visible = 0;
+
+    relevant.forEach(pair=>{
+
+        if(good(pair[0]) && good(pair[1])){
+            visible++;
         }
 
     });
+
+    /*
+       IMPORTANT:
+       Only check whether the body is visible.
+
+       No strict:
+       - angle
+       - distance
+       - pose
+       - exact position
+    */
+
+    if(visible >= Math.max(1,Math.ceil(relevant.length*0.55))){
+
+        if(!positionReady){
+
+            positionReady = true;
+
+            baseline = null;
+            movementStart = null;
+            state = "READY";
+        }
+
+        lostFrames = 0;
+
+        return true;
+    }
+
+    lostFrames++;
+
+    /*
+       Small temporary tracking loss
+       should NOT immediately turn red.
+    */
+
+    if(lostFrames < 15){
+        return true;
+    }
+
+    positionReady = false;
+
+    return false;
 }
 
 
-/* =========================================================
-   BODY TRACKING
-========================================================= */
+/* =========================
+   DRAW BODY
+========================= */
 
-function bodyTracked(lm,ids){
+function drawBody(l){
 
-    let count = 0;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    ids.forEach(id=>{
+    const ready = checkPosition(l);
 
-        if(visible(lm,id)){
-            count++;
-        }
+    const color = ready ? "#00ff66" : "#ff3030";
 
+    const parts = getParts(l);
+
+    parts.forEach(pair=>{
+        drawLine(pair[0],pair[1],color);
+        drawPoint(pair[0],color);
+        drawPoint(pair[1],color);
     });
 
-    return count >=
-        Math.max(
-            2,
-            Math.ceil(ids.length*0.55)
-        );
-}
+    if(ready){
 
-
-/* =========================================================
-   SQUAT
-   HIP + KNEE + ANKLE
-========================================================= */
-
-function squat(lm){
-
-    const ids = [
-        23,24,
-        25,26,
-        27,28
-    ];
-
-    if(!bodyTracked(lm,ids)){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            personLocked=false;
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
-        }
-
-        return;
-    }
-
-    lostFrames=0;
-
-    if(!personLocked){
-
-        personLocked=true;
-
-        squatBase=null;
-
-        baselineFrames=0;
-    }
-
-    drawChain(
-        lm,
-        [23,25,27],
-        "#00ff66"
-    );
-
-    drawChain(
-        lm,
-        [24,26,28],
-        "#00ff66"
-    );
-
-    const hipValues=[];
-
-    if(visible(lm,23)){
-        hipValues.push(lm[23].y);
-    }
-
-    if(visible(lm,24)){
-        hipValues.push(lm[24].y);
-    }
-
-    const kneeValues=[];
-
-    if(visible(lm,25)){
-        kneeValues.push(lm[25].y);
-    }
-
-    if(visible(lm,26)){
-        kneeValues.push(lm[26].y);
-    }
-
-    if(
-        hipValues.length===0 ||
-        kneeValues.length===0
-    ){
-        return;
-    }
-
-    const hipY =
-        hipValues.reduce(
-            (a,b)=>a+b,
-            0
-        ) /
-        hipValues.length;
-
-    const kneeY =
-        kneeValues.reduce(
-            (a,b)=>a+b,
-            0
-        ) /
-        kneeValues.length;
-
-    const scale =
-        Math.max(
-            0.20,
-            Math.abs(
-                kneeY-hipY
-            )
-        );
-
-    if(squatBase===null){
-
-        squatBase=hipY;
-
-        baselineFrames=1;
-
-        setStatus(
-            "SQUAT • READY",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        squatState==="READY"
-    ){
-
-        squatBase =
-            squatBase*0.97+
-            hipY*0.03;
-    }
-
-    const movement =
-        (
-            hipY-
-            squatBase
-        ) /
-        scale;
-
-    /*
-       Forgiving movement threshold.
-    */
-
-    if(
-        squatState==="READY" &&
-        movement>0.045
-    ){
-
-        squatState="DOWN";
-
-        setStatus(
-            "SQUAT • DOWN",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        squatState==="DOWN"
-    ){
-
-        setStatus(
-            "SQUAT • UP",
-            "green"
-        );
-
-        if(
-            movement<0.018
-        ){
-
-            addRep();
-
-            squatState="READY";
-        }
-
-        return;
-    }
-
-    setStatus(
-        "SQUAT • READY",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   PUSH UP
-   SHOULDER + ELBOW + WRIST
-========================================================= */
-
-function pushUp(lm){
-
-    const left =
-        [11,13,15].every(
-            id=>visible(lm,id)
-        );
-
-    const right =
-        [12,14,16].every(
-            id=>visible(lm,id)
-        );
-
-    if(!left && !right){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            personLocked=false;
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
-        }
-
-        return;
-    }
-
-    lostFrames=0;
-
-    personLocked=true;
-
-    /*
-       Pick the clearer side.
-    */
-
-    let side;
-
-    if(left && right){
-
-        const leftScore =
-            (lm[11].visibility||1)+
-            (lm[13].visibility||1)+
-            (lm[15].visibility||1);
-
-        const rightScore =
-            (lm[12].visibility||1)+
-            (lm[14].visibility||1)+
-            (lm[16].visibility||1);
-
-        side =
-            leftScore>=rightScore
-            ? "L"
-            : "R";
+        statusEl.textContent = "READY • MOVE";
+        statusEl.style.color = "#00ff66";
 
     }else{
 
-        side =
-            left ? "L" : "R";
+        statusEl.textContent = "MOVE INTO CAMERA";
+        statusEl.style.color = "#ff3030";
     }
+}
 
-    const shoulder =
-        side==="L"
-        ? lm[11]
-        : lm[12];
 
-    const elbow =
-        side==="L"
-        ? lm[13]
-        : lm[14];
+/* =========================
+   ADD REP
+========================= */
 
-    const wrist =
-        side==="L"
-        ? lm[15]
-        : lm[16];
+function addRep(){
 
-    drawChain(
-        lm,
-        side==="L"
-        ? [11,13,15]
-        : [12,14,16],
-        "#00ff66"
-    );
+    if(!positionReady) return;
 
-    const elbowAngle =
-        angle(
-            shoulder,
-            elbow,
-            wrist
-        );
+    if(reps >= MAX_REPS) return;
 
-    /*
-       Very forgiving:
-       bent enough = down
-       straight again = up
-    */
+    reps++;
 
-    if(
-        pushState==="UP" &&
-        elbowAngle<145
-    ){
+    repEl.textContent = reps;
 
-        pushState="DOWN";
+    statusEl.textContent = "REP " + reps;
+    statusEl.style.color = "#00ff66";
+}
 
-        setStatus(
-            "PUSH UP • DOWN",
-            "green"
-        );
 
-        return;
-    }
+/* =========================
+   MOVEMENT DETECTION
+========================= */
 
-    if(
-        pushState==="DOWN"
-    ){
+function detectMovement(l){
 
-        setStatus(
-            "PUSH UP • UP",
-            "green"
-        );
+    if(!positionReady) return;
 
-        if(
-            elbowAngle>155
+    const w = workout.toLowerCase();
+
+
+    /* ================= PUSH UP ================= */
+
+    if(w === "push up"){
+
+        const leftAngle = angle(l[11],l[13],l[15]);
+        const rightAngle = angle(l[12],l[14],l[16]);
+
+        let elbowAngle =
+            Math.min(leftAngle,rightAngle);
+
+        if(!isFinite(elbowAngle)) return;
+
+        /*
+           No exact body position.
+
+           Only:
+           arms bend = down
+           arms straighten = up
+        */
+
+        if(elbowAngle < 155){
+
+            state = "DOWN";
+
+        }else if(
+            state === "DOWN" &&
+            elbowAngle > 160
         ){
 
             addRep();
 
-            pushState="UP";
+            state = "UP";
         }
 
         return;
     }
 
-    setStatus(
-        "PUSH UP • READY",
-        "green"
-    );
-}
 
+    /* ================= SQUAT ================= */
 
-/* =========================================================
-   MOUNTAIN CLIMBER
-   SHOULDER + HIP + KNEE
-========================================================= */
+    if(w === "squat"){
 
-function mountainClimber(lm){
+        if(!good(l[23]) ||
+           !good(l[24]) ||
+           !good(l[25]) ||
+           !good(l[26])) return;
 
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                11,12,
-                23,24,
-                25,26
-            ]
-        );
+        const leftHip = l[23];
+        const rightHip = l[24];
 
-    if(!tracked){
+        const leftKnee = l[25];
+        const rightKnee = l[26];
 
-        lostFrames++;
+        const hipY =
+            (leftHip.y+rightHip.y)/2;
 
-        if(lostFrames>10){
+        const kneeY =
+            (leftKnee.y+rightKnee.y)/2;
 
-            personLocked=false;
+        const movement =
+            kneeY-hipY;
 
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
+        /*
+           We only compare movement
+           relative to user's own baseline.
+        */
+
+        if(baseline === null){
+
+            baseline = movement;
+
+            return;
         }
 
-        return;
-    }
+        const delta = movement-baseline;
 
-    lostFrames=0;
+        if(delta > 0.035){
 
-    personLocked=true;
+            state = "DOWN";
 
-    drawChain(
-        lm,
-        [11,23,25],
-        "#00ff66"
-    );
-
-    drawChain(
-        lm,
-        [12,24,26],
-        "#00ff66"
-    );
-
-    const distances=[];
-
-    if(
-        visible(lm,23) &&
-        visible(lm,25)
-    ){
-
-        distances.push(
-            Math.abs(
-                lm[25].y-
-                lm[23].y
-            )
-        );
-    }
-
-    if(
-        visible(lm,24) &&
-        visible(lm,26)
-    ){
-
-        distances.push(
-            Math.abs(
-                lm[26].y-
-                lm[24].y
-            )
-        );
-    }
-
-    if(distances.length===0){
-        return;
-    }
-
-    const kneeDistance =
-        Math.min(...distances);
-
-    /*
-       Calibrate user's normal
-       leg distance.
-    */
-
-    if(mountainBase===null){
-
-        mountainBase =
-            kneeDistance;
-
-        setStatus(
-            "MOUNTAIN CLIMBER • READY",
-            "green"
-        );
-
-        return;
-    }
-
-    mountainBase =
-        mountainBase*0.995+
-        kneeDistance*0.005;
-
-    const ratio =
-        kneeDistance/
-        Math.max(
-            mountainBase,
-            0.10
-        );
-
-    /*
-       Knee comes toward chest.
-    */
-
-    if(
-        mountainState==="AWAY" &&
-        ratio<0.82
-    ){
-
-        mountainState="UP";
-
-        setStatus(
-            "MOUNTAIN CLIMBER • KNEE",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        mountainState==="UP" &&
-        ratio>0.96
-    ){
-
-        addRep();
-
-        mountainState="AWAY";
-    }
-
-    setStatus(
-        "MOUNTAIN CLIMBER • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   HIGH KNEES
-   HIP + KNEE
-========================================================= */
-
-function highKnees(lm){
-
-    const tracked =
-        bodyTracked(
-            lm,
-            [23,24,25,26]
-        );
-
-    if(!tracked){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
-        }
-
-        return;
-    }
-
-    lostFrames=0;
-
-    drawChain(
-        lm,
-        [23,25],
-        "#00ff66"
-    );
-
-    drawChain(
-        lm,
-        [24,26],
-        "#00ff66"
-    );
-
-    let lifted=false;
-
-    if(
-        visible(lm,23) &&
-        visible(lm,25) &&
-        lm[25].y <
-        lm[23].y-0.06
-    ){
-
-        lifted=true;
-    }
-
-    if(
-        visible(lm,24) &&
-        visible(lm,26) &&
-        lm[26].y <
-        lm[24].y-0.06
-    ){
-
-        lifted=true;
-    }
-
-    if(
-        highKneeState==="DOWN" &&
-        lifted
-    ){
-
-        addRep();
-
-        highKneeState="UP";
-
-        setStatus(
-            "HIGH KNEES • UP",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        highKneeState==="UP" &&
-        !lifted
-    ){
-
-        highKneeState="DOWN";
-    }
-
-    setStatus(
-        "HIGH KNEES • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   LUNGES
-   HIP + KNEE + ANKLE
-========================================================= */
-
-function lunges(lm){
-
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                23,24,
-                25,26,
-                27,28
-            ]
-        );
-
-    if(!tracked){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
-        }
-
-        return;
-    }
-
-    lostFrames=0;
-
-    drawChain(
-        lm,
-        [23,25,27],
-        "#00ff66"
-    );
-
-    drawChain(
-        lm,
-        [24,26,28],
-        "#00ff66"
-    );
-
-    let bent=false;
-
-    if(
-        visible(lm,23) &&
-        visible(lm,25) &&
-        visible(lm,27)
-    ){
-
-        if(
-            angle(
-                lm[23],
-                lm[25],
-                lm[27]
-            ) < 155
+        }else if(
+            state === "DOWN" &&
+            delta < 0.015
         ){
 
-            bent=true;
+            addRep();
+
+            state = "UP";
         }
+
+        return;
     }
 
-    if(
-        visible(lm,24) &&
-        visible(lm,26) &&
-        visible(lm,28)
-    ){
 
-        if(
-            angle(
-                lm[24],
-                lm[26],
-                lm[28]
-            ) < 155
+    /* ================= HIGH KNEES ================= */
+
+    if(w === "high knees"){
+
+        if(!good(l[23]) || !good(l[25]) ||
+           !good(l[24]) || !good(l[26])) return;
+
+        const leftRise = l[23].y-l[25].y;
+        const rightRise = l[24].y-l[26].y;
+
+        const rise = Math.max(leftRise,rightRise);
+
+        if(rise > 0.06){
+
+            state = "UP";
+
+        }else if(
+            state === "UP" &&
+            rise < 0.025
         ){
 
-            bent=true;
-        }
-    }
+            addRep();
 
-    if(
-        lungeState==="UP" &&
-        bent
-    ){
-
-        lungeState="DOWN";
-
-        setStatus(
-            "LUNGE • DOWN",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        lungeState==="DOWN" &&
-        !bent
-    ){
-
-        addRep();
-
-        lungeState="UP";
-    }
-
-    setStatus(
-        "LUNGE • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   JUMPING JACK
-   ARMS + LEGS
-========================================================= */
-
-function jumpingJack(lm){
-
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                11,12,
-                15,16,
-                27,28
-            ]
-        );
-
-    if(!tracked){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
+            state = "DOWN";
         }
 
         return;
     }
 
-    lostFrames=0;
 
-    drawChain(
-        lm,
-        [11,13,15],
-        "#00ff66"
-    );
+    /* ================= LUNGES ================= */
 
-    drawChain(
-        lm,
-        [12,14,16],
-        "#00ff66"
-    );
+    if(w === "lunges"){
 
-    drawChain(
-        lm,
-        [23,25,27],
-        "#00ff66"
-    );
+        const leftAngle =
+            angle(l[23],l[25],l[27]);
 
-    drawChain(
-        lm,
-        [24,26,28],
-        "#00ff66"
-    );
+        const rightAngle =
+            angle(l[24],l[26],l[28]);
 
-    const armsUp =
-        visible(lm,15) &&
-        visible(lm,16) &&
-        visible(lm,11) &&
-        visible(lm,12) &&
-        lm[15].y < lm[11].y &&
-        lm[16].y < lm[12].y;
+        const kneeAngle =
+            Math.min(leftAngle,rightAngle);
 
-    const legsApart =
-        visible(lm,27) &&
-        visible(lm,28) &&
-        Math.abs(
-            lm[27].x-
-            lm[28].x
-        ) > 0.14;
+        if(kneeAngle < 155){
 
-    const open =
-        armsUp &&
-        legsApart;
+            state = "DOWN";
 
-    if(
-        jackState==="CLOSED" &&
-        open
-    ){
+        }else if(
+            state === "DOWN" &&
+            kneeAngle > 165
+        ){
 
-        jackState="OPEN";
+            addRep();
 
-        setStatus(
-            "JUMPING JACK • OPEN",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        jackState==="OPEN" &&
-        !open
-    ){
-
-        addRep();
-
-        jackState="CLOSED";
-    }
-
-    setStatus(
-        "JUMPING JACK • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   BURPEE
-   SHOULDER + HIP + KNEE
-========================================================= */
-
-function burpee(lm){
-
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                11,12,
-                23,24,
-                25,26
-            ]
-        );
-
-    if(!tracked){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
+            state = "UP";
         }
 
         return;
     }
 
-    lostFrames=0;
 
-    drawChain(
-        lm,
-        [11,23,25],
-        "#00ff66"
-    );
+    /* ================= MOUNTAIN CLIMBER ================= */
 
-    drawChain(
-        lm,
-        [12,24,26],
-        "#00ff66"
-    );
+    if(w === "mountain climber"){
 
-    const shoulderY =
-        (
-            lm[11].y+
-            lm[12].y
-        )/2;
+        if(!good(l[23]) ||
+           !good(l[24]) ||
+           !good(l[25]) ||
+           !good(l[26])) return;
 
-    const hipY =
-        (
-            lm[23].y+
-            lm[24].y
-        )/2;
+        const leftDistance =
+            Math.abs(l[25].y-l[23].y);
 
-    const distance =
-        Math.abs(
-            hipY-
-            shoulderY
-        );
+        const rightDistance =
+            Math.abs(l[26].y-l[24].y);
 
-    /*
-       Burpee movement changes
-       body shape substantially.
-    */
+        const distance =
+            Math.min(leftDistance,rightDistance);
 
-    if(
-        burpeeState==="UP" &&
-        distance<0.22
-    ){
+        if(baseline === null){
 
-        burpeeState="DOWN";
+            baseline = distance;
 
-        setStatus(
-            "BURPEE • DOWN",
-            "green"
-        );
+            return;
+        }
 
-        return;
-    }
+        if(distance < baseline*0.75){
 
-    if(
-        burpeeState==="DOWN" &&
-        distance>0.28
-    ){
+            state = "KNEE_UP";
 
-        addRep();
+        }else if(
+            state === "KNEE_UP" &&
+            distance > baseline*0.90
+        ){
 
-        burpeeState="UP";
-    }
+            addRep();
 
-    setStatus(
-        "BURPEE • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   PLANK
-   SHOULDER + HIP + ANKLE
-========================================================= */
-
-function plank(lm){
-
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                11,12,
-                23,24,
-                27,28
-            ]
-        );
-
-    if(!tracked){
-
-        lostFrames++;
-
-        plankStart=null;
-
-        if(lostFrames>10){
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
+            state = "READY";
         }
 
         return;
     }
 
-    lostFrames=0;
 
-    drawChain(
-        lm,
-        [11,23,27],
-        "#00ff66"
-    );
+    /* ================= JUMPING JACK ================= */
 
-    drawChain(
-        lm,
-        [12,24,28],
-        "#00ff66"
-    );
+    if(w === "jumping jack"){
 
-    /*
-       Plank is a hold.
-       Every 5 seconds = 1 rep.
-    */
+        if(!good(l[11]) ||
+           !good(l[12]) ||
+           !good(l[15]) ||
+           !good(l[16])) return;
 
-    if(plankStart===null){
+        const armsUp =
+            l[15].y < l[11].y ||
+            l[16].y < l[12].y;
 
-        plankStart =
-            Date.now();
+        const feetApart =
+            Math.abs(l[27].x-l[28].x) > 0.22;
 
-        setStatus(
-            "PLANK • HOLD",
-            "green"
-        );
+        const open = armsUp && feetApart;
+
+        if(open){
+
+            state = "OPEN";
+
+        }else if(
+            state === "OPEN" &&
+            !open
+        ){
+
+            addRep();
+
+            state = "CLOSED";
+        }
 
         return;
     }
 
-    const seconds =
-        Math.floor(
-            (
-                Date.now()-
-                plankStart
-            )/1000
-        );
 
-    setStatus(
-        "PLANK • "+seconds+"s",
-        "green"
-    );
+    /* ================= BURPEE ================= */
 
-    if(seconds>=5){
+    if(w === "burpees"){
 
-        addRep();
+        if(!good(l[11]) ||
+           !good(l[12]) ||
+           !good(l[23]) ||
+           !good(l[24])) return;
 
-        plankStart =
-            Date.now();
+        const shoulderY =
+            (l[11].y+l[12].y)/2;
+
+        const hipY =
+            (l[23].y+l[24].y)/2;
+
+        const bodyHeight =
+            Math.abs(shoulderY-hipY);
+
+        if(baseline === null){
+
+            baseline = bodyHeight;
+
+            return;
+        }
+
+        /*
+           Large body shape change = down.
+           Return to normal = up.
+        */
+
+        if(bodyHeight < baseline*0.65){
+
+            state = "DOWN";
+
+        }else if(
+            state === "DOWN" &&
+            bodyHeight > baseline*0.85
+        ){
+
+            addRep();
+
+            state = "UP";
+        }
+
+        return;
+    }
+
+
+    /* ================= PLANK ================= */
+
+    if(w === "plank"){
+
+        /*
+           Plank is intentionally simple:
+           if the body remains visible and
+           reasonably stable, count one rep
+           after holding for 5 seconds.
+        */
+
+        if(!movementStart){
+
+            movementStart = Date.now();
+
+        }
+
+        if(
+            Date.now()-movementStart >= 5000 &&
+            state !== "COUNTED"
+        ){
+
+            addRep();
+
+            state = "COUNTED";
+        }
+
+        return;
+    }
+
+
+    /* ================= STRETCHING ================= */
+
+    if(w === "stretching"){
+
+        if(!good(l[15]) ||
+           !good(l[16])) return;
+
+        const wristY =
+            (l[15].y+l[16].y)/2;
+
+        if(baseline === null){
+
+            baseline = wristY;
+
+            return;
+        }
+
+        const movement =
+            Math.abs(wristY-baseline);
+
+        if(movement > 0.07){
+
+            state = "MOVE";
+
+        }else if(
+            state === "MOVE" &&
+            movement < 0.035
+        ){
+
+            addRep();
+
+            state = "READY";
+            baseline = wristY;
+        }
+
+        return;
+    }
+
+
+    /* ================= COOL DOWN ================= */
+
+    if(w === "cool down"){
+
+        if(!good(l[15]) ||
+           !good(l[16])) return;
+
+        const wristY =
+            (l[15].y+l[16].y)/2;
+
+        if(baseline === null){
+
+            baseline = wristY;
+
+            return;
+        }
+
+        const movement =
+            Math.abs(wristY-baseline);
+
+        if(movement > 0.07){
+
+            state = "MOVE";
+
+        }else if(
+            state === "MOVE" &&
+            movement < 0.035
+        ){
+
+            addRep();
+
+            state = "READY";
+            baseline = wristY;
+        }
+
+        return;
     }
 }
 
 
-/* =========================================================
-   STRETCHING
-   SHOULDERS + ELBOWS + WRISTS
-========================================================= */
+/* =========================
+   POSE RESULT
+========================= */
 
-function stretching(lm){
+function onResults(results){
 
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                11,12,
-                13,14,
-                15,16
-            ]
-        );
+    if(!running) return;
 
-    if(!tracked){
+    if(!results.poseLandmarks){
 
         lostFrames++;
 
-        if(lostFrames>10){
+        if(lostFrames >= 15){
 
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
+            positionReady = false;
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
             );
+
+            statusEl.textContent =
+                "MOVE INTO CAMERA";
+
+            statusEl.style.color="#ff3030";
         }
 
         return;
     }
 
-    lostFrames=0;
+    lostFrames = 0;
 
-    drawChain(
-        lm,
-        [11,13,15],
-        "#00ff66"
-    );
-
-    drawChain(
-        lm,
-        [12,14,16],
-        "#00ff66"
-    );
-
-    const wristY =
-        (
-            lm[15].y+
-            lm[16].y
-        )/2;
-
-    if(
-        armMovementBase===null
-    ){
-
-        armMovementBase =
-            wristY;
-
-        setStatus(
-            "STRETCHING • READY",
-            "green"
-        );
-
-        return;
-    }
-
-    const movement =
-        Math.abs(
-            wristY-
-            armMovementBase
-        );
-
-    if(movement>0.07){
-
-        addRep();
-
-        armMovementBase =
-            wristY;
-    }
-
-    setStatus(
-        "STRETCHING • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   COOL DOWN
-   SHOULDERS + ELBOWS + WRISTS
-========================================================= */
-
-function coolDown(lm){
-
-    const tracked =
-        bodyTracked(
-            lm,
-            [
-                11,12,
-                13,14,
-                15,16
-            ]
-        );
-
-    if(!tracked){
-
-        lostFrames++;
-
-        if(lostFrames>10){
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
-        }
-
-        return;
-    }
-
-    lostFrames=0;
-
-    drawChain(
-        lm,
-        [11,13,15],
-        "#00ff66"
-    );
-
-    drawChain(
-        lm,
-        [12,14,16],
-        "#00ff66"
-    );
-
-    const wristY =
-        (
-            lm[15].y+
-            lm[16].y
-        )/2;
-
-    if(
-        armMovementBase===null
-    ){
-
-        armMovementBase =
-            wristY;
-
-        setStatus(
-            "COOL DOWN • READY",
-            "green"
-        );
-
-        return;
-    }
-
-    if(
-        Math.abs(
-            wristY-
-            armMovementBase
-        )>0.07
-    ){
-
-        addRep();
-
-        armMovementBase =
-            wristY;
-    }
-
-    setStatus(
-        "COOL DOWN • MOVE",
-        "green"
-    );
-}
-
-
-/* =========================================================
-   POSE RESULTS
-========================================================= */
-
-function onPoseResults(results){
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    if(
-        !results ||
-        !results.poseLandmarks
-    ){
-
-        lostFrames++;
-
-        if(lostFrames>8){
-
-            personLocked=false;
-
-            setStatus(
-                "MOVE INTO CAMERA",
-                "red"
-            );
-        }
-
-        return;
-    }
-
-    const lm =
+    const landmarks =
         results.poseLandmarks;
 
-    const name =
-        workout.toLowerCase();
+    drawBody(landmarks);
 
+    /*
+       IMPORTANT:
+       Movement analysis only happens
+       after usable position is detected.
+    */
 
-    if(
-        name.includes("stretch")
-    ){
+    if(positionReady){
 
-        stretching(lm);
-        return;
+        detectMovement(landmarks);
     }
-
-
-    if(
-        name.includes("push")
-    ){
-
-        pushUp(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("squat")
-    ){
-
-        squat(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("high knee")
-    ){
-
-        highKnees(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("lunge")
-    ){
-
-        lunges(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("mountain")
-    ){
-
-        mountainClimber(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("jumping jack")
-    ){
-
-        jumpingJack(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("burpee")
-    ){
-
-        burpee(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("plank")
-    ){
-
-        plank(lm);
-        return;
-    }
-
-
-    if(
-        name.includes("cool")
-    ){
-
-        coolDown(lm);
-        return;
-    }
-
-    setStatus(
-        "MOVE",
-        "green"
-    );
 }
 
 
-/* =========================================================
-   MEDIAPIPE
-========================================================= */
+/* =========================
+   POSE SETUP
+========================= */
 
-const pose =
-    new Pose({
+function setupPose(){
+
+    pose = new Pose({
+
         locateFile:(file)=>{
             return "https://cdn.jsdelivr.net/npm/@mediapipe/pose/"+file;
         }
+
     });
 
+    pose.setOptions({
 
-pose.setOptions({
+        modelComplexity:1,
 
-    modelComplexity:1,
+        smoothLandmarks:true,
 
-    smoothLandmarks:true,
+        enableSegmentation:false,
 
-    enableSegmentation:false,
+        minDetectionConfidence:0.40,
 
-    minDetectionConfidence:0.40,
+        minTrackingConfidence:0.40
 
-    minTrackingConfidence:0.40
+    });
 
-});
-
-
-pose.onResults(
-    onPoseResults
-);
-
-
-/* =========================================================
-   CAMERA
-   Native getUserMedia
-   More reliable than MediaPipe Camera helper.
-========================================================= */
-
-async function startCamera(){
-
-    if(cameraRunning){
-        return;
-    }
-
-    try{
-
-        setStatus(
-            "STARTING CAMERA...",
-            "yellow"
-        );
-
-        if(
-            !navigator.mediaDevices ||
-            !navigator.mediaDevices.getUserMedia
-        ){
-
-            throw new Error(
-                "Camera API unavailable"
-            );
-        }
-
-        stream =
-            await navigator.mediaDevices
-            .getUserMedia({
-
-                video:{
-                    facingMode:"user",
-                    width:{
-                        ideal:720
-                    },
-                    height:{
-                        ideal:1280
-                    }
-                },
-
-                audio:false
-            });
-
-        video.srcObject =
-            stream;
-
-        await video.play();
-
-        cameraRunning=true;
-
-        setStatus(
-            "MOVE INTO CAMERA",
-            "red"
-        );
-
-        processVideo();
-
-    }catch(error){
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
-        cameraRunning=false;
-
-        setStatus(
-            "CAMERA PERMISSION NEEDED",
-            "red"
-        );
-    }
+    pose.onResults(onResults);
 }
 
 
-/* =========================================================
-   FRAME PROCESSING
-========================================================= */
+/* =========================
+   CAMERA LOOP
+========================= */
 
 async function processVideo(){
 
-    if(!cameraRunning){
-        return;
-    }
+    if(!running) return;
 
     if(
-        video.readyState>=2 &&
-        !processingFrame
+        video.readyState >= 2 &&
+        !processing
     ){
 
-        processingFrame=true;
+        processing = true;
 
         try{
 
@@ -2142,215 +1057,224 @@ async function processVideo(){
                 image:video
             });
 
-        }catch(error){
+        }catch(e){
 
-            console.error(
-                "Pose error:",
-                error
-            );
+            console.error("Pose error:",e);
 
-        }finally{
-
-            processingFrame=false;
         }
+
+        processing = false;
     }
 
-    requestAnimationFrame(
-        processVideo
-    );
+    requestAnimationFrame(processVideo);
 }
 
 
-/* =========================================================
+/* =========================
+   START CAMERA
+========================= */
+
+async function startCamera(){
+
+    try{
+
+        loading.style.display="flex";
+
+        setupPose();
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video:{
+                    facingMode:"user",
+                    width:{ideal:720},
+                    height:{ideal:1280}
+                },
+
+                audio:false
+
+            });
+
+        video.srcObject=stream;
+
+        await video.play();
+
+        canvas.width =
+            video.videoWidth || 720;
+
+        canvas.height =
+            video.videoHeight || 1280;
+
+        loading.style.display="none";
+
+        processVideo();
+
+    }catch(error){
+
+        console.error(error);
+
+        loading.innerHTML=`
+            <div style="color:#ff3030;font-size:18px">
+                Camera could not start
+            </div>
+            <div style="font-size:13px;color:#aaa">
+                Allow camera permission and reload.
+            </div>
+        `;
+    }
+}
+
+
+/* =========================
    STOP CAMERA
-========================================================= */
+========================= */
 
 function stopCamera(){
 
-    cameraRunning=false;
-
-    processingFrame=false;
+    running=false;
 
     if(stream){
 
-        stream.getTracks()
-            .forEach(track=>{
-                track.stop();
-            });
+        stream.getTracks().forEach(track=>{
+            track.stop();
+        });
 
         stream=null;
     }
-
-    video.srcObject=null;
 }
 
 
-/* =========================================================
+/* =========================
    QUIT
-   NO SAVE
-========================================================= */
+========================= */
 
-function quitWorkout(){
+quitBtn.onclick=()=>{
+
+    /*
+       QUIT = NO SAVE
+    */
 
     stopCamera();
 
-    window.location.href =
-        "daily-task.html";
-}
+    location.href="daily-task.html";
+};
 
 
-/* =========================================================
+/* =========================
    FINISH
-========================================================= */
+========================= */
 
-async function finishWorkout(){
+finishBtn.onclick=async()=>{
 
-    const user =
-        auth.currentUser;
+    if(reps <= 0){
+
+        alert("Complete at least 1 rep.");
+        return;
+    }
+
+    const user = auth.currentUser;
 
     if(!user){
 
-        alert(
-            "Please login first."
-        );
-
+        alert("Please login first.");
         return;
     }
-
-    if(reps<=0){
-
-        alert(
-            "Complete at least 1 rep."
-        );
-
-        return;
-    }
-
-    const finalReps =
-        Math.min(
-            reps,
-            50
-        );
 
     finishBtn.disabled=true;
 
     try{
 
-        const ref =
-            db.collection("users")
-            .doc(user.uid);
+        const userRef =
+            db.collection("users").doc(user.uid);
 
-        const snap =
-            await ref.get();
+        await db.runTransaction(async(transaction)=>{
 
-        const data =
-            snap.exists
-            ? snap.data()
-            : {};
+            const snap =
+                await transaction.get(userRef);
 
-        const oldPoints =
-            Number(
-                data.totalPoints || 0
+            const data =
+                snap.exists ? snap.data() : {};
+
+            const oldPoints =
+                Number(data.totalPoints || 0);
+
+            const oldTasks =
+                Number(data.completedTasks || 0);
+
+            transaction.set(
+
+                userRef,
+
+                {
+
+                    totalPoints:
+                        oldPoints + reps,
+
+                    completedTasks:
+                        oldTasks + 1,
+
+                    lastWorkout:
+                        workout,
+
+                    lastWorkoutReps:
+                        reps,
+
+                    updatedAt:
+                        firebase.firestore.FieldValue.serverTimestamp()
+
+                },
+
+                {merge:true}
             );
-
-        const oldTasks =
-            Array.isArray(
-                data.completedTasks
-            )
-            ? data.completedTasks
-            : [];
-
-        const tasks =
-            [...oldTasks];
-
-        if(
-            !tasks.includes(workout)
-        ){
-
-            tasks.push(
-                workout
-            );
-        }
-
-        await ref.set({
-
-            totalPoints:
-                oldPoints+
-                finalReps,
-
-            completedTasks:
-                tasks,
-
-            lastWorkout:
-                workout,
-
-            lastWorkoutReps:
-                finalReps,
-
-            updatedAt:
-                firebase.firestore
-                .FieldValue
-                .serverTimestamp()
-
-        },{
-            merge:true
         });
 
         stopCamera();
 
-        window.location.href =
-            "daily-task.html";
+        location.href="daily-task.html";
 
     }catch(error){
 
-        console.error(
-            "Save error:",
-            error
+        console.error(error);
+
+        alert(
+            "Could not save workout. Please try again."
         );
 
         finishBtn.disabled=false;
-
-        alert(
-            "Could not save workout."
-        );
     }
-}
+};
 
 
-/* =========================================================
-   BUTTONS
-========================================================= */
+/* =========================
+   AUTH + START
+========================= */
 
-quitBtn.addEventListener(
-    "click",
-    quitWorkout
-);
+auth.onAuthStateChanged(user=>{
 
-finishBtn.addEventListener(
-    "click",
-    finishWorkout
-);
+    if(!user){
 
-
-/* =========================================================
-   AUTO START
-========================================================= */
-
-window.addEventListener(
-    "load",
-    ()=>{
-
-        setTimeout(
-            ()=>{
-
-                startCamera();
-
-            },
-            300
-        );
-
+        location.href="index.html";
+        return;
     }
-);
+
+    startCamera();
+
+});
+
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener("resize",()=>{
+
+    if(video.videoWidth){
+
+        canvas.width=video.videoWidth;
+        canvas.height=video.videoHeight;
+    }
+
+});
 
 </script>
 
